@@ -11,6 +11,7 @@ from odoo.tools.profiler import profile
 
 class ComboSaleOrder(models.Model):
     _inherit = "sale.order"
+
     """
     @api.multi
     @profile
@@ -39,6 +40,7 @@ class ComboSaleOrder(models.Model):
             move.filtered(lambda m: m.product_id.tracking == 'none')._action_done()
         return res
     """
+
     def action_confirm(self):
         self.ensure_one()
         res = super(ComboSaleOrder, self).action_confirm()
@@ -70,8 +72,8 @@ class ComboSaleOrder(models.Model):
             pickings_id.action_assign()
             for move in pickings_id.move_lines:
                 move._action_assign()
-                move.filtered(lambda m: m.state in [
-                    'confirmed', 'waiting'])._force_assign()
+                # move.filtered(lambda m: m.state in [
+                    # 'confirmed', 'waiting'])._force_assign()
                 move.filtered(
                     lambda m: m.product_id.tracking == 'none')._action_done()
         return res

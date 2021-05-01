@@ -10,9 +10,9 @@
     'name': 'Combo Product',
     'summary': "Combo Product",
     'description': """
-Combo Product.
-========================
-Create Combo Product . extension by SINAPSYS GLOBAL SA || MASTERCORE SAS
+        Combo Product.
+        ========================
+        Create Combo Product . extension by SINAPSYS GLOBAL SA || MASTERCORE SAS
     """,
 
     'author': 'iPredict IT Solutions Pvt, SINAPSYS GLOBAL SA || MASTERCORE SAS',
