@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding='UTF-8'?>
+<odoo>
+	<record model="ir.cron" id="product_category_history_cron">
+        <field name="name">Product Sale Category: generate classification to product based in sales</field>
+        <field name="model_id" ref="model_product_category_history"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_generate_classification()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="numbercall">-1</field>
+        <field name="doall" eval="False"/>
+    </record>
+</odoo>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="product_category_history_list_view" model="ir.ui.view">
+        <field name="name">product.category.history.list</field>
+        <field name="model">product.category.history</field>
+        <field name="priority">1</field>
+        <field name="arch" type="xml">
+            <tree string="Product Categories">
+                <field name="category_id" />
+                <field name="date" />
+            </tree>
+        </field>
+    </record>
+    <record id="product_category_history_action_form" model="ir.actions.act_window">
+        <field name="name">Product Sale Categories History</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">product.category.history</field>
+        <field name="context">{'create': 0}</field>
+        <field name="view_id" ref="product_category_history_list_view"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_empty_folder">
+                 There's no this product sales yet
+            </p><p>
+              
+            </p>
+        </field>
+    </record>
+</odoo>
