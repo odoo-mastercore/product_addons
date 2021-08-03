@@ -37,7 +37,8 @@ class WhatsappInvoice(models.Model):
                 'target': 'new',
                 'view_mode': 'form',
                 'view_type': 'form',
-                'context': {'default_template_id': self.env.ref('ss_whatsapp_connector.whatsapp_invoice_template').id},
+                'context': {'default_template_id': self.env.ref(
+                    'whatsapp_connector.whatsapp_invoice_template').id},
                 }
 
 class WhatsappPurchase(models.Model):
@@ -50,7 +51,8 @@ class WhatsappPurchase(models.Model):
                 'target': 'new',
                 'view_mode': 'form',
                 'view_type': 'form',
-                'context': {'default_template_id': self.env.ref('ss_whatsapp_connector.whatsapp_purchase_template').id},
+                'context': {'default_template_id': self.env.ref(
+                    'whatsapp_connector.whatsapp_purchase_template').id},
                 }
 
 class WhatsappSale(models.Model):
@@ -63,18 +65,6 @@ class WhatsappSale(models.Model):
                 'target': 'new',
                 'view_mode': 'form',
                 'view_type': 'form',
-                'context': {'default_template_id': self.env.ref('ss_whatsapp_connector.whatsapp_sales_template').id},
-                }
-
-class WhatsappPurchase(models.Model):
-    _inherit = 'stock.picking'
-
-    def stock_whatsapp(self):
-        return {'type': 'ir.actions.act_window',
-                'name': _('Send Whatsapp Message'),
-                'res_model': 'whatsapp.message.wizard',
-                'target': 'new',
-                'view_mode': 'form',
-                'view_type': 'form',
-                'context': {'default_user_id': self.partner_id.id},
+                'context': {'default_template_id': self.env.ref(
+                    'whatsapp_connector.whatsapp_sales_template').id},
                 }

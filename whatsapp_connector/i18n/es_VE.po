@@ -1,0 +1,306 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* whatsapp_connector
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 13.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-08-03 14:24+0000\n"
+"PO-Revision-Date: 2021-08-03 14:24+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: whatsapp_connector
+#: model:mail.template,body_html:whatsapp_connector.whatsapp_purchase_template
+msgid ""
+"<div style=\"font-family: 'Lucica Grande', Ubuntu, Arial, Verdana, sans-serif; font-size: 12px;\">\n"
+"         <p style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
+"                Dear ${object.partner_id.name}\n"
+"                % if object.partner_id.parent_id:\n"
+"                    (${object.partner_id.parent_id.name})\n"
+"                % endif\n"
+"                <br/><br/>\n"
+"                This is about the purchase order <strong>${object.name}</strong>\n"
+"                % if object.partner_ref:\n"
+"                    with reference: ${object.partner_ref}\n"
+"                % endif\n"
+"                with amount ${format_amount(object.amount_total, object.currency_id)}\n"
+"                from ${object.company_id.name}.\n"
+"                <br/>\n"
+"                The order date and time is \"${object.date_approve}\"\n"
+"                <br/>\n"
+"                If you have any questions, please do not hesitate to contact us.\n"
+"                <br/><br/>\n"
+"                Best regards,\n"
+"            </p>\n"
+"        \n"
+"\n"
+"        "
+msgstr ""
+"<div style=\"font-family: 'Lucica Grande', Ubuntu, Arial, Verdana, sans-serif; font-size: 12px;\">\n"
+"         <p style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
+"                Estimado/a ${object.partner_id.name}\n"
+"                % if object.partner_id.parent_id:\n"
+"                    (${object.partner_id.parent_id.name})\n"
+"                % endif\n"
+"                <br/><br/>\n"
+"                Se trata de la orden de compra. <strong>${object.name}</strong>\n"
+"                % if object.partner_ref:\n"
+"                    con referencia: ${object.partner_ref}\n"
+"                % endif\n"
+"                por un monto de ${format_amount(object.amount_total, object.currency_id)}\n"
+"                de ${object.company_id.name}.\n"
+"                <br/>\n"
+"                La fecha y hora del pedido es \"${object.date_approve}\"\n"
+"                <br/>\n"
+"                Si tiene alguna pregunta, no dude en ponerse en contacto con nosotros.\n"
+"                <br/><br/>\n"
+"                Atentamente,\n"
+"            </p>\n"
+"        \n"
+"\n"
+"        "
+
+#. module: whatsapp_connector
+#: model:mail.template,body_html:whatsapp_connector.whatsapp_invoice_template
+msgid ""
+"<div style=\"font-family: 'Lucica Grande', Ubuntu, Arial, Verdana, sans-serif; font-size: 12px;\">\n"
+"        <p style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
+"                Dear\n"
+"                % if object.partner_id.parent_id:\n"
+"                    ${object.partner_id.name} (${object.partner_id.parent_id.name}),\n"
+"                % else:\n"
+"                    ${object.partner_id.name},\n"
+"                % endif\n"
+"                <br /><br />\n"
+"                Here is your\n"
+"                % if object.name:\n"
+"                    invoice ${object.name}\n"
+"                % else:\n"
+"                    invoice\n"
+"                %endif\n"
+"                % if object.invoice_origin:\n"
+"                    (with reference: ${object.invoice_origin})\n"
+"                % endif\n"
+"                with amount ${format_amount(object.amount_total, object.currency_id)}\n"
+"                from ${object.company_id.name}.\n"
+"                % if object.payment_state == 'paid':\n"
+"                    This invoice is already paid.\n"
+"                % else:\n"
+"                    Please remit payment at your earliest convenience.\n"
+"                % endif\n"
+"                <br />\n"
+"                The invoice date and time is \"${object.invoice_date}\"\n"
+"                <br />\n"
+"                Do not hesitate to contact us if you have any questions.\n"
+"                % if object.invoice_user_id.signature:\n"
+"                    <br />\n"
+"                    ${object.invoice_user_id.signature | safe}\n"
+"                % endif\n"
+"                </p>\n"
+"        \n"
+"        "
+msgstr ""
+"<div style=\"font-family: 'Lucica Grande', Ubuntu, Arial, Verdana, sans-serif; font-size: 12px;\">\n"
+"        <p style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
+"                Estimado/a \n"
+"                % if object.partner_id.parent_id:\n"
+"                    ${object.partner_id.name} (${object.partner_id.parent_id.name}),\n"
+"                % else:\n"
+"                    ${object.partner_id.name},\n"
+"                % endif\n"
+"                <br /><br />\n"
+"                Aqui esta su\n"
+"                % if object.name:\n"
+"                    factura ${object.name}\n"
+"                % else:\n"
+"                    factura\n"
+"                %endif\n"
+"                % if object.invoice_origin:\n"
+"                    (con referencia: ${object.invoice_origin})\n"
+"                % endif\n"
+"                por un monto de ${format_amount(object.amount_total, object.currency_id)}\n"
+"                de ${object.company_id.name}.\n"
+"                % if object.payment_state == 'paid':\n"
+"                    Esta factura ya está pagada.\n"
+"                % else:\n"
+"                    Por favor remita el pago a su más pronta conveniencia.\n"
+"                % endif\n"
+"                <br />\n"
+"                La fecha y hora de la factura es \"${object.invoice_date}\"\n"
+"                <br />\n"
+"                No dude en contactarnos si tiene alguna pregunta.\n"
+"                % if object.invoice_user_id.signature:\n"
+"                    <br />\n"
+"                    ${object.invoice_user_id.signature | safe}\n"
+"                % endif\n"
+"                </p>\n"
+"        \n"
+"        "
+
+#. module: whatsapp_connector
+#: model:mail.template,body_html:whatsapp_connector.whatsapp_sales_template
+msgid ""
+"<div style=\"font-family: 'Lucica Grande', Ubuntu, Arial, Verdana, sans-serif; font-size: 12px;\">\n"
+"        <p> Hello ${object.partner_id.name or ''},</p>\n"
+"        Your order Number ${object.name} with amount ${format_amount(object.amount_total, object.currency_id)} is Confirmed.\n"
+"        <br>\n"
+"        Your order date and time is \"${object.date_order}\"\n"
+"        <br>\n"
+"        If you have any questions, please do not hesitate to contact us.\n"
+"        <br>\n"
+"        \n"
+"        "
+msgstr ""
+"<div style=\"font-family: 'Lucica Grande', Ubuntu, Arial, Verdana, sans-serif; font-size: 12px;\">\n"
+"        <p> Hello ${object.partner_id.name or ''},</p>\n"
+"        Su número de orden ${object.name} con cantidad ${format_amount(object.amount_total, object.currency_id)} esta confirmada.\n"
+"        <br>\n"
+"        La fecha y hora de su pedido es \"${object.date_order}\"\n"
+"        <br>\n"
+"        Si tiene alguna pregunta, no dude en ponerse en contacto con nosotros.\n"
+"        <br>\n"
+"        \n"
+"        "
+
+#. module: whatsapp_connector
+#: model_terms:ir.ui.view,arch_db:whatsapp_connector.whatsapp_message_wizard_form
+msgid "Cancel"
+msgstr "Cancelar"
+
+#. module: whatsapp_connector
+#: model:ir.model,name:whatsapp_connector.model_res_partner
+msgid "Contact"
+msgstr "Contacto"
+
+#. module: whatsapp_connector
+#: model:ir.model.fields,field_description:whatsapp_connector.field_whatsapp_message_wizard__create_uid
+msgid "Created by"
+msgstr "Creado Por"
+
+#. module: whatsapp_connector
+#: model:ir.model.fields,field_description:whatsapp_connector.field_whatsapp_message_wizard__create_date
+msgid "Created on"
+msgstr "Creado el"
+
+#. module: whatsapp_connector
+#: model:ir.model.fields,field_description:whatsapp_connector.field_whatsapp_message_wizard__display_name
+msgid "Display Name"
+msgstr "Nombre a mostrar"
+
+#. module: whatsapp_connector
+#: model:ir.model.fields,field_description:whatsapp_connector.field_whatsapp_message_wizard__id
+msgid "ID"
+msgstr "ID"
+
+#. module: whatsapp_connector
+#: model:ir.model,name:whatsapp_connector.model_crm_lead
+msgid "Initiatives"
+msgstr "Iniciativas"
+
+#. module: whatsapp_connector
+#: model:ir.model,name:whatsapp_connector.model_account_move
+msgid "Journal Entries"
+msgstr "Asientos contables"
+
+#. module: whatsapp_connector
+#: model:ir.model.fields,field_description:whatsapp_connector.field_whatsapp_message_wizard____last_update
+msgid "Last Modified on"
+msgstr "Última modificación el"
+
+#. module: whatsapp_connector
+#: model:ir.model.fields,field_description:whatsapp_connector.field_whatsapp_message_wizard__write_uid
+msgid "Last Updated by"
+msgstr "Última modificación por"
+
+#. module: whatsapp_connector
+#: model:ir.model.fields,field_description:whatsapp_connector.field_whatsapp_message_wizard__write_date
+msgid "Last Updated on"
+msgstr "Última actualización el"
+
+#. module: whatsapp_connector
+#: model:ir.model.fields,field_description:whatsapp_connector.field_whatsapp_message_wizard__message
+msgid "Message"
+msgstr "Mensaje"
+
+#. module: whatsapp_connector
+#: model:ir.model.fields,field_description:whatsapp_connector.field_whatsapp_message_wizard__mobile_number
+msgid "Mobile"
+msgstr "Celular"
+
+#. module: whatsapp_connector
+#: model:ir.model,name:whatsapp_connector.model_purchase_order
+#: model:mail.template,subject:whatsapp_connector.whatsapp_invoice_template
+#: model:mail.template,subject:whatsapp_connector.whatsapp_purchase_template
+msgid "Purchase Order"
+msgstr "Pedido de compra"
+
+#. module: whatsapp_connector
+#: model:ir.model.fields,field_description:whatsapp_connector.field_whatsapp_message_wizard__user_id
+msgid "Recipient"
+msgstr "Destinatario"
+
+#. module: whatsapp_connector
+#: model:mail.template,subject:whatsapp_connector.whatsapp_sales_template
+msgid "Sales Confirm"
+msgstr "Confirmación de ventas"
+
+#. module: whatsapp_connector
+#: model:ir.model,name:whatsapp_connector.model_sale_order
+msgid "Sales Order"
+msgstr "Pedido de venta"
+
+#. module: whatsapp_connector
+#: model_terms:ir.ui.view,arch_db:whatsapp_connector.whatsapp_message_wizard_form
+msgid "Send"
+msgstr "Enviar"
+
+#. module: whatsapp_connector
+#: model_terms:ir.ui.view,arch_db:whatsapp_connector.whatsapp_account_view_form
+#: model_terms:ir.ui.view,arch_db:whatsapp_connector.whatsapp_crm_view_form
+#: model_terms:ir.ui.view,arch_db:whatsapp_connector.whatsapp_purchase_view_form
+#: model_terms:ir.ui.view,arch_db:whatsapp_connector.whatsapp_sale_view_form
+#: model_terms:ir.ui.view,arch_db:whatsapp_connector.whatsapp_stock_view_form
+msgid "Send Whatsapp"
+msgstr "Enviar WhatsApp"
+
+#. module: whatsapp_connector
+#: code:addons/whatsapp_connector/models/whatsapp_popup.py:0
+#: code:addons/whatsapp_connector/models/whatsapp_popup.py:0
+#: code:addons/whatsapp_connector/models/whatsapp_popup.py:0
+#: code:addons/whatsapp_connector/models/whatsapp_popup.py:0
+#: code:addons/whatsapp_connector/models/whatsapp_popup.py:0
+#: model_terms:ir.ui.view,arch_db:whatsapp_connector.whatsapp_message_wizard_form
+#, python-format
+msgid "Send Whatsapp Message"
+msgstr "Enviar Mensaje de WhatsApp"
+
+#. module: whatsapp_connector
+#: model:ir.model.fields,field_description:whatsapp_connector.field_whatsapp_message_wizard__template_id
+msgid "Use template"
+msgstr "Usar Template"
+
+#. module: whatsapp_connector
+#: model_terms:ir.ui.view,arch_db:whatsapp_connector.whatsapp_res_view_form
+msgid "Whatsapp Message"
+msgstr "Mensaje de WhatsApp"
+
+#. module: whatsapp_connector
+#: model_terms:ir.ui.view,arch_db:whatsapp_connector.whatsapp_message_wizard_form
+msgid "Whatsapp Number"
+msgstr "Numero de WhatsApp"
+
+#. module: whatsapp_connector
+#: model:ir.model.fields,field_description:whatsapp_connector.field_whatsapp_message_wizard__model
+msgid "mail.template.model_id"
+msgstr ""
+
+#. module: whatsapp_connector
+#: model:ir.model,name:whatsapp_connector.model_whatsapp_message_wizard
+msgid "whatsapp.message.wizard"
+msgstr "Mensaje WhatsApp"
