@@ -21,7 +21,8 @@ class MaterialPurchaseRequisition(models.Model):
     @api.onchange('user_id')
     def onchange_user_id(self):
         if self.user_id:
-            location = self.env['stock.location'].search([('user_id', '=', self.user_id.id)])
+            location = self.env['hr.employee'].search(
+                [('user_id', '=', self.user_id.id)]).dest_location_id
             self.location_id = location.id
 
     user_id = fields.Many2one('res.users')
