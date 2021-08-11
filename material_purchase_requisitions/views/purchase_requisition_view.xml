@@ -8,16 +8,16 @@
             <field name="arch" type="xml">
                 <form>
                     <header>
-                        <button name="request_stock" type="object" string="Confirm" states="draft" class="btn-primary" groups="base.group_user"/>
-<!--                        <button name="manager_approve" type="object" string="Department Approve" states="dept_confirm,cancel" class="btn-primary" groups="material_purchase_requisitions.group_purchase_requisition_department"/>-->
-<!--                        <button name="user_approve" type="object" string="Approve" states="ir_approve" class="btn-primary" groups="material_purchase_requisitions.group_purchase_requisition_user"/>-->
+                        <button name="requisition_confirm" type="object" string="Confirm" states="draft" class="btn-primary" groups="base.group_user"/>
+                        <button name="manager_approve" type="object" string="Department Approve" states="dept_confirm,cancel" class="btn-primary" groups="material_purchase_requisitions.group_purchase_requisition_department"/>
+                        <button name="user_approve" type="object" string="Approve" states="ir_approve" class="btn-primary" groups="material_purchase_requisitions.group_purchase_requisition_user"/>
                         <button name="request_stock" type="object" string="Create Picking and PO" states="approve" class="btn-primary" groups="material_purchase_requisitions.group_purchase_requisition_user"/>
-                        <button name="action_received" type="object" string="Received" class="btn-primary"/>
-                        <button name="requisition_reject" type="object" string="Reject" groups="material_purchase_requisitions.group_purchase_requisition_department,material_purchase_requisitions.group_purchase_requisition_user" states="dept_confirm,approve,ir_approve" />
+                        <button name="action_received" type="object" string="Received" states="stock" class="btn-primary"/>
+                        <button name="requisition_reject" type="object" string="Reject" groups="material_purchase_requisitions.group_purchase_requisition_department" states="dept_confirm,approve,ir_approve" />
                         <button name="action_cancel" type="object" states="draft" string="Cancel" groups="base.group_user"/>
                         <button name="reset_draft" type="object" string="Reset to Draft" states="cancel,reject,receive" class="btn-primary"/>
                         <field name="state" widget="statusbar" string="confirm"  
-                                        statusbar_visible="draft,stock,receive"/>
+                                        statusbar_visible="draft,dept_confirm,ir_approve,approve,stock,receive"/>
                     </header>
                     <sheet>
                     <div class="oe_button_box" name="button_box">
@@ -35,17 +35,10 @@
                     </div>
                         <group>
                                 <group>
-                                    <field name="employee_id" required="0" attrs="{'readonly': [('state', '!=', 'draft')]}" invisible="1"/>
-                                    <field name="user_id" required="1"/>
-<!--                                    <field name="my_list" widget="many2many_tags"/>-->
-                                    <field name="department_id" required="0" attrs="{'readonly': [('state', '!=', 'draft')]}" invisible="1"/>
-                                    <field name="company_id" groups="base.group_multi_company" attrs="{'readonly': [('state', '!=', 'draft')]}" invisible="1"/>
-                                    <field name="requisiton_responsible_id" attrs="{'readonly': [('state', '!=', 'draft')]}" invisible="1"/>
-                                    <field name="location_id"
-                                                   groups="material_purchase_requisitions.group_purchase_requisition_user,stock.group_stock_user"
-                                                   domain="[('usage','!=', 'view')]" attrs="{'readonly': [['state', 'in', ['reject','cancel','receive']]]}"/>
-                                    <field name="dest_location_id" groups="material_purchase_requisitions.group_purchase_requisition_user,stock.group_stock_user" attrs="{'readonly': [['state', 'in', ['reject','cancel','receive']]]}"/>
-
+                                    <field name="employee_id" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                                    <field name="department_id" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                                    <field name="company_id" groups="base.group_multi_company" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                                    <field name="requisiton_responsible_id" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
                                 </group>
                                 <group>
                                     <field name="request_date" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
@@ -73,12 +66,12 @@
                             <page groups="material_purchase_requisitions.group_purchase_requisition_user,stock.group_stock_user" string="Picking Details" attrs="{'readonly': [['state', 'in', ['done']]]}">
                                 <group>
                                     <group>
-<!--                                            <field name="location_id"-->
-<!--                                                   groups="material_purchase_requisitions.group_purchase_requisition_user,stock.group_stock_user" -->
-<!--                                                   domain="[('usage','!=', 'view')]" attrs="{'readonly': [['state', 'in', ['reject','cancel','receive']]]}"/>-->
+                                            <field name="location_id"
+                                                   groups="material_purchase_requisitions.group_purchase_requisition_user,stock.group_stock_user" 
+                                                   domain="[('usage','!=', 'view')]" attrs="{'readonly': [['state', 'in', ['reject','cancel','receive']]]}"/>
                                     </group>
                                     <group>
-<!--                                        <field name="dest_location_id" groups="material_purchase_requisitions.group_purchase_requisition_user,stock.group_stock_user" attrs="{'readonly': [['state', 'in', ['reject','cancel','receive']]]}"/>-->
+                                        <field name="dest_location_id" groups="material_purchase_requisitions.group_purchase_requisition_user,stock.group_stock_user" attrs="{'readonly': [['state', 'in', ['reject','cancel','receive']]]}"/>
                                         <field name="delivery_picking_id" groups="material_purchase_requisitions.group_purchase_requisition_user,stock.group_stock_user"/>
                                         <field name="custom_picking_type_id" groups="material_purchase_requisitions.group_purchase_requisition_user,stock.group_stock_user" attrs="{'readonly': [['state', 'in', ['reject','cancel','receive']]]}"/>
                                     </group>
@@ -115,15 +108,12 @@
             <field name="model">material.purchase.requisition</field>
             <field name="arch" type="xml">
                 <tree>
-<!--                    <field name="ref"/>-->
-                    <field name="employee_id" invisible="1"/>
-                    <field name="employee_id" invisible="1"/>
-                    <field name="department_id" invisible="1"/>
-                    <field name="request_date" invisible="1"/>
-                    <field name="location_id"/>
-                    <field name="dest_location_id"/>
+                    <field name="name"/>
+                    <field name="employee_id"/>
+                    <field name="department_id"/>
+                    <field name="request_date"/>
                     <field name="date_end"/>
-                    <field name="company_id" groups="base.group_multi_company"/>
+                    <field name="company_id"/>
                     <field name="state"/>
                 </tree>
             </field>
@@ -136,7 +126,7 @@
                 <search string="Purchase Requistion search">
                     <field name="employee_id"/>
                     <field name="request_date"/>
-                    <field name="company_id" groups="base.group_multi_company"/>
+                    <field name="company_id"/>
                     <field name="date_end"/>
                     <field name="department_id"/>
                     <field name="approve_manager_id"/>
@@ -153,7 +143,7 @@
                     <group expand="0" string="Group By">
                         <filter string="Employee" name="employee_id" context="{'group_by':'employee_id'}"/>
                         <filter string="Reqisition Date" name="request_date" context="{'group_by':'request_date'}"/>
-                        <filter string="Company" name="company" context="{'group_by':'company_id'}" groups="base.group_multi_company"/>
+                        <filter string="Company" name="company" context="{'group_by':'company_id'}"/>
                         <filter string="Reqisition Dedline" name="date_end" context="{'group_by':'date_end'}"/>
                         <filter string="Department" name="department" context="{'group_by':'department_id'}"/>
                         <filter string="Department Manager" name="department_manager" context="{'group_by':'approve_manager_id'}"/>
@@ -174,7 +164,6 @@
         <record model="ir.actions.act_window" id="action_material_purchase_requisition">
             <field name="name">Purchase Requisitions</field>
             <field name="res_model">material.purchase.requisition</field>
-            <!--<field name="view_type">form</field>-->
             <field name="view_mode">tree,form</field>
         </record>
         

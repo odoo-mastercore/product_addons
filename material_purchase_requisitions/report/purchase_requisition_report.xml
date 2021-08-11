@@ -31,7 +31,7 @@
                                    <td><strong>Received Date</strong></td><td> <span t-field="doc.receive_date"/></td>
                                </tr>
                                <tr style="border: 2px solid black;">
-                                   <td><strong>Requisition Responsible</strong></td><td> <span t-field="doc.requisiton_responsible_id.sudo().name"/></td>
+                                   <td><strong>Requisition Responsible</strong></td><td> <span t-field="doc.requisiton_responsible_id.name"/></td>
                                    <td><strong>Requisition Deadline</strong></td><td> <span t-field="doc.date_end"/></td>
                                </tr>
                                <tr style="border: 2px solid black;">
@@ -99,26 +99,26 @@
                                </t>
                          </table>
                          <div class="row mt32 mb32">
-                             <div class="col-6">
+                             <div class="col-xs-6 text-left">
                                 <strong>Employee Signature:____________________</strong>
                              </div>
-                             <div class="col-6">
+                             <div class="col-xs-6 text-left">
                                 <strong>Date:____________________</strong>
                              </div>
                          </div>
                           <div class="row mt32 mb32">
-                             <div class="col-6">
-                                <strong>Department Manager Signature:____________________</strong>
+                             <div class="col-xs-6 text-left">
+                                <strong>Manager Signature:____________________</strong>
                              </div>
-                             <div class="col-6">
+                             <div class="col-xs-6 text-left">
                                 <strong>Date:____________________</strong>
                              </div>
                          </div>
                          <div class="row mt32 mb32">
-                             <div class="col-6">
-                                <strong>Approver Signature:____________________</strong>
+                             <div class="col-xs-6 text-left">
+                                <strong>Approve Signature:____________________</strong>
                              </div>
-                             <div class="col-6">
+                             <div class="col-xs-6 text-left">
                                 <strong>Date:____________________</strong>
                              </div>
                          </div>

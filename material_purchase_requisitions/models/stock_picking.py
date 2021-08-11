@@ -9,7 +9,7 @@ class StockPicking(models.Model):
         'material.purchase.requisition',
         string='Purchase Requisition',
         readonly=True,
-        copy=True
+        copy=False
     )
 
 class StockMove(models.Model):
@@ -18,7 +18,7 @@ class StockMove(models.Model):
     custom_requisition_line_id = fields.Many2one(
         'material.purchase.requisition.line',
         string='Requisitions Line',
-        copy=True
+        copy=False
     )
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

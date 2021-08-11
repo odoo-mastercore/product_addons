@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
+
+# Part of Probuse Consulting Service Pvt Ltd. See LICENSE file for full copyright and licensing details.
+
 {
     'name': 'Product/Material Purchase Requisitions by Employees/Users',
-    'version': '1.7.3',
-    'price': 79.0,
+    'version': '1.3.3',
+    'price': 59.0,
     'currency': 'EUR',
     'license': 'Other proprietary',
     'summary': """This module allow your employees/users to create Purchase Requisitions.""",
@@ -51,7 +54,7 @@ products Requisitions
 purchase Requisition Process
 Approving or Denying the purchase Requisition
 Denying purchase Requisition​
-construction management
+construction managment
 real estate management
 construction app
 Requisition
@@ -88,17 +91,15 @@ Email notifications to Department Manager, Requisition Manager for approval.
     'website': 'http://www.probuse.com',
     'support': 'contact@probuse.com',
     'images': ['static/description/img1.jpeg'],
-    # 'live_test_url': 'https://youtu.be/1AgKs7gfe4M',
-    #'live_test_url': 'https://youtu.be/byR2cM0c274',
+    'live_test_url': 'https://youtu.be/1AgKs7gfe4M',
     'category': 'Warehouse',
     'depends': [
-        'stock',
-        'hr',
-        'purchase',
-    ],
-    'data': [
+                'stock',
+                'hr',
+                'purchase',
+                ],
+    'data':[
         'security/security.xml',
-        # 'security/multi_company_security.xml',
         'security/ir.model.access.csv',
         'data/purchase_requisition_sequence.xml',
         'data/employee_purchase_approval_template.xml',
@@ -109,6 +110,8 @@ Email notifications to Department Manager, Requisition Manager for approval.
         'views/hr_department_view.xml',
         'views/stock_picking_view.xml',
     ],
-    'installable': True,
-    'application': False,
+    'installable' : True,
+    'application' : False,
 }
+
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
