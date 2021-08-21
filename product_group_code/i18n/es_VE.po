@@ -1,0 +1,125 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* product_fleet
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 13.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-02-26 14:29+0000\n"
+"PO-Revision-Date: 2021-02-26 14:29+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: product_fleet
+#: model:ir.model.fields,field_description:product_fleet.field_product_cross_reference__create_uid
+#: model:ir.model.fields,field_description:product_fleet.field_product_fleet_model__create_uid
+msgid "Created by"
+msgstr "Creado por"
+
+#. module: product_fleet
+#: model:ir.model.fields,field_description:product_fleet.field_product_cross_reference__create_date
+#: model:ir.model.fields,field_description:product_fleet.field_product_fleet_model__create_date
+msgid "Created on"
+msgstr "Creado el"
+
+#. module: product_fleet
+#: model:ir.model.fields,field_description:product_fleet.field_product_cross_reference__display_name
+#: model:ir.model.fields,field_description:product_fleet.field_product_fleet_model__display_name
+msgid "Display Name"
+msgstr "Nombre"
+
+#. module: product_fleet
+#: model:ir.model.fields,field_description:product_fleet.field_product_cross_reference__maker_id
+msgid "Fabricante"
+msgstr ""
+
+#. module: product_fleet
+#: model:ir.model.fields,field_description:product_fleet.field_product_product__cross_reference
+#: model:ir.model.fields,field_description:product_fleet.field_product_template__cross_reference
+msgid "Fabricante - Numero de Pieza"
+msgstr "Número de Pieza por el Fabricante"
+
+#. module: product_fleet
+#: model:ir.model.fields,field_description:product_fleet.field_product_cross_reference__id
+#: model:ir.model.fields,field_description:product_fleet.field_product_fleet_model__id
+msgid "ID"
+msgstr "ID"
+
+#. module: product_fleet
+#: model:ir.model.fields,field_description:product_fleet.field_product_cross_reference____last_update
+#: model:ir.model.fields,field_description:product_fleet.field_product_fleet_model____last_update
+msgid "Last Modified on"
+msgstr "Última modificación el"
+
+#. module: product_fleet
+#: model:ir.model.fields,field_description:product_fleet.field_product_cross_reference__write_uid
+#: model:ir.model.fields,field_description:product_fleet.field_product_fleet_model__write_uid
+msgid "Last Updated by"
+msgstr "Última actualización por"
+
+#. module: product_fleet
+#: model:ir.model.fields,field_description:product_fleet.field_product_cross_reference__write_date
+#: model:ir.model.fields,field_description:product_fleet.field_product_fleet_model__write_date
+msgid "Last Updated on"
+msgstr "Última actualización el"
+
+#. module: product_fleet
+#: model:ir.model.fields,field_description:product_fleet.field_product_product__model_fleet_part
+#: model:ir.model.fields,field_description:product_fleet.field_product_template__model_fleet_part
+msgid "Modelo - Numero de parte"
+msgstr "Modelo - Número de parte"
+
+#. module: product_fleet
+#: model:ir.model.fields,field_description:product_fleet.field_product_fleet_model__fleet_model_id
+#: model:ir.model.fields,field_description:product_fleet.field_product_product__cross_reference_ids
+#: model:ir.model.fields,field_description:product_fleet.field_product_product__fleet_model_ids
+#: model:ir.model.fields,field_description:product_fleet.field_product_template__cross_reference_ids
+#: model:ir.model.fields,field_description:product_fleet.field_product_template__fleet_model_ids
+msgid "Modelos"
+msgstr ""
+
+#. module: product_fleet
+#: model_terms:ir.ui.view,arch_db:product_fleet.product_template_fleet_form_view
+msgid "Modelos Compatibles"
+msgstr ""
+
+#. module: product_fleet
+#: model:ir.model.fields,field_description:product_fleet.field_product_fleet_model__part_number
+msgid "Numero de parte"
+msgstr "Número de parte"
+
+#. module: product_fleet
+#: model:ir.model.fields,field_description:product_fleet.field_product_cross_reference__reference
+msgid "Numero de referencia"
+msgstr "Número de referencia"
+
+#. module: product_fleet
+#: model:ir.model,name:product_fleet.model_product_template
+msgid "Product Template"
+msgstr "Plantilla de producto"
+
+#. module: product_fleet
+#: model:ir.model.fields,field_description:product_fleet.field_product_cross_reference__product_id
+#: model:ir.model.fields,field_description:product_fleet.field_product_fleet_model__product_id
+msgid "Producto"
+msgstr ""
+
+#. module: product_fleet
+#: model_terms:ir.ui.view,arch_db:product_fleet.product_template_fleet_form_view
+msgid "Referencia Cruzada"
+msgstr ""
+
+#. module: product_fleet
+#: model:ir.model,name:product_fleet.model_product_cross_reference
+msgid "product.cross.reference"
+msgstr ""
+
+#. module: product_fleet
+#: model:ir.model,name:product_fleet.model_product_fleet_model
+msgid "product.fleet.model"
+msgstr ""
