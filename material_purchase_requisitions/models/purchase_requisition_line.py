@@ -15,6 +15,10 @@ class MaterialPurchaseRequisitionLine(models.Model):
         string='Product',
         required=True,
     )
+    qty_available = fields.Float(
+        'Cantidad a Mano',
+        related="product_id.qty_available",
+        digits='Product Unit of Measure',)
 #     layout_category_id = fields.Many2one(
 #         'sale.layout_category',
 #         string='Section',
