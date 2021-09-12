@@ -53,7 +53,7 @@
                                     <tree editable="bottom">
                                         <field name="requisition_type" groups="material_purchase_requisitions.group_purchase_requisition_user,purchase.group_purchase_user,material_purchase_requisitions.group_purchase_requisition_manager,material_purchase_requisitions.group_purchase_requisition_department"/>
                                         <field name="product_id" options="{'no_create': True, 'no_edit': True}"/>
-                                        <field name="qty_available" />
+                                        <field name="qty_available" groups="stock.group_stock_user" />
                                         <field name="description"/>
                                         <field name="qty"/>
                                         <field name="uom"/>
