@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Odoo Server 13.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-09-13 13:17+0000\n"
-"PO-Revision-Date: 2021-09-13 09:29-0400\n"
+"PO-Revision-Date: 2021-09-13 11:01-0400\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -351,7 +351,7 @@ msgstr "<strong>Fecha de rechazo</strong>"
 #. module: material_purchase_requisitions
 #: model_terms:ir.ui.view,arch_db:material_purchase_requisitions.purchase_requisition
 msgid "<strong>Requisition Action</strong>"
-msgstr "<strong> Acción de solicitud </strong>"
+msgstr "<strong> Tipo de solicitud </strong>"
 
 #. module: material_purchase_requisitions
 #: model_terms:ir.ui.view,arch_db:material_purchase_requisitions.purchase_requisition
@@ -797,7 +797,7 @@ msgstr "Otra información"
 #: code:addons/material_purchase_requisitions/models/purchase_requisition.py:0
 #, python-format
 msgid "PLease Enter Atleast One Vendor on Requisition Lines"
-msgstr "Por favor ingrese al menos un proveedor en las líneas de solicitud"
+msgstr "Por favor ingrese al menos un proveedor en las líneas de Pedido de Compra"
 
 #. module: material_purchase_requisitions
 #: model_terms:ir.ui.view,arch_db:material_purchase_requisitions.material_purchase_requisition_form_view
@@ -808,7 +808,7 @@ msgstr "Detalles"
 #. module: material_purchase_requisitions
 #: model:ir.model.fields,field_description:material_purchase_requisitions.field_material_purchase_requisition__custom_picking_type_id
 msgid "Picking Type"
-msgstr "Tipo de selección"
+msgstr "Tipo de operación"
 
 #. module: material_purchase_requisitions
 #: code:addons/material_purchase_requisitions/models/purchase_requisition.py:0
@@ -855,18 +855,18 @@ msgstr "Ordenes de compra"
 #: model:ir.ui.menu,name:material_purchase_requisitions.menu_item_purchase_requisition
 #: model_terms:ir.ui.view,arch_db:material_purchase_requisitions.purchase_requisition
 msgid "Purchase Requisition"
-msgstr "Solicitud de compra"
+msgstr "Requisición"
 
 #. module: material_purchase_requisitions
 #: model_terms:ir.ui.view,arch_db:material_purchase_requisitions.purchase_requisition_employee_form_view
 msgid "Purchase Requisition Settings"
-msgstr "Configuración de solicitud de compra"
+msgstr "Configuración de la requisición"
 
 #. module: material_purchase_requisitions
 #: model:ir.actions.act_window,name:material_purchase_requisitions.action_material_purchase_requisition
 #: model:ir.ui.menu,name:material_purchase_requisitions.menu_action_purchase_requisition
 msgid "Purchase Requisitions"
-msgstr "Solicitud de compra"
+msgstr "Requisiciones"
 
 #. module: material_purchase_requisitions
 #: model:ir.model.fields,field_description:material_purchase_requisitions.field_material_purchase_requisition__requisition_line_ids
@@ -1011,19 +1011,19 @@ msgstr "Token de seguridad"
 #: code:addons/material_purchase_requisitions/models/purchase_requisition.py:0
 #, python-format
 msgid "Select Destination location under the picking details."
-msgstr "Seleccione Ubicación de destino debajo de los detalles de recolección."
+msgstr "Seleccione \"Ubicación de destino\" en la pestaña \"Detalles\"."
 
 #. module: material_purchase_requisitions
 #: code:addons/material_purchase_requisitions/models/purchase_requisition.py:0
 #, python-format
 msgid "Select Picking Type under the picking details."
-msgstr "Seleccione Tipo de solicitud debajo de los detalles de la solicitud."
+msgstr "Seleccione \"Tipo de operación\" en la pestaña \"Detalles\"."
 
 #. module: material_purchase_requisitions
 #: code:addons/material_purchase_requisitions/models/purchase_requisition.py:0
 #, python-format
 msgid "Select Source location under the picking details."
-msgstr "Seleccione Ubicación de origen debajo de los detalles de selección."
+msgstr "Seleccione \"Ubicación de origen\" en la pestaña \"Detalles\"."
 
 #. module: material_purchase_requisitions
 #: model:ir.model.fields,field_description:material_purchase_requisitions.field_material_purchase_requisition__location_id
