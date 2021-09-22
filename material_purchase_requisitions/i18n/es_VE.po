@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 13.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-09-13 13:17+0000\n"
-"PO-Revision-Date: 2021-09-13 11:01-0400\n"
+"POT-Creation-Date: 2021-09-21 18:21+0000\n"
+"PO-Revision-Date: 2021-09-21 15:42-0400\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -271,7 +271,7 @@ msgstr "<strong>Confirmado por</strong>"
 #. module: material_purchase_requisitions
 #: model_terms:ir.ui.view,arch_db:material_purchase_requisitions.purchase_requisition
 msgid "<strong>Confirmed Date</strong>"
-msgstr "<strong>Fecha confirmada</strong>"
+msgstr "<strong>Fecha de confirmación</strong>"
 
 #. module: material_purchase_requisitions
 #: model_terms:ir.ui.view,arch_db:material_purchase_requisitions.purchase_requisition
@@ -391,7 +391,7 @@ msgstr "Advertencia de acceso"
 #. module: material_purchase_requisitions
 #: model:ir.model.fields,field_description:material_purchase_requisitions.field_material_purchase_requisition__message_needaction
 msgid "Action Needed"
-msgstr "Acción necesaria"
+msgstr "Accion necesaria"
 
 #. module: material_purchase_requisitions
 #: model:ir.model.fields,field_description:material_purchase_requisitions.field_material_purchase_requisition__activity_ids
@@ -785,7 +785,7 @@ msgstr "Número de mensajes con error de envío"
 #. module: material_purchase_requisitions
 #: model:ir.model.fields,help:material_purchase_requisitions.field_material_purchase_requisition__message_unread_counter
 msgid "Number of unread messages"
-msgstr "Número de mensajes no leidos"
+msgstr "Número de mensajes no leídos"
 
 #. module: material_purchase_requisitions
 #: model_terms:ir.ui.view,arch_db:material_purchase_requisitions.material_purchase_requisition_form_view
@@ -797,7 +797,7 @@ msgstr "Otra información"
 #: code:addons/material_purchase_requisitions/models/purchase_requisition.py:0
 #, python-format
 msgid "PLease Enter Atleast One Vendor on Requisition Lines"
-msgstr "Por favor ingrese al menos un proveedor en las líneas de Pedido de Compra"
+msgstr "Por favor ingrese al menos un proveedor en las líneas de solicitud"
 
 #. module: material_purchase_requisitions
 #: model_terms:ir.ui.view,arch_db:material_purchase_requisitions.material_purchase_requisition_form_view
@@ -808,7 +808,7 @@ msgstr "Detalles"
 #. module: material_purchase_requisitions
 #: model:ir.model.fields,field_description:material_purchase_requisitions.field_material_purchase_requisition__custom_picking_type_id
 msgid "Picking Type"
-msgstr "Tipo de operación"
+msgstr "Tipo de selección"
 
 #. module: material_purchase_requisitions
 #: code:addons/material_purchase_requisitions/models/purchase_requisition.py:0
@@ -855,18 +855,18 @@ msgstr "Ordenes de compra"
 #: model:ir.ui.menu,name:material_purchase_requisitions.menu_item_purchase_requisition
 #: model_terms:ir.ui.view,arch_db:material_purchase_requisitions.purchase_requisition
 msgid "Purchase Requisition"
-msgstr "Requisición"
+msgstr "Solicitud de compra"
 
 #. module: material_purchase_requisitions
 #: model_terms:ir.ui.view,arch_db:material_purchase_requisitions.purchase_requisition_employee_form_view
 msgid "Purchase Requisition Settings"
-msgstr "Configuración de la requisición"
+msgstr "Configuración de solicitud de compra"
 
 #. module: material_purchase_requisitions
 #: model:ir.actions.act_window,name:material_purchase_requisitions.action_material_purchase_requisition
 #: model:ir.ui.menu,name:material_purchase_requisitions.menu_action_purchase_requisition
 msgid "Purchase Requisitions"
-msgstr "Requisiciones"
+msgstr "Solicitud de compra"
 
 #. module: material_purchase_requisitions
 #: model:ir.model.fields,field_description:material_purchase_requisitions.field_material_purchase_requisition__requisition_line_ids
@@ -967,7 +967,7 @@ msgstr "Líneas de solicitud"
 #. module: material_purchase_requisitions
 #: model:ir.model.fields,field_description:material_purchase_requisitions.field_material_purchase_requisition__requisiton_responsible_id
 msgid "Requisition Responsible"
-msgstr "Responsable de la requisición"
+msgstr "Responsable de requisición"
 
 #. module: material_purchase_requisitions
 #: model:ir.model.fields,field_description:material_purchase_requisitions.field_material_purchase_requisition_line__requisition_id
