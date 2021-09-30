@@ -40,7 +40,7 @@ class MaterialPurchaseRequisitionLine(models.Model):
     partner_id = fields.Many2many(
         'res.partner',
         string='Vendors',
-        domain="[('supplier_rank', '=', 1)]",
+        domain="[('supplier_rank', '>', 0)]",
     )
     requisition_type = fields.Selection(
         selection=[
