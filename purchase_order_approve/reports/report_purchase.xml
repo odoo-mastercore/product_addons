@@ -16,7 +16,7 @@
                         <img  t-att-src="image_data_uri(o.validator_user_id.digital_signature)" width="200px" height="100px"/><br/>
                         <span class="text-center">Autorizado por:</span><br/>
                         <span class="text-center"><span t-field="o.validator_user_id.name"/></span><br/>
-                        <span class="text-center"><span t-field="o.validation_date" t-options='{"widget": "date"}'/></span>
+                        <span class="text-center"><span t-field="o.date_approve" t-options='{"widget": "date"}'/></span>
                     </div>
                 </t>
                 <div name="right_column_sing" class="col-4">
