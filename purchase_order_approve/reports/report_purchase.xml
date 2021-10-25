@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="report_purchaseorder_document_sing" inherit_id="purchase.report_purchaseorder_document">
+        <xpath expr="//span[@t-field='line.price_unit']" position="replace">
+             <span t-field="line.price_unit" t-options='{"widget": "float", "precision": 2}'/>
+        </xpath>
+        <xpath expr="//p[@t-field='o.notes']" position="after">
+            <br/><b/>
+            <div class="row">
+                <br/>
+                <div name="left_column" class="col-2">
+                </div>
+                <br/>
+                <t t-if="o.validator_user_id">
+                    <div name="right_column_sing" class="col-4">
+                        <img  t-att-src="image_data_uri(o.validator_user_id.digital_signature)" width="200px" height="100px"/><br/>
+                        <span class="text-center">Autorizado por:</span><br/>
+                        <span class="text-center"><span t-field="o.validator_user_id.name"/></span><br/>
+                        <span class="text-center"><span t-field="o.validation_date" t-options='{"widget": "date"}'/></span>
+                    </div>
+                </t>
+                <div name="right_column_sing" class="col-4">
+                    <img  t-att-src="image_data_uri(o.create_uid.digital_signature)" width="200px" height="100px"/><br/>
+                    <span class="text-center">Elaborador por:</span><br/>
+                    <span class="text-center"><span t-field="o.create_uid.name"/></span><br/>
+                    <span class="text-center"><span t-field="o.create_date" t-options='{"widget": "date"}'/></span>
+                </div>
+                <div name="left_column" class="col-2">
+                </div>
+            </div>
+        </xpath>
+    </template>
+</odoo>
