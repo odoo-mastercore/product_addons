@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="1">
+    <record model="purchase.order.stage" id="p_order_coc">
+        <field name="name">Colocación de Orden de compra</field>
+        <field name="sequence">5</field>
+        <field name="identifier">purchase_order</field>
+    </record>
+    <record model="purchase.order.stage" id="p_order_rp">
+        <field name="name">Respuesta del proveedor</field>
+        <field name="identifier">provider_response</field>
+    </record>
+    <record model="purchase.order.stage" id="p_order_fp">
+        <field name="name">Factura/Pago</field>
+        <field name="identifier">invoice_payment</field>
+    </record>
+    <record model="purchase.order.stage" id="p_order_rw">
+        <field name="name">Recepción Warehouse</field>
+        <field name="identifier">reception_warehouse</field>
+    </record>
+    <record model="purchase.order.stage" id="p_order_dt">
+        <field name="name">Despacho en tránsito</field>
+        <field name="identifier">transit_dispatch</field>
+    </record>
+    <record model="purchase.order.stage" id="p_order_ra">
+        <field name="name">Recepción almacén</field>
+        <field name="identifier">stock_reception</field>
+    </record>
+</odoo>
