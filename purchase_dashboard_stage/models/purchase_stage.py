@@ -16,10 +16,6 @@ class PurchaseOrderStage(models.Model):
     name = fields.Char(required=True, translate=True)
     sequence = fields.Integer(help="Used to order the note stages")
 
-    # -------------------------------------------------------------
-    # This field is used at the development level to identify
-    # the different stages of a purchase order.
-    # -------------------------------------------------------------
     identifier = fields.Char(
         required=True,
         string="Identifier",
@@ -43,6 +39,12 @@ class PurchaseOrder(models.Model):
         default=_get_default_stage, group_expand='_read_group_stage_ids',
         tracking=True,
         help='Current stage of the Purchase', ondelete="set null")
+
+    # -------------------------------------------------------------
+    # This field is used at the development level to identify
+    # the different stages of a purchase order.
+    # -------------------------------------------------------------
+    stage_identifier = fields.Char(related="stage_id.identifier", readonly=True)
 
     @api.model
     def _read_group_stage_ids(self, stages, domain, order):

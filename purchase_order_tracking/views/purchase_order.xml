@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <record id="purchase_order_form_inherit_order_tracking" model="ir.ui.view">
+        <field name="name">purchase.order.form.inherit.order.tracking</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='date_order']" position="after">
+                <field name="origin_purchase" string="Origen de la compra"/>
+                <field name="load_type" string="Tipo de carga"/>
+                <field name="stage_identifier" invisible="1"/>
+            </xpath>
+            <xpath expr="//page[@name='purchase_delivery_invoice']" position="before">
+                <page
+                    string="Respuesta del proveedor"
+                    attrs="{
+                        'invisible': [(
+                            'stage_identifier',
+                            'not in',
+                            (
+                                'provider_response',
+                                'invoice_payment',
+                                'reception_warehouse',
+                                'transit_dispatch',
+                                'stock_reception'
+                            )
+                        )]
+                    }"
+                >
+                    <group>
+                        <group>
+                            <field name="provider_estimated_date" string="Fecha estimada del Proveedor"/>
+                            <field name="provider_recognition_date" string="Fecha de Reconocimiento"/>
+                            <field name="provider_recognition_number" string="Número de Reconocimiento"/>
+                            <field name="provider_number_tracking" string="Número de Tracking"/>
+                        </group>
+                        <group></group>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>
