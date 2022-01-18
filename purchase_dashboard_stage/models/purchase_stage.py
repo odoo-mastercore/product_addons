@@ -32,7 +32,8 @@ class PurchaseOrder(models.Model):
     _inherit = 'purchase.order'
 
     def _get_default_stage(self):
-        state = self.env.ref('purchase_dashboard_stage.p_order_coc', raise_if_not_found=False)
+        # Change reference for the desired first stage when creating a sales order
+        state = self.env.ref('purchase_dashboard_stage.stage_requisition_order', raise_if_not_found=False)
         return state if state and state.id else False
 
     stage_id = fields.Many2one('purchase.order.stage', 'Stage',

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <record id="account_move_form_inherit_order_tracking" model="ir.ui.view">
+        <field name="name">account.move.form.inherit.order.tracking</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='currency_id']" position="after">
+                <field
+                    name="weight_provider_total"
+                    attrs="{'invisible': [('type', 'in', ('out_invoice', 'out_refund', 'out_receipt'))]}"/>
+                <field
+                    name="volume_provider_total"
+                    attrs="{'invisible': [('type', 'in', ('out_invoice', 'out_refund', 'out_receipt'))]}"/>
+            </xpath>
+            <xpath expr="//page[@id='aml_tab']" position="before">
+                <page
+                    string="Pallets"
+                    attrs="{
+                        'invisible': [('type', 'in', ('out_invoice', 'out_refund', 'out_receipt'))]
+                    }">
+                    <group>
+                        <group>
+                            <field name="pallets_ids" context="{'default_move_id': id}">
+                                <tree>
+                                    <field name="width" />
+                                    <field name="height" />
+                                    <field name="long" />
+                                    <field name="volume" />
+                                </tree>
+                            </field>
+                        </group>
+                        <group></group>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

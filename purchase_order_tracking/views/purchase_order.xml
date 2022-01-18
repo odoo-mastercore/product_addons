@@ -7,38 +7,101 @@
         <field name="inherit_id" ref="purchase.purchase_order_form"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='date_order']" position="after">
-                <field name="origin_purchase" string="Origen de la compra"/>
+                <field
+                    name="origin_purchase"
+                    string="Origen de la compra"
+                    placeholder="Pais"
+                    class="o_address_country"
+                    options='{"no_open": True, "no_create": True}'
+                    />
                 <field name="load_type" string="Tipo de carga"/>
                 <field name="stage_identifier" invisible="1"/>
+                <field name="weight_total" />
+                <field name="volume_total" />
+            </xpath>
+            <xpath expr="//field[@name='product_qty']" position="before">
+                <field  name="weight" />
+                <field name="volume" />
             </xpath>
             <xpath expr="//page[@name='purchase_delivery_invoice']" position="before">
                 <page
-                    string="Respuesta del proveedor"
+                    string="Colocación de Orden de Compra"
                     attrs="{
-                        'invisible': [(
-                            'stage_identifier',
-                            'not in',
-                            (
-                                'provider_response',
-                                'invoice_payment',
-                                'reception_warehouse',
-                                'transit_dispatch',
-                                'stock_reception'
-                            )
-                        )]
-                    }"
-                >
+                        'invisible': [('stage_identifier', 'not in', ('purchase_order', 'invoice_payment', 'transit_warehouse', 'transit_marine_land', 'stock_reception', 'cost_verification'))]
+                    }">
                     <group>
                         <group>
                             <field name="provider_estimated_date" string="Fecha estimada del Proveedor"/>
                             <field name="provider_recognition_date" string="Fecha de Reconocimiento"/>
                             <field name="provider_recognition_number" string="Número de Reconocimiento"/>
-                            <field name="provider_number_tracking" string="Número de Tracking"/>
                         </group>
                         <group></group>
                     </group>
                 </page>
+                <page
+                    string="Facturación/Pago"
+                    attrs="{
+                        'invisible': [('stage_identifier', 'not in', ('invoice_payment', 'transit_warehouse', 'transit_marine_land', 'stock_reception', 'cost_verification'))]
+                    }">
+                </page>
+                <page
+                    string="Tránsito Warehouse"
+                    attrs="{
+                        'invisible': [('stage_identifier', 'not in', ('transit_warehouse', 'transit_marine_land', 'stock_reception', 'cost_verification'))]
+                    }">
+                    <group>
+                        <group>
+                            <field name="tracking_number" />
+                            <field name="shipping_company" />
+                            <field name="warehouse_number" />
+                            <field name="warehouse_company" />
+                        </group>
+                        <group>
+                            <field name="warehouse_receipt_date" />
+                        </group>
+                    </group>
+
+                </page>
+                <page
+                    string="Tránsito Maritimo/Terrestre"
+                    attrs="{
+                        'invisible': [('stage_identifier', 'not in', ('transit_marine_land', 'stock_reception', 'cost_verification'))]
+                    }">
+                    <group>
+                        <group>
+                            <field name="trip_name" />
+                            <field name="shipowner" />
+                            <field name="booking_number" />
+                            <field name="ship_name" />
+                            <field name="container_number" />
+                        </group>
+                        <group>
+                            <field name="bl" />
+                            <field name="port_arrival" />
+                            <field name="estimated_departure_date" />
+                            <field name="estimated_port_arrival" />
+                            <field name="real_date_arrival" />
+                        </group>
+                    </group>
+                </page>
+                <page
+                    string="Recepción almacén"
+                    attrs="{
+                        'invisible': [('stage_identifier', 'not in', ('stock_reception', 'cost_verification'))]
+                    }">
+                    <group>
+                        <field name="stock_receipt_date" />
+                        <field name="observations" />
+                    </group>
+                </page>
+                <page
+                    string="Verificacón de Costos"
+                    attrs="{
+                        'invisible': [('stage_identifier', 'not in', ('cost_verification'))]
+                    }">
+                </page>
             </xpath>
+
         </field>
     </record>
 
