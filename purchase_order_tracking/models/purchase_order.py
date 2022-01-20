@@ -12,6 +12,13 @@ from odoo import api, fields, models, _, SUPERUSER_ID
 class PurchaseOrder(models.Model):
     _inherit = 'purchase.order'
 
+    def _get_default_weight_uom(self):
+        return self.env['product.template']._get_weight_uom_name_from_ir_config_parameter()
+
+    def _get_default_volume_uom(self):
+        return self.env['product.template']._get_volume_uom_name_from_ir_config_parameter()
+
+    # stage 1
     origin_purchase = fields.Many2one(
         'res.country',
         string='Origin of the purchase', ondelete='restrict', required=True
@@ -21,16 +28,24 @@ class PurchaseOrder(models.Model):
         selection=[('marine', 'Maritima'), ('land', 'Terrestre')],
         default='marine')
     weight_total = fields.Float(
-        string="Peso total", compute="_all_weight_volume",
+        string="Peso total", compute="_compute_weight_total",
         store=True,
-        readonly=True
+    )
+    weight_uom_name = fields.Char(
+        string="weight uom",
+        compute="_compute_weight_uom_name",
+        default=_get_default_weight_uom
     )
     volume_total = fields.Float(
-        string="Volumen total", compute="_all_weight_volume",
+        string="Volumen total", compute="_compute_weight_total",
         store=True,
-        readonly=True
     )
-
+    volume_uom_name = fields.Char(
+        string="volume uom",
+        compute='_compute_volume_uom_name',
+        default=_get_default_volume_uom
+    )
+    # stage 2
     provider_estimated_date = fields.Datetime(
         string='Provider estimated date',
     )
@@ -40,7 +55,23 @@ class PurchaseOrder(models.Model):
     provider_recognition_number = fields.Char(
         string="Recognition number"
     )
-
+    # stage 3
+    supplier_ids = fields.Many2many(
+        'account.move',
+        string='Facturas/Pagos',
+        compute='_compute_supplier_ids',
+    )
+    supplier_weight_total = fields.Float(
+        string="Peso total",
+        compute="_compute_supplier_ids",
+        store=True
+    )
+    supplier_volume_total = fields.Float(
+        string="Volume total",
+        compute="_compute_supplier_ids",
+        store=True
+    )
+    # stage 4
     tracking_number = fields.Char(string="Número de Tracking")
     shipping_company = fields.Char(string="Empresa de Envío")
     warehouse_number = fields.Char(string="Número de Warehouse")
@@ -48,7 +79,22 @@ class PurchaseOrder(models.Model):
     warehouse_receipt_date = fields.Datetime(
         string="Fecha de recepción de Warehouse"
     )
-
+    invoice_warehouse_ids = fields.Many2many(
+        'account.move',
+        string='Facturas/Pagos',
+        compute='_compute_invoice_warehouse_ids',
+    )
+    warehouse_weight_total = fields.Float(
+        string="Peso total",
+        compute='_compute_invoice_warehouse_ids',
+        store=True
+    )
+    warehouse_volume_total = fields.Float(
+        string="Volume total",
+        compute='_compute_invoice_warehouse_ids',
+        store=True
+    )
+    # stage 5
     trip_name = fields.Char(string="Nombre del viaje")
     shipowner = fields.Many2one('res.partner', string="Naviera")
     booking_number = fields.Char(string="Número de Booking")
@@ -75,14 +121,14 @@ class PurchaseOrder(models.Model):
     real_date_arrival = fields.Datetime(
         string="Fecha real llegada al puerto"
     )
-
+    # stage 6
     stock_receipt_date = fields.Datetime(
         string="Fecha de recepción de almacén"
     )
     observations = fields.Text(string="Observaciones")
 
     @api.depends("order_line.weight", "order_line.volume")
-    def _all_weight_volume(self):
+    def _compute_weight_total(self):
         for order in self:
             weight = volume = 0.0
             for line in order.order_line:
@@ -92,6 +138,44 @@ class PurchaseOrder(models.Model):
                 'weight_total': float(weight),
                 'volume_total': float(volume)
             })
+
+    def _compute_weight_uom_name(self):
+        for order in self:
+            order.weight_uom_name = self.env['product.template'].\
+                _get_weight_uom_name_from_ir_config_parameter()
+
+    def _compute_volume_uom_name(self):
+        for order in self:
+            order.volume_uom_name = self.env['product.template'].\
+                _get_volume_uom_name_from_ir_config_parameter()
+
+    @api.depends('order_line.invoice_lines.move_id')
+    def _compute_supplier_ids(self):
+        for order in self:
+            invoices = order.mapped('order_line.invoice_lines.move_id').filtered(
+                lambda inv: inv.partner_id == order.partner_id
+            )
+            order.supplier_ids = invoices
+            weight = volume = 0
+            for invoice in invoices:
+                weight += invoice.weight_provider_total
+                volume += invoice.volume_provider_total
+            order.supplier_weight_total = weight
+            order.supplier_volume_total = volume
+
+    @api.depends('order_line.invoice_lines.move_id')
+    def _compute_invoice_warehouse_ids(self):
+        for order in self:
+            invoices = order.mapped('order_line.invoice_lines.move_id').filtered(
+                lambda inv: inv.partner_id != order.partner_id
+            )
+            order.invoice_warehouse_ids = invoices
+            weight = volume = 0
+            for invoice in invoices:
+                weight += invoice.weight_provider_total
+                volume += invoice.volume_provider_total
+            order.warehouse_weight_total = weight
+            order.warehouse_volume_total = volume
 
 class PurchaseOrderLine(models.Model):
     _inherit = 'purchase.order.line'

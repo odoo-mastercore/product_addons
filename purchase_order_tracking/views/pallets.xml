@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="account_move_pallets_form" model="ir.ui.view">
+        <field name="model">account.move.pallets</field>
+        <field name="name">account.move.pallets.form</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+            <form string="Pallets y Cajas">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="type" />
+                            <label for="long" />
+                            <div class="o_row" name="long">
+                                <field name="long" />
+                                <span><field name="inches"/></span>
+                            </div>
+                            <label for="width" />
+                            <div class="o_row" name="width">
+                                <field name="width" />
+                                <span><field name="inches"/></span>
+                            </div>
+                            <label for="height" />
+                            <div class="o_row" name="height">
+                                <field name="height" />
+                                <span><field name="inches"/></span>
+                            </div>
+                        </group>
+                        <group>
+                            <label for="weight" />
+                            <div class="o_row" name="weight">
+                                <field name="weight" />
+                                <span><field name="weight_uom_name"/></span>
+                            </div>
+                            <label for="volume" />
+                            <div class="o_row" name="volume">
+                                <field name="volume" />
+                                <span><field name="volume_uom_name"/></span>
+                            </div>
+                            <field name="move_id" invisible="1" />
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+</odoo>

@@ -16,8 +16,16 @@
                     />
                 <field name="load_type" string="Tipo de carga"/>
                 <field name="stage_identifier" invisible="1"/>
-                <field name="weight_total" />
-                <field name="volume_total" />
+                <label for="weight_total" />
+                <div class="o_row" name="weight_total">
+                    <field name="weight_total"/>
+                    <span><field name="weight_uom_name"/></span>
+                </div>
+                <label for="volume_total" />
+                <div class="o_row" name="volume_total" >
+                    <field name="volume_total"/>
+                    <span><field name="volume_uom_name"/></span>
+                </div>
             </xpath>
             <xpath expr="//field[@name='product_qty']" position="before">
                 <field  name="weight" />
@@ -43,6 +51,31 @@
                     attrs="{
                         'invisible': [('stage_identifier', 'not in', ('invoice_payment', 'transit_warehouse', 'transit_marine_land', 'stock_reception', 'cost_verification'))]
                     }">
+                    <field name="supplier_ids" widget="many2many">
+                        <tree>
+                            <field name="name" />
+                            <field name="invoice_date" string="Fecha factura" />
+                            <field name="weight_provider_total" string="Peso" />
+                            <field name="volume_provider_total" string="Volumen"/>
+                            <field name="amount_total" />
+                            <field name="state" />
+                            <field name="invoice_payment_state" />
+                        </tree>
+                    </field>
+                    <group>
+                        <group>
+                            <label for="supplier_weight_total" />
+                            <div class="o_row" name="supplier_weight_total">
+                                <field name="supplier_weight_total"/>
+                                <span><field name="weight_uom_name"/></span>
+                            </div>
+                            <label for="supplier_volume_total" />
+                            <div class="o_row" name="supplier_volume_total">
+                                <field name="supplier_volume_total"/>
+                                <span><field name="volume_uom_name"/></span>
+                            </div>
+                        </group>
+                    </group>
                 </page>
                 <page
                     string="Tránsito Warehouse"
@@ -58,9 +91,30 @@
                         </group>
                         <group>
                             <field name="warehouse_receipt_date" />
+                            <label for="warehouse_weight_total" />
+                            <div class="o_row" name="warehouse_weight_total">
+                                <field name="warehouse_weight_total"/>
+                                <span><field name="weight_uom_name"/></span>
+                            </div>
+                            <label for="warehouse_volume_total" />
+                            <div class="o_row" name="warehouse_volume_total">
+                                <field name="warehouse_volume_total"/>
+                                <span><field name="volume_uom_name"/></span>
+                            </div>
                         </group>
                     </group>
-
+                    <field name="invoice_warehouse_ids" widget="many2many">
+                        <tree>
+                            <field name="name" />
+                            <field name="partner_id" string="Empresa warehouse"/>
+                            <field name="invoice_date" string="Fecha factura" />
+                            <field name="weight_provider_total" string="Peso" />
+                            <field name="volume_provider_total" string="Volumen"/>
+                            <field name="amount_total" />
+                            <field name="state" />
+                            <field name="invoice_payment_state" />
+                        </tree>
+                    </field>
                 </page>
                 <page
                     string="Tránsito Maritimo/Terrestre"
@@ -101,7 +155,6 @@
                     }">
                 </page>
             </xpath>
-
         </field>
     </record>
 

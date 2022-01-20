@@ -12,10 +12,35 @@ from odoo import api, fields, models, _, SUPERUSER_ID
 class AccountMove(models.Model):
     _inherit = 'account.move'
 
-    weight_provider_total = fields.Float('Peso Total')
-    volume_provider_total = fields.Float('Volumen Total')
+    def _get_default_weight_uom(self):
+        return self.env['product.template']._get_weight_uom_name_from_ir_config_parameter()
+
+    def _get_default_volume_uom(self):
+        return self.env['product.template']._get_volume_uom_name_from_ir_config_parameter()
+
+    weight_provider_total = fields.Float('Peso total')
+    weight_uom_name = fields.Char(
+        string="weight uom",
+        compute="_compute_weight_uom_name",
+        default=_get_default_weight_uom
+    )
+    volume_provider_total = fields.Float('Volumen total')
+    volume_uom_name = fields.Char(
+        string="volume uom",
+        compute='_compute_volume_uom_name',
+        default=_get_default_volume_uom
+    )
     pallets_ids = fields.One2many(
         'account.move.pallets',
-        'move_id',
-        string='Pallets'
+        'move_id'
     )
+
+    def _compute_weight_uom_name(self):
+        for account in self:
+            account.weight_uom_name = self.env['product.template'].\
+                _get_weight_uom_name_from_ir_config_parameter()
+
+    def _compute_volume_uom_name(self):
+        for account in self:
+            account.volume_uom_name = self.env['product.template'].\
+                _get_volume_uom_name_from_ir_config_parameter()
