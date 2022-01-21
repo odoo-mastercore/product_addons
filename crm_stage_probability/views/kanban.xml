@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+		<record id="crm_iap_opportunity_operation_kanban" model="ir.ui.view">
+        <field name="name">crm.opportunity.inherited.kanban</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="crm.crm_case_kanban_view_leads" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='tag_ids']" position="before">
+			    <label>Probabilidad: </label>
+                <field name="probability"/>
+			    <label> %</label>
+            </xpath>
+        </field>
+    </record>
+</odoo>
