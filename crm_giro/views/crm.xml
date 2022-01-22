@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="crm_iap_opportunity_operation_kanban" model="ir.ui.view">
+        <field name="name">crm.opportunity.inherited.kanban</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="crm.crm_case_kanban_view_leads" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='tag_ids']" position="before">
+                <label>Probabilidad: </label>
+                <field name="probability"/>
+                <label> %</label>
+            </xpath>
+        </field>
+    </record>
+    <record id="crm_lead_view_form_inherit" model="ir.ui.view">
+        <field name="name">crm_lead_view_form_inherit</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="crm.crm_lead_view_form" />
+        <field name="arch" type="xml">
+            <h2 class="o_row row no-gutters d-flex" position="replace">
+                <h2 class="o_row row no-gutters d-flex">
+                    <div class="col" attrs="{'invisible': [('type', '=', 'lead')]}">
+                        <label for="planned_revenue" class="oe_edit_only"/>
+                        <div class="o_row">
+                            <field name="company_currency" invisible="1"/>
+                            <field name="planned_revenue" class="oe_inline" widget="monetary" options="{'currency_field': 'company_currency'}"/>
+                            <span class="oe_grey p-2"> en </span>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <label for="probability" class="oe_edit_only"/>
+                        <div id="probability" class="o_row">
+                            <field name="is_automated_probability" invisible="1"/>
+                            <field name="probability" widget="float" class="oe_inline" readonly="1"/>
+                            <span class="oe_grey p-2"> %</span>
+                        </div>
+                    </div>
+                </h2>
+            </h2>
+        </field>
+    </record>
+</odoo>
