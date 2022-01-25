@@ -6,6 +6,7 @@
 #
 #
 ###############################################################################
+from cgitb import reset
 from odoo import api, fields, models, _, SUPERUSER_ID
 
 
@@ -27,6 +28,10 @@ class PurchaseOrder(models.Model):
         string='Type of load', required=True,
         selection=[('marine', 'Maritima'), ('land', 'Terrestre')],
         default='marine')
+    purchase_type = fields.Selection(
+        string='Type of Purchase', required=True,
+        selection=[('international', 'Internacional'), ('national', 'Nacional')],
+        default='international')
     weight_total = fields.Float(
         string="Peso total", compute="_compute_weight_total",
         store=True,
@@ -127,27 +132,43 @@ class PurchaseOrder(models.Model):
     )
     observations = fields.Text(string="Observaciones")
 
-    @api.depends("order_line.weight", "order_line.volume")
+    @api.depends(
+        "order_line.weight",
+        "order_line.volume",
+        "purchase_type"
+    )
     def _compute_weight_total(self):
         for order in self:
             weight = volume = 0.0
-            for line in order.order_line:
-                weight += line.weight
-                volume += line.volume
+            if order.purchase_type == 'international':
+                for line in order.order_line:
+                    weight += line.weight
+                    volume += line.volume
+            else:
+                for line in order.order_line:
+                    weight += line.weight_kg
+                    volume += line.volume_mc
             order.update({
                 'weight_total': float(weight),
                 'volume_total': float(volume)
             })
-
+    @api.depends("purchase_type")
     def _compute_weight_uom_name(self):
         for order in self:
-            order.weight_uom_name = self.env['product.template'].\
-                _get_weight_uom_name_from_ir_config_parameter()
+            if order.purchase_type == 'international':
+                order.weight_uom_name = self.env['product.template'].\
+                    _get_weight_uom_name_from_ir_config_parameter()
+            else:
+                order.weight_uom_name = "kg"
 
+    @api.depends('purchase_type')
     def _compute_volume_uom_name(self):
         for order in self:
-            order.volume_uom_name = self.env['product.template'].\
-                _get_volume_uom_name_from_ir_config_parameter()
+            if order.purchase_type == 'international':
+                order.volume_uom_name = self.env['product.template'].\
+                    _get_volume_uom_name_from_ir_config_parameter()
+            else:
+                order.volume_uom_name = "m³"
 
     @api.depends('order_line.invoice_lines.move_id')
     def _compute_supplier_ids(self):
@@ -177,6 +198,13 @@ class PurchaseOrder(models.Model):
             order.warehouse_weight_total = weight
             order.warehouse_volume_total = volume
 
+    def action_view_invoice(self):
+        result = super().action_view_invoice()
+        result['context'].update({
+            'default_purchase_type': self.purchase_type,
+        })
+        return result
+
 class PurchaseOrderLine(models.Model):
     _inherit = 'purchase.order.line'
 
@@ -185,4 +213,10 @@ class PurchaseOrderLine(models.Model):
     )
     volume = fields.Float(
         related='product_id.product_tmpl_id.volume', string='Volumen'
+    )
+    weight_kg = fields.Float(
+        related='product_id.product_tmpl_id.weight_kg', string="Peso"
+    )
+    volume_mc = fields.Float(
+        related='product_id.product_tmpl_id.volume_mc', string="Volumen"
     )
