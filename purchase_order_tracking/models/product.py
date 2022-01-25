@@ -8,6 +8,9 @@
 ###############################################################################
 from odoo import api, fields, models, _
 
+KG = 2.205
+MC = 35.315
+
 
 class ProductTemplate(models.Model):
     _inherit = "product.template"
@@ -27,12 +30,10 @@ class ProductTemplate(models.Model):
 
     @api.depends('weight')
     def _compute_weight(self):
-        KG = 2.205
         for rec in self:
             rec.weight_kg = round((float(rec.weight) / KG), 2)
 
     @api.depends('volume')
     def _compute_volume(self):
-        mc = 35.315
         for rec in self:
-            rec.volume_mc = round((float(rec.volume) / mc), 2)
+            rec.volume_mc = round((float(rec.volume) / MC), 2)
