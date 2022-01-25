@@ -6,7 +6,6 @@
 #
 #
 ###############################################################################
-from cgitb import reset
 from odoo import api, fields, models, _, SUPERUSER_ID
 
 
