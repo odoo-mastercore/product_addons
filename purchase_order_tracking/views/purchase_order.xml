@@ -7,6 +7,7 @@
         <field name="inherit_id" ref="purchase.purchase_order_form"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='date_order']" position="after">
+                <field name="purchase_type" string="Tipo de Compra"/>
                 <field
                     name="origin_purchase"
                     string="Origen de la compra"
@@ -28,8 +29,10 @@
                 </div>
             </xpath>
             <xpath expr="//field[@name='product_qty']" position="before">
-                <field  name="weight" />
-                <field name="volume" />
+                <field name="weight" attrs="{'column_invisible': [('parent.purchase_type', 'in', 'national')]}" />
+                <field name="volume" attrs="{'column_invisible': [('parent.purchase_type', 'in', 'national')]}" />
+                <field name="weight_kg" attrs="{'column_invisible': [('parent.purchase_type', 'in', 'international')]}" />
+                <field name="volume_mc" attrs="{'column_invisible': [('parent.purchase_type', 'in', 'international')]}" />
             </xpath>
             <xpath expr="//page[@name='purchase_delivery_invoice']" position="before">
                 <page

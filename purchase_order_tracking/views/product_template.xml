@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <record id="product_template_inherit_weight_volume" model="ir.ui.view">
+        <field name="name">product.template.inherit.weight.volume</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//group[@name='group_lots_and_weight']" position="after">
+                <group name="group_lots_and_weight_kg" string="Logística calculada" attrs="{'invisible': [('type', 'not in', ['product', 'consu'])]}">
+                    <label for="weight_kg" attrs="{'invisible':[('product_variant_count', '>', 1), ('is_product_variant', '=', False)]}"/>
+                    <div class="o_row" name="weight_kg" attrs="{'invisible':[('product_variant_count', '>', 1), ('is_product_variant', '=', False)]}">
+                        <field name="weight_kg"/>
+                        <span><field name="weight_uom_kg"/></span>
+                    </div>
+                    <label for="volume_mc" attrs="{'invisible':[('product_variant_count', '>', 1), ('is_product_variant', '=', False)]}"/>
+                    <div class="o_row" name="volume_mc" attrs="{'invisible':[('product_variant_count', '>', 1), ('is_product_variant', '=', False)]}">
+                        <field name="volume_mc" string="Volume"/>
+                        <span><field name="volume_uom_mc"/></span>
+                    </div>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

@@ -6,7 +6,4 @@
 #
 #
 ###############################################################################
-from . import purchase_order
-from . import account_move
-from . import pallets
-from . import product
+# from . import models

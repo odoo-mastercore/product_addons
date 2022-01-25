@@ -7,22 +7,17 @@
         <field name="inherit_id" ref="account.view_move_form"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='currency_id']" position="after">
-                <label for="weight_provider_total" />
-                <div class="o_row" name="weight_provider_total">
-                    <field
-                        name="weight_provider_total"
-                        attrs="{'invisible': [('type', 'in', ('out_invoice', 'out_refund', 'out_receipt'))]}"
-                        />
+                <label for="weight_provider_total" attrs="{'invisible': [('type', 'in', ('out_invoice', 'out_refund', 'out_receipt'))]}" />
+                <div class="o_row" name="weight_provider_total" attrs="{'invisible': [('type', 'in', ('out_invoice', 'out_refund', 'out_receipt'))]}">
+                    <field name="weight_provider_total" />
                     <span><field name="weight_uom_name"/></span>
                 </div>
-                <label for="volume_provider_total" />
-                <div class="o_row" name="volume_provider_total" >
-                    <field
-                        name="volume_provider_total"
-                        attrs="{'invisible': [('type', 'in', ('out_invoice', 'out_refund', 'out_receipt'))]}"
-                        />
+                <label for="volume_provider_total" attrs="{'invisible': [('type', 'in', ('out_invoice', 'out_refund', 'out_receipt'))]}" />
+                <div class="o_row" name="volume_provider_total" attrs="{'invisible': [('type', 'in', ('out_invoice', 'out_refund', 'out_receipt'))]}">
+                    <field name="volume_provider_total" />
                     <span><field name="volume_uom_name"/></span>
                 </div>
+                <field name="purchase_type" invisible="1" />
             </xpath>
             <xpath expr="//page[@id='aml_tab']" position="before">
                 <page

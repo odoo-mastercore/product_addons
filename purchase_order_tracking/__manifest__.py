@@ -13,7 +13,7 @@
     """,
     'author': "SINAPSYS GLOBAL SA || MASTERCORE SAS",
     'website': "http://sinapsys.global",
-    'version': '13.0.3',
+    'version': '13.0.4',
     'category': '',
     'license': 'AGPL-3',
     'depends': ['purchase', 'purchase_dashboard_stage', 'account'],
@@ -21,6 +21,7 @@
         'security/ir.model.access.csv',
         'views/purchase_order.xml',
         'views/account_move.xml',
-        'views/pallets.xml'
+        'views/pallets.xml',
+        'views/product_template.xml'
     ],
 }

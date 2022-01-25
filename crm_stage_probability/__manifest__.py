@@ -15,6 +15,5 @@
         "views/crm_stage.xml",
         "wizard/crm_lead_stage_probability_update.xml",
 #        "data/crm_stage.xml",
-        "views/kanban.xml"
     ],
 }
