@@ -25,20 +25,20 @@ class SaleOrderLine(models.Model):
             else:
                 rec.qty_not_available = True
 
-    @api.model
-    def create(self, vals):
-        result = super(SaleOrderLine, self).create(vals)
-        if result.qty_not_available:
-            raise ValidationError(
-                _('No hay disponibilidad para el producto %s' % result.product_id.name)
-            )
-        return result
+    # @api.model
+    # def create(self, vals):
+    #     result = super(SaleOrderLine, self).create(vals)
+    #     if result.qty_not_available:
+    #         raise ValidationError(
+    #             _('No hay disponibilidad para el producto %s' % result.product_id.name)
+    #         )
+    #     return result
     
 
-    def write(self, vals):
-        result = super(SaleOrderLine, self).write(vals)
-        if self.qty_not_available:
-            raise ValidationError(
-                _('No hay disponibilidad para el producto %s' % self.product_id.name)
-            )
-        return result
+    # def write(self, vals):
+    #     result = super(SaleOrderLine, self).write(vals)
+    #     if self.qty_not_available:
+    #         raise ValidationError(
+    #             _('No hay disponibilidad para el producto %s' % self.product_id.name)
+    #         )
+    #     return result
