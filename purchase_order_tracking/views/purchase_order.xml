@@ -6,6 +6,9 @@
         <field name="model">purchase.order</field>
         <field name="inherit_id" ref="purchase.purchase_order_form"/>
         <field name="arch" type="xml">
+            <xpath expr="//field[@name='currency_id']" position="after">
+                <field name="warehouse_company" />
+            </xpath>
             <xpath expr="//field[@name='date_order']" position="after">
                 <field name="purchase_type" string="Tipo de Compra"/>
                 <field
@@ -90,7 +93,6 @@
                             <field name="tracking_number" />
                             <field name="shipping_company" />
                             <field name="warehouse_number" />
-                            <field name="warehouse_company" />
                         </group>
                         <group>
                             <field name="warehouse_receipt_date" />
