@@ -21,6 +21,9 @@ class PurchaseOrderStage(models.Model):
         string="Identifier",
         help="It is used to identify or validate the purchase order"
     )
+    estimated_time = fields.Char(
+        string='Tiempo estimado',
+    )
 
     _sql_constraints = [
         ('purchase_stage_name_unique', 'unique(name)', 'Stage name already exists'),

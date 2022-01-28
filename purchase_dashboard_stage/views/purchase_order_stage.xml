@@ -8,6 +8,7 @@
                 <field name="sequence" widget="handle"/>
                 <field name="name" />
                 <field name="identifier" />
+                <field name="estimated_time" />
             </tree>
         </field>
     </record>

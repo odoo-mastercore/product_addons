@@ -42,7 +42,8 @@
                     string="Colocación de Orden de Compra"
                     attrs="{
                         'invisible': [('stage_identifier', 'not in', ('purchase_order', 'invoice_payment', 'transit_warehouse', 'transit_marine_land', 'stock_reception', 'cost_verification'))]
-                    }">
+                    }"
+                    >
                     <group>
                         <group>
                             <field name="provider_estimated_date" string="Fecha estimada del Proveedor"/>
