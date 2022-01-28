@@ -38,6 +38,17 @@
                                 <field name="volume" />
                                 <span><field name="volume_uom_name"/></span>
                             </div>
+                            <field name="pallets_qty" />
+                            <label for="weight_total" />
+                            <div class="o_row" name="weight_total">
+                                <field name="weight_total" />
+                                <span><field name="weight_uom_name"/></span>
+                            </div>
+                            <label for="volume_total" />
+                            <div class="o_row" name="volume_total">
+                                <field name="volume_total" />
+                                <span><field name="volume_uom_name"/></span>
+                            </div>
                             <field name="move_id" invisible="1" />
                         </group>
                     </group>

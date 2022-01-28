@@ -141,12 +141,12 @@ class PurchaseOrder(models.Model):
             weight = volume = 0.0
             if order.purchase_type == 'international':
                 for line in order.order_line:
-                    weight += line.weight
-                    volume += line.volume
+                    weight += (line.weight * line.product_qty)
+                    volume += (line.volume * line.product_qty)
             else:
                 for line in order.order_line:
-                    weight += line.weight_kg
-                    volume += line.volume_mc
+                    weight += (line.weight_kg * line.product_qty)
+                    volume += (line.volume_mc * line.product_qty)
             order.update({
                 'weight_total': float(weight),
                 'volume_total': float(volume)

@@ -32,6 +32,9 @@
                             <field name="height" />
                             <field name="weight" />
                             <field name="volume" />
+                            <field name="pallets_qty" />
+                            <field name="weight_total" />
+                            <field name="volume_total" />
                         </tree>
                     </field>
                 </page>
