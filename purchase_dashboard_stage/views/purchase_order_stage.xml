@@ -33,6 +33,6 @@
         sequence="40"
         action="purchase_order_stage_action"
         groups="purchase.group_purchase_manager,purchase.group_purchase_user"
-    />
+        />
 
 </odoo>
