@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+  <data>
+    
+    <record id="inherit_view_order_form" model="ir.ui.view">
+      <field name="name">inherit.sale.order.form</field>
+      <field name="model">sale.order</field>
+      <field name="inherit_id" ref="sale.view_order_form" />
+      <field name="arch" type="xml">
+        <xpath expr="/form/sheet/div[1]" position="after">
+          <field name="state_invoice" invisible="1" />
+          <widget
+              name="web_ribbon"
+              bg_color="bg-danger"
+              title="Sin Factura"
+              attrs="{'invisible': [('state_invoice', '!=', 'SIN_FACTURA')]}"
+          />
+          <widget
+              name="web_ribbon"
+              bg_color="bg-danger"
+              title="Sin Pago"
+              attrs="{'invisible': [('state_invoice', '!=', 'NO_PAGO')]}"
+          />
+          <widget
+              name="web_ribbon"
+              bg_color="bg-info"
+              title="En Proceso"
+              attrs="{'invisible': [('state_invoice', '!=', 'EN PROCESO DE PAGO')]}"
+          />
+          <widget
+              name="web_ribbon"
+              bg_color="bg-success"
+              title="Pagada"
+              attrs="{'invisible': [('state_invoice', '!=', 'PAGADA')]}"
+          />
+        </xpath>
+      </field>
+    </record>
+
+  </data>
+</odoo>
+
