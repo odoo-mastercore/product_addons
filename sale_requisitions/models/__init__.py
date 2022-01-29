@@ -7,3 +7,4 @@
 #
 ###############################################################################
 from . import sale_requisitions
+from . import sale_order

@@ -17,10 +17,12 @@
     'depends': [
         'sale',
         'sale_stock',
-        'material_purchase_requisitions'
+        'material_purchase_requisitions',
+        'purchase_order_tracking',
     ],
     'data': [
         'views/sale_requisitions.xml',
+        'views/sale_order.xml',
     ],
     'installable': True,
 }

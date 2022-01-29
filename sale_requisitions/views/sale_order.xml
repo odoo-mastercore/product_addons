@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <record id="sale_order_view_inherith" model="ir.ui.view">
+        <field name="name">sale.order.view.inherit</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='partner_id']" position="after">
+                <label for="weight_total" />
+                <div class="o_row" name="weight_total">
+                    <field name="weight_total"/>
+                    <span><field name="weight_uom_kg"/></span>
+                </div>
+                <label for="volume_total" />
+                <div class="o_row" name="volume_total" >
+                    <field name="volume_total"/>
+                    <span><field name="volume_uom_mc"/></span>
+                </div>
+                <field name="show_meter_report" string="Mostrar presupuesto completo"/>
+            </xpath>
+            <xpath expr="//field[@name='order_line']//tree//field[@name='product_uom_qty']" position="before">
+                <field name="weight_kg" />
+                <field name="volume_mc" />
+            </xpath>
+        </field>
+    </record>
+
+</odoo>
