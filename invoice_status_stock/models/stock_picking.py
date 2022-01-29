@@ -16,7 +16,6 @@ class StockPicking(models.Model):
 
     
     def _compute_state_invoice(self):
-        _logger.info("######################################################")
         if self.sale_id:
             if self.sale_id.invoice_count >= 1:
                 for rec in self:
