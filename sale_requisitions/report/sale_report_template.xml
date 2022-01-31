@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+  <data>
+
+    <template id="report_saleorder_document_inherit" inherit_id="sale.report_saleorder_document">
+      <xpath expr="//div[@t-if='doc.user_id.name']" position="after">
+        <t t-if="doc.show_meter_report == True">
+          <div t-if="doc.user_id.name" class="col-auto mw-100 mb-2">
+            <strong>Peso Total:</strong>
+            <br/>
+            <span>
+              <span class="m-0" t-field="doc.weight_total"/> kg
+            </span>
+          </div>
+          <div t-if="doc.user_id.name" class="col-auto mw-100 mb-2">
+            <strong>Volumen Total:</strong>
+            <br/>
+            <span>
+              <span class="m-0" t-field="doc.volume_total"/> m³
+            </span>
+          </div>
+        </t>
+      </xpath>
+      <xpath expr="//th[@name='th_quantity']" position="after">
+        <t t-if="doc.show_meter_report == True">
+          <th name="th_weight" class="text-right">Peso</th> 
+          <th name="th_vomume" class="text-right">Volumen</th> 
+        </t>
+      </xpath>
+
+      <xpath expr="//td[@name='td_quantity']" position="after">
+        <t t-if="doc.show_meter_report == True">
+          <td name="td_weight" class="text-right">
+            <span t-field="line.weight_kg"/>
+          </td> 
+          <td name="td_vomume" class="text-right">
+            <span t-field="line.volume_mc"/>
+          </td> 
+        </t>
+      </xpath>
+    </template>
+
+  </data>
+</odoo>
