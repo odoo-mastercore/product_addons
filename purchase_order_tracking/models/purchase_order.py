@@ -6,6 +6,7 @@
 #
 #
 ###############################################################################
+from asyncore import read
 from odoo import api, fields, models, _, SUPERUSER_ID
 
 
@@ -19,6 +20,7 @@ class PurchaseOrder(models.Model):
         return self.env['product.template']._get_volume_uom_name_from_ir_config_parameter()
 
     # stage 1
+    warehouse_company = fields.Many2one('res.partner', string="Empresa Warehouse")
     origin_purchase = fields.Many2one(
         'res.country',
         string='Origin of the purchase', ondelete='restrict', required=True
@@ -50,14 +52,10 @@ class PurchaseOrder(models.Model):
         default=_get_default_volume_uom
     )
     # stage 2
-    provider_estimated_date = fields.Datetime(
-        string='Provider estimated date',
-    )
-    provider_recognition_date = fields.Datetime(
-        string='Recognition date',
-    )
-    provider_recognition_number = fields.Char(
-        string="Recognition number"
+    oc_provider_ids = fields.One2many(
+        'order.purchase.provider',
+        'purchase_order_id',
+        string='Colocación Orden/Compra',
     )
     # stage 3
     supplier_ids = fields.Many2many(
@@ -76,12 +74,10 @@ class PurchaseOrder(models.Model):
         store=True
     )
     # stage 4
-    tracking_number = fields.Char(string="Número de Tracking")
-    shipping_company = fields.Char(string="Empresa de Envío")
-    warehouse_number = fields.Char(string="Número de Warehouse")
-    warehouse_company = fields.Many2one('res.partner', string="Empresa Warehouse")
-    warehouse_receipt_date = fields.Datetime(
-        string="Fecha de recepción de Warehouse"
+    transit_warehouse_ids = fields.One2many(
+        'transit.warehouse',
+        'purchase_order_id',
+        string='Tránsito',
     )
     invoice_warehouse_ids = fields.Many2many(
         'account.move',
@@ -99,37 +95,17 @@ class PurchaseOrder(models.Model):
         store=True
     )
     # stage 5
-    trip_name = fields.Char(string="Nombre del viaje")
-    shipowner = fields.Many2one('res.partner', string="Naviera")
-    booking_number = fields.Char(string="Número de Booking")
-    ship_name = fields.Char(string="Nombre del barco")
-    container_number = fields.Char(string="Número del contenedor")
-    bl = fields.Char(string="BL")
-    port_arrival = fields.Selection(
-        string='Puerto de llegada',
-        selection=[
-            ('0', 'Guanta'),
-            ('1', 'La Guaira'),
-            ('2', 'Maracaibo'),
-            ('3', 'Puerto Cabello'),
-            ('4', 'Porlamar'),
-        ],
-        default='0'
-    )
-    estimated_departure_date = fields.Datetime(
-        string="Fecha estimada de salida"
-    )
-    estimated_port_arrival = fields.Datetime(
-        string="Fecha estimada de llegada al puerto"
-    )
-    real_date_arrival = fields.Datetime(
-        string="Fecha real llegada al puerto"
+    transit_land_maritime_ids = fields.One2many(
+        'transit.land.maritime',
+        'purchase_order_id',
+        string='Tránsito Maritimo/Terrestre',
     )
     # stage 6
-    stock_receipt_date = fields.Datetime(
-        string="Fecha de recepción de almacén"
+    stock_receipt_ids = fields.One2many(
+        'stock.receipt',
+        'purchase_order_id',
+        string='Recepción almacen',
     )
-    observations = fields.Text(string="Observaciones")
 
     @api.depends(
         "order_line.weight",
@@ -219,3 +195,138 @@ class PurchaseOrderLine(models.Model):
     volume_mc = fields.Float(
         related='product_id.product_tmpl_id.volume_mc', string="Volumen"
     )
+
+
+class TransitWarehouse(models.Model):
+    _name = "order.purchase.provider"
+    _description = "Colocacion Order/Compra"
+
+    provider_estimated_date = fields.Datetime(
+        string='Fecha estamida del proveedor',
+    )
+    provider_recognition_date = fields.Datetime(
+        string='Fechas de reconocimiento',
+    )
+    provider_recognition_number = fields.Char(
+        string="Número de reconocimiento"
+    )
+    purchase_order_id = fields.Many2one(
+        'purchase.order',
+        string='Purchase Order',
+        readonly=True
+    )
+
+
+class TransitWarehouse(models.Model):
+    _name = "transit.warehouse"
+    _description = "Transito warehouse"
+
+    tracking_number = fields.Char(string="Número de Tracking")
+    shipping_company = fields.Char(string="Empresa de Envío")
+    warehouse_number = fields.Char(string="Número de Warehouse")
+    warehouse_receipt_date = fields.Datetime(
+        string="Fecha de recepción de Warehouse"
+    )
+    purchase_order_id = fields.Many2one(
+        'purchase.order',
+        string='Purchase Order',
+        readonly=True
+    )
+    order_picking_id = fields.Many2one(
+        'stock.picking',
+        string="Orden de entrega",
+        domain="[('purchase_id', '=', purchase_order_id)]"
+    )
+
+    @api.onchange('purchase_order_id')
+    def _onchange_purchase_order_id(self):
+        purchase_id = self._context.get('default_purchase_order_id')
+        picking = self.env['stock.picking'].search([
+            ('purchase_id', '=', purchase_id),
+            ('state', '=', 'assigned')
+        ],order="id DESC", limit=1)
+        if picking:
+            self.order_picking_id = picking.id
+
+
+class TransitLandMaritime(models.Model):
+    _name = "transit.land.maritime"
+    _description = "Tránsito Maritimo/Terrestre"
+
+    trip_name = fields.Char(string="Nombre del viaje")
+    shipowner = fields.Many2one('res.partner', string="Naviera")
+    booking_number = fields.Char(string="Número de Booking")
+    ship_name = fields.Char(string="Nombre del barco")
+    container_number = fields.Char(string="Número del contenedor")
+    bl = fields.Char(string="BL")
+    port_arrival = fields.Selection(
+        string='Puerto de llegada',
+        selection=[
+            ('0', 'Guanta'),
+            ('1', 'La Guaira'),
+            ('2', 'Maracaibo'),
+            ('3', 'Puerto Cabello'),
+            ('4', 'Porlamar'),
+        ],
+        default='0'
+    )
+    estimated_departure_date = fields.Datetime(
+        string="Fecha estimada de salida"
+    )
+    estimated_port_arrival = fields.Datetime(
+        string="Fecha estimada de llegada al puerto"
+    )
+    real_date_arrival = fields.Datetime(
+        string="Fecha real llegada al puerto"
+    )
+    purchase_order_id = fields.Many2one(
+        'purchase.order',
+        string='Purchase Order',
+        readonly=True
+    )
+    order_picking_id = fields.Many2one(
+        'stock.picking',
+        string="Orden de entrega",
+        domain="[('purchase_id', '=', purchase_order_id)]"
+    )
+
+    @api.onchange('purchase_order_id')
+    def _onchange_purchase_order_id(self):
+        purchase_id = self._context.get('default_purchase_order_id')
+        picking = self.env['stock.picking'].search([
+            ('purchase_id', '=', purchase_id),
+            ('state', '=', 'assigned')
+        ],order="id DESC", limit=1)
+        if picking:
+            self.order_picking_id = picking.id
+
+
+class StockReceipt(models.Model):
+    _name = 'stock.receipt'
+    _description = 'Recepción Almacen'
+
+    stock_receipt_date = fields.Datetime(
+        string="Fecha de recepción de almacén"
+    )
+    observations = fields.Text(string="Observaciones")
+    purchase_order_id = fields.Many2one(
+        'purchase.order',
+        string='Purchase Order',
+        readonly=True
+    )
+    order_picking_id = fields.Many2one(
+        'stock.picking',
+        string="Orden de entrega",
+        domain="[('purchase_id', '=', purchase_order_id)]"
+    )
+
+    @api.onchange('purchase_order_id')
+    def _onchange_purchase_order_id(self):
+        purchase_id = self._context.get('default_purchase_order_id')
+        picking = self.env['stock.picking'].search([
+            ('purchase_id', '=', purchase_id),
+            ('state', '=', 'done')
+        ],order="id DESC", limit=1)
+        if picking:
+            self.order_picking_id = picking.id
+            self.stock_receipt_date = picking.date_done

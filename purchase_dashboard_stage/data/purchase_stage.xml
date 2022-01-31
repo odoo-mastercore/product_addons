@@ -35,4 +35,9 @@
         <field name="sequence">7</field>
         <field name="identifier">cost_verification</field>
     </record>
+    <record model="purchase.order.stage" id="stage_partial_delivery">
+        <field name="name">Entrega parcial</field>
+        <field name="sequence">8</field>
+        <field name="identifier">partial_delivery</field>
+    </record>
 </odoo>
