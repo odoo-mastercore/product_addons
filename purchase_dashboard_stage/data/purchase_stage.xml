@@ -31,7 +31,7 @@
         <field name="identifier">stock_reception</field>
     </record>
     <record model="purchase.order.stage" id="stage_cost_verification">
-        <field name="name">Varificación de Costos</field>
+        <field name="name">Verificación de Costos</field>
         <field name="sequence">7</field>
         <field name="identifier">cost_verification</field>
     </record>
