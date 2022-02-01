@@ -21,6 +21,7 @@
         'purchase_order_tracking',
     ],
     'data': [
+        'report/sale_report_template.xml',
         'views/sale_requisitions.xml',
         'views/sale_order.xml',
     ],
