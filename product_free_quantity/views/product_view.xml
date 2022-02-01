@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+  <odoo>
+    <record id="view_stock_product_template_tree_inherit" model="ir.ui.view">
+        <field name="name">product.template.stock.tree.inherit</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_tree_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='responsible_id']" position="after">
+              <field name="free_quantity" string="Stock Libre"/>
+            </xpath>
+        </field>
+      </record>
+      <record model="ir.ui.view" id="product_template_kanban_stock_view_inherit">
+          <field name="name">Product Template Kanban Stock inherit</field>
+          <field name="model">product.template</field>
+          <field name="inherit_id" ref="product.product_template_kanban_view"/>
+          <field name="arch" type="xml">
+              <xpath expr="//div[@name='product_lst_price']" position="after">
+                  <div>Stock Libre: <field name="free_quantity"/></div>
+              </xpath>
+          </field>
+      </record>
+  </odoo>
