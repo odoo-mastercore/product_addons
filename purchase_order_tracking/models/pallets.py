@@ -16,6 +16,9 @@ class AccountMovePallets(models.Model):
         selection=[('pallet', 'Pallet'), ('box', 'Caja')],
         default='pallet'
     )
+    pallets_qty = fields.Integer(
+        string='Cantidad',
+    )
     long = fields.Float(string='Largo')
     width = fields.Float(string="Ancho")
     height = fields.Float(string="Alto")
@@ -30,3 +33,11 @@ class AccountMovePallets(models.Model):
         default='p',
         readonly=True
     )
+    weight_total = fields.Float(string="Peso total", compute="_compute_total")
+    volume_total = fields.Float(string="Volumen total", compute="_compute_total")
+
+    @api.depends('pallets_qty', 'weight', 'volume')
+    def _compute_total(self):
+        for record in self:
+            record.weight_total = float(record.weight * record.pallets_qty)
+            record.volume_total = float(record.volume * record.pallets_qty)

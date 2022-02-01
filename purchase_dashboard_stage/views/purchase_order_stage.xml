@@ -8,6 +8,7 @@
                 <field name="sequence" widget="handle"/>
                 <field name="name" />
                 <field name="identifier" />
+                <field name="estimated_time" />
             </tree>
         </field>
     </record>
@@ -32,6 +33,6 @@
         sequence="40"
         action="purchase_order_stage_action"
         groups="purchase.group_purchase_manager,purchase.group_purchase_user"
-    />
+        />
 
 </odoo>

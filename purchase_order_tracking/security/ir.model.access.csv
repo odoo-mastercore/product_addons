@@ -1,2 +1,6 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_account_move_pallets,account.move.pallets,model_account_move_pallets,base.group_user,1,1,1,1
+access_transit_warehouse,transit.warehouse,model_transit_warehouse,base.group_user,1,1,1,1
+access_transit_land_maritime,transit.land.maritime,model_transit_land_maritime,base.group_user,1,1,1,1
+access_order_purchase_provider,order.purchase.provider,model_order_purchase_provider,base.group_user,1,1,1,1
+access_stock_receipt,stock.receipt,model_stock_receipt,base.group_user,1,1,1,1

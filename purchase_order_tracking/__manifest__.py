@@ -16,7 +16,12 @@
     'version': '13.0.4',
     'category': '',
     'license': 'AGPL-3',
-    'depends': ['purchase', 'purchase_dashboard_stage', 'account'],
+    'depends': [
+        'purchase',
+        'purchase_dashboard_stage',
+        'account',
+        'stock_account'
+    ],
     'data': [
         'security/ir.model.access.csv',
         'views/purchase_order.xml',

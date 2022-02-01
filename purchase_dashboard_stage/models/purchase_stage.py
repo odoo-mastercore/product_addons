@@ -14,18 +14,27 @@ class PurchaseOrderStage(models.Model):
     _description = 'Purchase Stages'
 
     name = fields.Char(required=True, translate=True)
-    sequence = fields.Integer(help="Used to order the note stages")
+    sequence = fields.Integer(help="Used to order the note stages", readonly=True)
 
     identifier = fields.Char(
         required=True,
         string="Identifier",
         help="It is used to identify or validate the purchase order"
     )
+    estimated_time = fields.Char(
+        string='Tiempo estimado',
+    )
 
     _sql_constraints = [
         ('purchase_stage_name_unique', 'unique(name)', 'Stage name already exists'),
         ('purchase_stage_identifier_unique', 'unique(identifier)', 'Stage identifier already exists')
     ]
+
+    @api.model
+    def create(self, vals):
+        sequence_max = self.search([],order="sequence DESC", limit=1)
+        vals.update({'sequence': int(sequence_max.sequence + 1)})
+        return super(PurchaseOrderStage, self).create(vals)
 
 
 class PurchaseOrder(models.Model):
