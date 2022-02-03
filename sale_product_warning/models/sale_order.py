@@ -17,7 +17,7 @@ class SaleOrder(models.Model):
     def action_confirm(self):
         for rec in self:
             for line in rec.order_line:
-                if line.product_uom_qty > line.free_qty_today:
+                if line.product_uom_qty > line.free_qty_today and line.product_uom_qty > line.product_id.free_qty:
                     raise ValidationError(
                         _('No hay disponibilidad para el producto %s' % line.\
                             product_id.name)
