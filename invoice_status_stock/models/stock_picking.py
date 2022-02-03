@@ -30,9 +30,40 @@ class StockPicking(models.Model):
         else:
             self.state_invoice = "N/A"
 
+
+    def _compute_withdrawal_payment(self):
+        if self.sale_id:
+            for rec in self:
+                rec.withdrawal_type = rec.sale_id.withdrawal_type
+                rec.by_payment = rec.sale_id.by_payment
+        else:
+            self.withdrawal_type = ""
+            self.by_payment = ""
+
+
     invoice_id = fields.Many2one('account.move', string="Factura")
     state_invoice = fields.Char(
         string="Status Factura",
         compute="_compute_state_invoice",
+    )
+    withdrawal_type = fields.Selection(
+        [
+            ('office_retreat', 'Retiro en Oficina'),
+            ('shipping_to_freight', 'Envíar a Fletera')
+        ],string="Tipo de Retiro",
+        compute="_compute_withdrawal_payment",
+        help="Indica si el pedido sera retirado en Oficina o enviado a Fletera."
+    )
+    by_payment = fields.Selection(
+        [
+            ('charge_at_destination', 'Cobro en Destino'),
+            ('pay_per_giro', 'Pago por Giro')
+        ],string="Pagado por",
+        compute="_compute_withdrawal_payment",
+    )
+    fleet_contact_id = fields.Many2one(
+        'fleet.contact',
+        related='sale_id.fleet_contact_id',
+        string="Fleet Contact"
     )
 

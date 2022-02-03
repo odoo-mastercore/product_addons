@@ -6,6 +6,21 @@
         <field name="model">sale.order</field>
         <field name="inherit_id" ref="sale.view_order_form"/>
         <field name="arch" type="xml">
+            <field name="sale_order_template_id" position="after">
+                <field name="withdrawal_type" placeholder="Seleccione" />
+                <field name="fleet_contact_id" placeholder="Seleccione" 
+                  attrs="{
+                    'invisible': [('withdrawal_type', '!=', 'shipping_to_freight')],
+                    'required': [('withdrawal_type', '=', 'shipping_to_freight')]
+                  }"
+                />
+                <field name="by_payment" placeholder="Seleccione"
+                  attrs="{
+                    'invisible': [('withdrawal_type', '!=', 'shipping_to_freight')],
+                    'required': [('withdrawal_type', '=', 'shipping_to_freight')]
+                  }"
+                />
+            </field>
             <xpath expr="//field[@name='payment_term_id']" position="after">
                 <label for="weight_total" />
                 <div class="o_row" name="weight_total">

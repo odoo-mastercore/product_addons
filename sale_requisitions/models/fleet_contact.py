@@ -6,6 +6,16 @@
 #
 #
 ###############################################################################
-from . import sale_requisitions
-from . import sale_order
-from . import fleet_contact
+from odoo import models, fields, api, _
+import logging
+
+_logger = logging.getLogger(__name__)
+
+
+class FleetContact(models.Model):
+    _name = 'fleet.contact'
+    _description = 'Contacts Fleet'
+
+    name = fields.Char(string="Name", required=True)
+
+
