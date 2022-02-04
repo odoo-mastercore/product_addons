@@ -40,6 +40,19 @@
               groups="account.group_account_invoice"
           />
         </xpath>
+        <field name="backorder_id" position="after">
+          <field name="withdrawal_type"
+            attrs="{'invisible': [('withdrawal_type', '=', '')]}"
+          />
+        </field>
+        <field name="owner_id" position="after">
+          <field name="by_payment" 
+            attrs="{'invisible': [('withdrawal_type', '=', 'office_retreat')]}"
+          />
+          <field name="fleet_contact_id" 
+            attrs="{'invisible': [('fleet_contact_id', '=', False)]}"
+          />
+        </field>
       </field>
     </record>
 

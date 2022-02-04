@@ -18,7 +18,8 @@
     "depends": [
         "sale",
         "account",
-        "stock"
+        "stock",
+        "sale_requisitions"
     ],
     "data": [
         "views/stock_picking_view.xml",

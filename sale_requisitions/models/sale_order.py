@@ -38,6 +38,29 @@ class SaleOrder(models.Model):
         string='Show meter in report',
         default=False
     )
+    withdrawal_type = fields.Selection(
+        [
+            ('office_retreat', 'Retiro en Oficina'),
+            ('shipping_to_freight', 'Envíar a Fletera')
+        ],string="Tipo de Retiro",
+        help="Indica si el pedido sera retirado en Oficina o enviado a Fletera."
+    )
+    by_payment = fields.Selection(
+        [
+            ('charge_at_destination', 'Cobro en Destino'),
+            ('pay_per_giro', 'Pago por Giro')
+        ],string="Pagado por"
+    )
+    fleet_contact_id = fields.Many2one(
+        'fleet.contact',
+        string="Fleet Contact"
+    )
+
+
+    @api.onchange('withdrawal_type')
+    def _onchange_withdrawal_type(self):
+        if self.withdrawal_type == 'office_retreat':
+            self.by_payment = False
 
     @api.depends("order_line.weight_kg", "order_line.volume_mc")
     def _compute_weight_total(self):
@@ -61,4 +84,7 @@ class SaleOrderLine(models.Model):
     volume_mc = fields.Float(
         string="Volumen",
         related='product_id.product_tmpl_id.volume_mc'
+    )
+    product_uom_qty = fields.Float(
+        digits=(12, 0)
     )
