@@ -23,7 +23,8 @@
     ],
     "data": [
         "views/stock_picking_view.xml",
-        "views/sale_view.xml"
+        "views/sale_view.xml",
+        "views/account_view.xml"
     ],
 }
 

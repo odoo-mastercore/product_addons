@@ -30,6 +30,12 @@
           <widget
               name="web_ribbon"
               bg_color="bg-success"
+              title="Cretido"
+              attrs="{'invisible': [('state_invoice', '!=', 'CREDITO')]}"
+          />
+          <widget
+              name="web_ribbon"
+              bg_color="bg-success"
               title="Pagada"
               attrs="{'invisible': [('state_invoice', '!=', 'PAGADA')]}"
           />
