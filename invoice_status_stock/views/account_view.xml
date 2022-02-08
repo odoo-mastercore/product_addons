@@ -7,7 +7,11 @@
       <field name="inherit_id" ref="account.view_move_form" />
       <field name="arch" type="xml">
         <field name="journal_id" position="after">
-          <field name="payment_type" placeholder="Select" required="True" />
+          <field name="payment_type" placeholder="Select" 
+            attrs="{
+              'invisible': [('type', '!=', 'out_invoice')],
+              'required': [('type', '=', 'out_invoice')]
+            }"/>
         </field>
       </field>
     </record>
