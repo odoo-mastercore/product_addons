@@ -8,6 +8,7 @@
 ###############################################################################
 
 from odoo import models, fields, api, _
+from odoo.exceptions import UserError
 import logging
 _logger = logging.getLogger(__name__)
 
@@ -25,6 +26,8 @@ class StockPicking(models.Model):
                         rec.state_invoice = "PROCESO"
                     else:
                         rec.state_invoice = "NO_PAGO"
+                        if rec.sale_id.invoice_ids[0].payment_type == 'credit_payment':
+                            rec.state_invoice = 'CREDITO'
             else:
                 self.state_invoice = "SIN_FACTURA"
         else:
@@ -45,6 +48,7 @@ class StockPicking(models.Model):
     state_invoice = fields.Char(
         string="Status Factura",
         compute="_compute_state_invoice",
+        # store=True
     )
     withdrawal_type = fields.Selection(
         [
@@ -66,4 +70,14 @@ class StockPicking(models.Model):
         related='sale_id.fleet_contact_id',
         string="Fleet Contact"
     )
+
+
+    def button_validate(self):
+        res = super(StockPicking, self).button_validate()
+        if self.sale_id:
+            if self.sale_id.invoice_count >= 1:
+                if self.state_invoice == "PAGADA" or self.state_invoice == "CREDITO":
+                    return res
+                else:
+                    raise UserError(_(' No puede validar una transferencia si no tiene factura pagada o factura a credito.'))
 
