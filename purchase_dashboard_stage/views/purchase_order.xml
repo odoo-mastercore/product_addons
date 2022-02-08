@@ -6,6 +6,9 @@
         <field name="model">purchase.order</field>
         <field name="inherit_id" ref="purchase.view_purchase_order_kanban"/>
         <field name="arch" type="xml">
+            <xpath expr="//kanban" position="inside">
+                <field name="stage_id" readonly="1"/>
+            </xpath>
             <xpath expr="//kanban" position="attributes">
                 <attribute name="default_group_by">stage_id</attribute>
             </xpath>
@@ -26,7 +29,8 @@
                 <attribute name="invisible">1</attribute>
             </xpath>
             <xpath expr="//form//header//field[@name='state']" position="after">
-                <field name="stage_id" widget="statusbar" options="{'clickable': '1'}"  />
+                <!-- <field name="stage_id" widget="statusbar" options="{'clickable': '1'}"  /> -->
+                <field name="stage_id" widget="statusbar"/>
             </xpath>
         </field>
     </record>

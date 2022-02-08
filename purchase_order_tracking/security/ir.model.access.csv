@@ -5,3 +5,4 @@ access_transit_land_maritime,transit.land.maritime,model_transit_land_maritime,b
 access_order_purchase_provider,order.purchase.provider,model_order_purchase_provider,base.group_user,1,1,1,1
 access_stock_receipt,stock.receipt,model_stock_receipt,base.group_user,1,1,1,1
 access_estimated_time,estimated.time,model_estimated_time,base.group_user,1,1,1,1
+access_account_move_estimated,account.move.estimated,model_account_move_estimated,base.group_user,1,1,1,1
