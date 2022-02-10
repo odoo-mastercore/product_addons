@@ -80,6 +80,8 @@ class StockPicking(models.Model):
                     return res
                 else:
                     raise UserError(_(' No puede validar una transferencia si no tiene factura pagada o factura a credito.'))
+            else:
+                raise UserError(_(' No puede validar una transferencia si no tiene factura pagada o factura a credito.'))
         else:
             return res
 
