@@ -235,9 +235,9 @@ class TransitWarehouse(models.Model):
     def create(self, vals):
         if not 'write_purchase_done' in self.env.context:
             res = super(TransitWarehouse, self).create(vals)
+
             if 'create_view' in vals and vals.get('create_view'):
                 stage_warehouse = self.env.ref('purchase_dashboard_stage.stage_transit_warehouse', raise_if_not_found=False)
-
                 real_date_warehouse = vals.get('warehouse_receipt_date') \
                     if 'warehouse_receipt_date' in vals and vals.get('warehouse_receipt_date') \
                     else False
@@ -249,6 +249,7 @@ class TransitWarehouse(models.Model):
                     'real_date': real_date_warehouse,
                     'registry_id': res.id
                 })
+
                 if 'warehouse_receipt_date' in vals and vals.get('warehouse_receipt_date'):
                     stage_next = self.env.ref('purchase_dashboard_stage.stage_transit_marine_land', raise_if_not_found=False)
                     warehouse_date = vals.get('warehouse_receipt_date')
@@ -276,11 +277,13 @@ class TransitWarehouse(models.Model):
                 ('purchase_order_id', '=', self.purchase_order_id.id),
                 ('registry_id', '=', self.id)
             ])
+
             if 'estimated_days' in vals and vals.get('estimated_days'):
                 new_estimated = self.stage_entry_date + relativedelta(days=int(vals.get('estimated_days')))
                 estimated_times.write({
                     'estimated_date': new_estimated
                 })
+
             if 'warehouse_receipt_date' in vals and vals.get('warehouse_receipt_date'):
                 warehouse_date = vals.get('warehouse_receipt_date')
                 estimated_times.write({'real_date': warehouse_date})
