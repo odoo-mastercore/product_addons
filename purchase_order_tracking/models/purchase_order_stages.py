@@ -221,13 +221,15 @@ class TransitWarehouse(models.Model):
     @api.depends('estimated_days', 'stage_entry_date')
     def _compute_estimated_date_warehouse(self):
         for rec in self:
-            if rec.estimated_days:
+            if rec.estimated_days and rec.stage_entry_date:
                 new_estimated = rec.stage_entry_date + relativedelta(days=int(rec.estimated_days))
                 try:
                     rec.estimated_date = new_estimated
                 except Exception as e:
                     _logger.error("Error compute estimated_date warehouse %s" % (e))
                     pass
+            else:
+                rec.estimated_date = fields.Datetime.now()
 
     @api.model
     def create(self, vals):
@@ -235,13 +237,33 @@ class TransitWarehouse(models.Model):
             res = super(TransitWarehouse, self).create(vals)
             if 'create_view' in vals and vals.get('create_view'):
                 stage_warehouse = self.env.ref('purchase_dashboard_stage.stage_transit_warehouse', raise_if_not_found=False)
+
+                real_date_warehouse = vals.get('warehouse_receipt_date') \
+                    if 'warehouse_receipt_date' in vals and vals.get('warehouse_receipt_date') \
+                    else False
                 self.env['estimated.time'].create({
                     'stage_name': stage_warehouse.name,
                     'entry_date': res.stage_entry_date,
                     'estimated_date': fields.Datetime.from_string(res.stage_entry_date) + relativedelta(days=int(stage_warehouse.estimated_time)),
                     'purchase_order_id': res.purchase_order_id.id,
+                    'real_date': real_date_warehouse,
                     'registry_id': res.id
                 })
+                if 'warehouse_receipt_date' in vals and vals.get('warehouse_receipt_date'):
+                    stage_next = self.env.ref('purchase_dashboard_stage.stage_transit_marine_land', raise_if_not_found=False)
+                    warehouse_date = vals.get('warehouse_receipt_date')
+                    res_warehouse = self.env['transit.land.maritime'].create({
+                        'purchase_order_id': res.purchase_order_id.id,
+                        'estimated_days': stage_next.estimated_time,
+                        'stage_entry_date': warehouse_date
+                    })
+                    self.env['estimated.time'].create({
+                        'stage_name': stage_next.name,
+                        'entry_date': warehouse_date,
+                        'estimated_date': fields.Datetime.from_string(warehouse_date) + relativedelta(days=int(stage_next.estimated_time)),
+                        'purchase_order_id': res.purchase_order_id.id,
+                        'registry_id': res_warehouse.id
+                    })
             return res
         return self
 
@@ -418,13 +440,15 @@ class StockReceipt(models.Model):
     @api.depends('estimated_days', 'stage_entry_date')
     def _compute_estimated_date_stock(self):
         for rec in self:
-            if rec.estimated_days:
+            if rec.estimated_days and rec.stage_entry_date:
                 new_estimated = rec.stage_entry_date + relativedelta(days=int(rec.estimated_days))
                 try:
                     rec.estimated_date = new_estimated
                 except Exception as e:
                     _logger.error("Error compute estimated_port_arrival land maritime %s" % (e))
                     pass
+            else:
+                rec.estimated_date = fields.Datetime.now()
 
     @api.model
     def write(self, vals):
