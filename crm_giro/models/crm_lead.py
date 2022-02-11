@@ -13,6 +13,10 @@ _logger = logging.getLogger(__name__)
 class CrmLead(models.Model):
     _inherit = 'crm.lead'
 
+    stage_id = fields.Many2one(
+        compute="_compute_stage_id",
+        store=True
+    )
 
     @api.depends('quotation_count')
     def _compute_stage_id(self):
@@ -56,11 +60,5 @@ class CrmLead(models.Model):
                 if rec.quotation_count > 1:
                     for order in rec.order_ids:
                         pass
-                
 
-
-    stage_id = fields.Many2one(
-        compute=_compute_stage_id,
-        store=True
-    )
 
