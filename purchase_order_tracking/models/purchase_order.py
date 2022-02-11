@@ -30,6 +30,14 @@ class PurchaseOrder(models.Model):
             raise_if_not_found=False
         ).estimated_time
 
+    def _get_estimated_stock(self):
+        estimated_times = self.env['purchase.order.stage'].search([])
+        total_days = 0
+        for estimated in estimated_times:
+            if estimated.estimated_time:
+                total_days += int(estimated.estimated_time.strip())
+        return fields.Datetime.now() + relativedelta(days=int(total_days))
+
     # stage 1
     warehouse_company = fields.Many2one('res.partner', string="Empresa Warehouse")
     origin_purchase = fields.Many2one(
@@ -67,6 +75,12 @@ class PurchaseOrder(models.Model):
     estimated_days_init = fields.Integer(
         string="Dias estimados Requisición",
         default=_get_detaulf_days_init
+    )
+    estimated_stock_date = fields.Datetime(
+        string='Fecha de recepción estimada',
+        default=_get_estimated_stock,
+        store=True
+        # compute="_compute_estimated_stock"
     )
     # stage 2
     oc_provider_ids = fields.One2many(
@@ -127,6 +141,12 @@ class PurchaseOrder(models.Model):
         'purchase_order_id',
         string='Tiempo estimado',
     )
+
+    # @api.depends('')
+    # def _compute_estimated_stock(self):
+    #     for record in self:
+    #         estimated_times = self.env['purchase.order.stage'].search([])
+    #         print(estimated_times)
 
     @api.depends(
         "order_line.weight",
@@ -249,95 +269,95 @@ class PurchaseOrder(models.Model):
         return rec
 
     def write(self, vals):
+        res = super(PurchaseOrder, self).write(vals)
+        context = dict(self.env.context)
+        context.update({'write_purchase_done': True})
+        self = self.with_context(context)
+
+        purchase_completed = True
         estimated_time = self.env['estimated.time'].search([
             ('purchase_order_id', '=', self.id),
             ('registry_id', '=', self.id)
         ])
+
         if 'estimated_days_init' in vals and vals.get('estimated_days_init'):
             estimated_time.write({
                 'estimated_date': self.estimated(self.create_date, int(vals.get('estimated_days_init')))
             })
-        if 'oc_provider_ids' in vals:
-            date = vals['oc_provider_ids'][0][2]
-            if 'provider_recognition_date' in date:
-                if date.get('provider_recognition_date') and date.get('provider_recognition_date'):
-                    stage_invoice = self.env.ref('purchase_dashboard_stage.stage_invoice_payment', raise_if_not_found=False)
-                    self.stage_id = stage_invoice.id
-        if 'supplier_ids' in vals:
-            date =  vals['supplier_ids'][0][2]
-            if 'real_date' in date and date.get('real_date'):
-                stage_warehouse = self.env.ref('purchase_dashboard_stage.stage_transit_warehouse', raise_if_not_found=False)
-                self.stage_id = stage_warehouse.id
-        if 'transit_warehouse_ids' in vals:
-            values = vals['transit_warehouse_ids']
-            if len(values) == 1:
-                date = vals['transit_warehouse_ids'][0][2]
-                if date:
-                    if 'warehouse_receipt_date' in date and date.get('warehouse_receipt_date'):
-                        stage_warehouse = self.env.ref('purchase_dashboard_stage.stage_transit_marine_land', raise_if_not_found=False)
-                        self.stage_id = stage_warehouse.id
-            elif len(values) > 1:
-                for index in range(0, len(values)):
-                    if values[index][0] == 0:
-                        if values[index][2].get('create_view'):
-                            stage_warehouse = self.env.ref('purchase_dashboard_stage.stage_transit_warehouse', raise_if_not_found=False)
-                            self.stage_id = stage_warehouse.id
-                    if values[index][0] == 1:
-                        date = values[index][2]
-                        if date:
-                            if 'warehouse_receipt_date' in date and date.get('warehouse_receipt_date'):
-                                stage_warehouse = self.env.ref('purchase_dashboard_stage.stage_transit_marine_land', raise_if_not_found=False)
-                                self.stage_id = stage_warehouse.id
-        if 'transit_land_maritime_ids' in vals:
-            values = vals['transit_land_maritime_ids']
-            if len(values) == 1:
-                date = vals['transit_land_maritime_ids'][0][2]
-                if date:
-                    if 'real_date_arrival' in date and date.get('real_date_arrival'):
-                        stage_stock = self.env.ref('purchase_dashboard_stage.stage_stock_reception', raise_if_not_found=False)
-                        self.stage_id = stage_stock.id
-            elif len(values) > 1:
-                for index in range(0, len(values)):
-                    if values[index][0] == 1:
-                        date = values[index][2]
-                        if date:
-                            if 'real_date_arrival' in date and date.get('real_date_arrival'):
-                                stage_stock = self.env.ref('purchase_dashboard_stage.stage_stock_reception', raise_if_not_found=False)
-                                self.stage_id = stage_stock.id
-        if 'stock_receipt_ids' in vals:
-            values = vals['stock_receipt_ids']
-            if len(values) == 1:
-                date = vals['stock_receipt_ids'][0][2]
-                if date:
-                    if 'stock_receipt_date' in date and date.get('stock_receipt_date'):
-                        stage_verification = self.env.ref('purchase_dashboard_stage.stage_cost_verification', raise_if_not_found=False)
-                        stage_partial = self.env.ref('purchase_dashboard_stage.stage_partial_delivery', raise_if_not_found=False)
-                        pickings = self.env['stock.picking'].search([
-                            ('purchase_id', '=', self.id),
-                            ('state', '=', 'assigned')
-                        ])
-                        if len(pickings) > 0:
-                            self.stage_id = stage_partial.id
-                        else:
-                            self.stage_id = stage_verification.id
-            elif len(values) > 1:
-                for index in range(0, len(values)):
-                    if values[index][0] == 1:
-                        date = values[index][2]
-                        if date:
-                            if 'stock_receipt_date' in date and date.get('stock_receipt_date'):
-                                stage_verification = self.env.ref('purchase_dashboard_stage.stage_cost_verification', raise_if_not_found=False)
-                                stage_partial = self.env.ref('purchase_dashboard_stage.stage_partial_delivery', raise_if_not_found=False)
-                                pickings = self.env['stock.picking'].search([
-                                    ('purchase_id', '=', self.id),
-                                    ('state', '=', 'assigned')
-                                ])
-                                if len(pickings) > 0:
-                                    self.stage_id = stage_partial.id
-                                else:
-                                    self.stage_id = stage_verification.id
 
-        return super(PurchaseOrder, self).write(vals)
+        if self.stock_receipt_ids:
+            stock_completed = True
+            for stock in self.stock_receipt_ids:
+                if not stock.stock_receipt_date:
+                    stock_completed = False
+                    break
+            if not stock_completed:
+                purchase_completed = False
+                stage_stock = self.env.ref('purchase_dashboard_stage.stage_stock_reception', raise_if_not_found=False)
+                vals.update({'stage_id': stage_stock.id})
+                super(PurchaseOrder, self).write(vals)
+
+        if self.transit_land_maritime_ids and purchase_completed:
+            transit_completed = True
+            for transit in self.transit_land_maritime_ids:
+                if not transit.real_date_arrival:
+                    transit_completed = False
+                    break
+            if not transit_completed:
+                purchase_completed = False
+                stage_transit = self.env.ref('purchase_dashboard_stage.stage_transit_marine_land', raise_if_not_found=False)
+                vals.update({'stage_id': stage_transit.id})
+                super(PurchaseOrder, self).write(vals)
+
+        if self.transit_warehouse_ids and purchase_completed:
+            warehouse_completed = True
+            for warehouse in self.transit_warehouse_ids:
+                if not warehouse.warehouse_receipt_date:
+                    warehouse_completed = False
+                    break
+            if not warehouse_completed:
+                purchase_completed = False
+                stage_warehouse = self.env.ref('purchase_dashboard_stage.stage_transit_warehouse', raise_if_not_found=False)
+                vals.update({'stage_id': stage_warehouse.id})
+                super(PurchaseOrder, self).write(vals)
+
+        if self.supplier_ids and purchase_completed:
+            supplier_completed = True
+            for supplier in self.supplier_ids:
+                if not supplier.real_date:
+                    supplier_completed = False
+                    break
+            if not supplier_completed:
+                purchase_completed = False
+                stage_invoice = self.env.ref('purchase_dashboard_stage.stage_invoice_payment', raise_if_not_found=False)
+                vals.update({'stage_id': stage_invoice.id})
+                super(PurchaseOrder, self).write(vals)
+
+        if self.oc_provider_ids and purchase_completed:
+            provider_completed = True
+            for provider in self.oc_provider_ids:
+                if not provider.provider_recognition_date:
+                    provider_completed = False
+                    break
+            if not provider_completed:
+                purchase_completed = False
+                stage_order = self.env.ref('purchase_dashboard_stage.stage_purchase_order', raise_if_not_found=False)
+                vals.update({'stage_id': stage_order.id})
+                super(PurchaseOrder, self).write(vals)
+
+        if purchase_completed:
+            stage_verification = self.env.ref('purchase_dashboard_stage.stage_cost_verification', raise_if_not_found=False)
+            stage_partial = self.env.ref('purchase_dashboard_stage.stage_partial_delivery', raise_if_not_found=False)
+            pickings = self.env['stock.picking'].search([
+                ('purchase_id', '=', self.id),
+                ('state', '=', 'assigned')
+            ])
+            if len(pickings) > 0:
+                vals.update({'stage_id': stage_partial.id})
+            else:
+                vals.update({'stage_id': stage_verification.id})
+            super(PurchaseOrder, self).write(vals)
+        return res
 
 
 class PurchaseOrderLine(models.Model):

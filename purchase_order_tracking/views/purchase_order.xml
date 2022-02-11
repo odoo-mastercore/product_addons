@@ -12,6 +12,7 @@
             <xpath expr="//field[@name='currency_id']" position="after">
                 <field name="warehouse_company" />
                 <field name="estimated_days_init" attrs="{'readonly': [('stage_identifier', 'not in', ('requisition_order'))]}"/>
+                <field name="estimated_stock_date" readonly="1" force_save="1"/>
             </xpath>
             <xpath expr="//field[@name='date_order']" position="after">
                 <field name="purchase_type" string="Tipo de Compra"/>
@@ -49,7 +50,7 @@
                     }">
                     <group name="order_privider">
                         <field name="oc_provider_ids" context="{'default_purchase_order_id': id}" nolabel="1">
-                            <tree>
+                            <tree create="false" delete="false">
                                 <field name="provider_estimated_date" />
                                 <field name="provider_recognition_date" />
                                 <field name="provider_recognition_number" />
@@ -139,7 +140,7 @@
                     }">
                     <group name="transit_land_maritime" string="Tránsito">
                         <field name="transit_land_maritime_ids" context="{'default_purchase_order_id': id}" nolabel="1">
-                            <tree>
+                            <tree create="false" delete="false">
                                 <field name="estimated_port_arrival" />
                                 <field name="trip_name" />
                                 <field name="shipowner" />
@@ -158,7 +159,7 @@
                     }">
                     <group>
                         <field name="stock_receipt_ids" context="{'default_purchase_order_id': id}" nolabel="1">
-                            <tree>
+                            <tree create="false" delete="false">
                                 <field name="estimated_date" />
                                 <field name="stock_receipt_date" />
                                 <field name="order_picking_id" />
@@ -333,7 +334,7 @@
                                 options="{'no_open': 'True', 'no_create_edit': True, 'no_quick_create': True}"
                                 required="1"
                                 />
-                            <field name="stock_receipt_date"/>
+                            <field name="stock_receipt_date" readonly="1" force_save="1"/>
                         </group>
                     </group>
                     <group>
@@ -357,9 +358,9 @@
                             <field name="entry_date" readonly="1"/>
                         </group>
                         <group>
+                            <field name="registry_id" invisible="1"/>
                             <field name="estimated_date" readonly="1"/>
                             <field name="real_date" readonly="1" />
-                            <field name="registry_id" />
                         </group>
                     </group>
                 </sheet>

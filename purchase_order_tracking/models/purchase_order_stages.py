@@ -55,33 +55,34 @@ class OrderPurchaseProvider(models.Model):
 
     @api.model
     def write(self, vals):
-        stage_next = self.env.ref('purchase_dashboard_stage.stage_invoice_payment', raise_if_not_found=False)
-        estimated_times = self.env['estimated.time'].search([
-            ('purchase_order_id', '=', self.purchase_order_id.id),
-            ('registry_id', '=', self.id)
-        ])
-        if 'estimated_days' in vals and vals.get('estimated_days'):
-            new_estimated = self.stage_entry_date + relativedelta(days=int(vals.get('estimated_days')))
-            estimated_times.write({
-                'estimated_date': new_estimated
-            })
-        if 'provider_recognition_date' in vals and vals.get('provider_recognition_date'):
-            date_recognition = vals.get('provider_recognition_date')
-            estimated_times.write({
-                'real_date': date_recognition
-            })
-            res_invoice = self.env['account.move.estimated'].create({
-                'purchase_order_id': self.purchase_order_id.id,
-                'estimated_days': stage_next.estimated_time,
-                'stage_entry_date': date_recognition
-            })
-            self.env['estimated.time'].create({
-                'stage_name': stage_next.name,
-                'entry_date': date_recognition,
-                'estimated_date': fields.Datetime.from_string(date_recognition) + relativedelta(days=int(stage_next.estimated_time)),
-                'purchase_order_id': self.purchase_order_id.id,
-                'registry_id': res_invoice.id
-            })
+        if not 'write_purchase_done' in self.env.context:
+            stage_next = self.env.ref('purchase_dashboard_stage.stage_invoice_payment', raise_if_not_found=False)
+            estimated_times = self.env['estimated.time'].search([
+                ('purchase_order_id', '=', self.purchase_order_id.id),
+                ('registry_id', '=', self.id)
+            ])
+            if 'estimated_days' in vals and vals.get('estimated_days'):
+                new_estimated = self.stage_entry_date + relativedelta(days=int(vals.get('estimated_days')))
+                estimated_times.write({
+                    'estimated_date': new_estimated
+                })
+            if 'provider_recognition_date' in vals and vals.get('provider_recognition_date'):
+                date_recognition = vals.get('provider_recognition_date')
+                estimated_times.write({
+                    'real_date': date_recognition
+                })
+                res_invoice = self.env['account.move.estimated'].create({
+                    'purchase_order_id': self.purchase_order_id.id,
+                    'estimated_days': stage_next.estimated_time,
+                    'stage_entry_date': date_recognition
+                })
+                self.env['estimated.time'].create({
+                    'stage_name': stage_next.name,
+                    'entry_date': date_recognition,
+                    'estimated_date': fields.Datetime.from_string(date_recognition) + relativedelta(days=int(stage_next.estimated_time)),
+                    'purchase_order_id': self.purchase_order_id.id,
+                    'registry_id': res_invoice.id
+                })
         return super(OrderPurchaseProvider, self).write(vals)
 
 
@@ -138,32 +139,33 @@ class AccountMoveEstimated(models.Model):
 
     @api.model
     def write(self, vals):
-        stage_next = self.env.ref('purchase_dashboard_stage.stage_transit_warehouse', raise_if_not_found=False)
-        estimated_times = self.env['estimated.time'].search([
-            ('purchase_order_id', '=', self.purchase_order_id.id),
-            ('registry_id', '=', self.id)
-        ])
-        if 'estimated_days' in vals and vals.get('estimated_days'):
-            new_estimated = self.stage_entry_date + relativedelta(days=int(vals.get('estimated_days')))
-            estimated_times.write({
-                'estimated_date': new_estimated
-            })
-        if 'real_date' in vals and vals.get('real_date'):
-            real_date = vals.get('real_date')
-            estimated_times.write({'real_date': real_date})
-            res_warehouse = self.env['transit.warehouse'].create({
-                'purchase_order_id': self.purchase_order_id.id,
-                'create_view': False,
-                'estimated_days': stage_next.estimated_time,
-                'stage_entry_date': real_date
-            })
-            self.env['estimated.time'].create({
-                'stage_name': stage_next.name,
-                'entry_date': real_date,
-                'estimated_date': fields.Datetime.from_string(real_date) + relativedelta(days=int(stage_next.estimated_time)),
-                'purchase_order_id': self.purchase_order_id.id,
-                'registry_id': res_warehouse.id
-            })
+        if not 'write_purchase_done' in self.env.context:
+            stage_next = self.env.ref('purchase_dashboard_stage.stage_transit_warehouse', raise_if_not_found=False)
+            estimated_times = self.env['estimated.time'].search([
+                ('purchase_order_id', '=', self.purchase_order_id.id),
+                ('registry_id', '=', self.id)
+            ])
+            if 'estimated_days' in vals and vals.get('estimated_days'):
+                new_estimated = self.stage_entry_date + relativedelta(days=int(vals.get('estimated_days')))
+                estimated_times.write({
+                    'estimated_date': new_estimated
+                })
+            if 'real_date' in vals and vals.get('real_date'):
+                real_date = vals.get('real_date')
+                estimated_times.write({'real_date': real_date})
+                res_warehouse = self.env['transit.warehouse'].create({
+                    'purchase_order_id': self.purchase_order_id.id,
+                    'create_view': False,
+                    'estimated_days': stage_next.estimated_time,
+                    'stage_entry_date': real_date
+                })
+                self.env['estimated.time'].create({
+                    'stage_name': stage_next.name,
+                    'entry_date': real_date,
+                    'estimated_date': fields.Datetime.from_string(real_date) + relativedelta(days=int(stage_next.estimated_time)),
+                    'purchase_order_id': self.purchase_order_id.id,
+                    'registry_id': res_warehouse.id
+                })
         return super(AccountMoveEstimated, self).write(vals)
 
 
@@ -229,46 +231,49 @@ class TransitWarehouse(models.Model):
 
     @api.model
     def create(self, vals):
-        res = super(TransitWarehouse, self).create(vals)
-        if 'create_view' in vals and vals.get('create_view'):
-            stage_warehouse = self.env.ref('purchase_dashboard_stage.stage_transit_warehouse', raise_if_not_found=False)
-            self.env['estimated.time'].create({
-                'stage_name': stage_warehouse.name,
-                'entry_date': res.stage_entry_date,
-                'estimated_date': fields.Datetime.from_string(res.stage_entry_date) + relativedelta(days=int(stage_warehouse.estimated_time)),
-                'purchase_order_id': res.purchase_order_id.id,
-                'registry_id': res.id
-            })
-        return res
+        if not 'write_purchase_done' in self.env.context:
+            res = super(TransitWarehouse, self).create(vals)
+            if 'create_view' in vals and vals.get('create_view'):
+                stage_warehouse = self.env.ref('purchase_dashboard_stage.stage_transit_warehouse', raise_if_not_found=False)
+                self.env['estimated.time'].create({
+                    'stage_name': stage_warehouse.name,
+                    'entry_date': res.stage_entry_date,
+                    'estimated_date': fields.Datetime.from_string(res.stage_entry_date) + relativedelta(days=int(stage_warehouse.estimated_time)),
+                    'purchase_order_id': res.purchase_order_id.id,
+                    'registry_id': res.id
+                })
+            return res
+        return self
 
 
     @api.model
     def write(self, vals):
-        stage_next = self.env.ref('purchase_dashboard_stage.stage_transit_marine_land', raise_if_not_found=False)
-        estimated_times = self.env['estimated.time'].search([
-            ('purchase_order_id', '=', self.purchase_order_id.id),
-            ('registry_id', '=', self.id)
-        ])
-        if 'estimated_days' in vals and vals.get('estimated_days'):
-            new_estimated = self.stage_entry_date + relativedelta(days=int(vals.get('estimated_days')))
-            estimated_times.write({
-                'estimated_date': new_estimated
-            })
-        if 'warehouse_receipt_date' in vals and vals.get('warehouse_receipt_date'):
-            warehouse_date = vals.get('warehouse_receipt_date')
-            estimated_times.write({'real_date': warehouse_date})
-            res_warehouse = self.env['transit.land.maritime'].create({
-                'purchase_order_id': self.purchase_order_id.id,
-                'estimated_days': stage_next.estimated_time,
-                'stage_entry_date': warehouse_date
-            })
-            self.env['estimated.time'].create({
-                'stage_name': stage_next.name,
-                'entry_date': warehouse_date,
-                'estimated_date': fields.Datetime.from_string(warehouse_date) + relativedelta(days=int(stage_next.estimated_time)),
-                'purchase_order_id': self.purchase_order_id.id,
-                'registry_id': res_warehouse.id
-            })
+        if not 'write_purchase_done' in self.env.context:
+            stage_next = self.env.ref('purchase_dashboard_stage.stage_transit_marine_land', raise_if_not_found=False)
+            estimated_times = self.env['estimated.time'].search([
+                ('purchase_order_id', '=', self.purchase_order_id.id),
+                ('registry_id', '=', self.id)
+            ])
+            if 'estimated_days' in vals and vals.get('estimated_days'):
+                new_estimated = self.stage_entry_date + relativedelta(days=int(vals.get('estimated_days')))
+                estimated_times.write({
+                    'estimated_date': new_estimated
+                })
+            if 'warehouse_receipt_date' in vals and vals.get('warehouse_receipt_date'):
+                warehouse_date = vals.get('warehouse_receipt_date')
+                estimated_times.write({'real_date': warehouse_date})
+                res_warehouse = self.env['transit.land.maritime'].create({
+                    'purchase_order_id': self.purchase_order_id.id,
+                    'estimated_days': stage_next.estimated_time,
+                    'stage_entry_date': warehouse_date
+                })
+                self.env['estimated.time'].create({
+                    'stage_name': stage_next.name,
+                    'entry_date': warehouse_date,
+                    'estimated_date': fields.Datetime.from_string(warehouse_date) + relativedelta(days=int(stage_next.estimated_time)),
+                    'purchase_order_id': self.purchase_order_id.id,
+                    'registry_id': res_warehouse.id
+                })
         return super(TransitWarehouse, self).write(vals)
 
 class TransitLandMaritime(models.Model):
@@ -340,31 +345,32 @@ class TransitLandMaritime(models.Model):
 
     @api.model
     def write(self, vals):
-        stage_next = self.env.ref('purchase_dashboard_stage.stage_stock_reception', raise_if_not_found=False)
-        estimated_times = self.env['estimated.time'].search([
-            ('purchase_order_id', '=', self.purchase_order_id.id),
-            ('registry_id', '=', self.id)
-        ])
-        if 'estimated_days' in vals and vals.get('estimated_days'):
-            new_estimated = self.stage_entry_date + relativedelta(days=int(vals.get('estimated_days')))
-            estimated_times.write({
-                'estimated_date': new_estimated
-            })
-        if 'real_date_arrival' in vals and vals.get('real_date_arrival'):
-            real_date_arrival = vals.get('real_date_arrival')
-            estimated_times.write({'real_date': real_date_arrival})
-            res_stock = self.env['stock.receipt'].create({
-                'purchase_order_id': self.purchase_order_id.id,
-                'estimated_days': stage_next.estimated_time,
-                'stage_entry_date': real_date_arrival
-            })
-            self.env['estimated.time'].create({
-                'stage_name': stage_next.name,
-                'entry_date': real_date_arrival,
-                'estimated_date': fields.Datetime.from_string(real_date_arrival) + relativedelta(days=int(stage_next.estimated_time)),
-                'purchase_order_id': self.purchase_order_id.id,
-                'registry_id': res_stock.id
-            })
+        if not 'write_purchase_done' in self.env.context:
+            stage_next = self.env.ref('purchase_dashboard_stage.stage_stock_reception', raise_if_not_found=False)
+            estimated_times = self.env['estimated.time'].search([
+                ('purchase_order_id', '=', self.purchase_order_id.id),
+                ('registry_id', '=', self.id)
+            ])
+            if 'estimated_days' in vals and vals.get('estimated_days'):
+                new_estimated = self.stage_entry_date + relativedelta(days=int(vals.get('estimated_days')))
+                estimated_times.write({
+                    'estimated_date': new_estimated
+                })
+            if 'real_date_arrival' in vals and vals.get('real_date_arrival'):
+                real_date_arrival = vals.get('real_date_arrival')
+                estimated_times.write({'real_date': real_date_arrival})
+                res_stock = self.env['stock.receipt'].create({
+                    'purchase_order_id': self.purchase_order_id.id,
+                    'estimated_days': stage_next.estimated_time,
+                    'stage_entry_date': real_date_arrival
+                })
+                self.env['estimated.time'].create({
+                    'stage_name': stage_next.name,
+                    'entry_date': real_date_arrival,
+                    'estimated_date': fields.Datetime.from_string(real_date_arrival) + relativedelta(days=int(stage_next.estimated_time)),
+                    'purchase_order_id': self.purchase_order_id.id,
+                    'registry_id': res_stock.id
+                })
         return super(TransitLandMaritime, self).write(vals)
 
 class StockReceipt(models.Model):
@@ -381,7 +387,10 @@ class StockReceipt(models.Model):
         string="Dias estimados",
         default=_get_detaulf_days_stock
     )
-    stage_entry_date = fields.Datetime(string="create entry stage")
+    stage_entry_date = fields.Datetime(
+        string="create entry stage",
+        default=fields.Datetime.now,
+    )
     estimated_date = fields.Datetime(
         string='Fecha estimada',
         compute="_compute_estimated_date_stock",
@@ -419,16 +428,17 @@ class StockReceipt(models.Model):
 
     @api.model
     def write(self, vals):
-        estimated_times = self.env['estimated.time'].search([
-            ('purchase_order_id', '=', self.purchase_order_id.id),
-            ('registry_id', '=', self.id)
-        ])
-        if 'estimated_days' in vals and vals.get('estimated_days'):
-            new_estimated = self.stage_entry_date + relativedelta(days=int(vals.get('estimated_days')))
-            estimated_times.write({
-                'estimated_date': new_estimated
-            })
-        if 'stock_receipt_date' in vals and vals.get('stock_receipt_date'):
-            date_stock = vals.get('stock_receipt_date')
-            estimated_times.write({'real_date': date_stock})
-        return super(StockReceipt, self).write(vals)
+        if not 'write_purchase_done' in self.env.context:
+            estimated_times = self.env['estimated.time'].search([
+                ('purchase_order_id', '=', self.purchase_order_id.id),
+                ('registry_id', '=', self.id)
+            ])
+            if 'estimated_days' in vals and vals.get('estimated_days'):
+                new_estimated = self.stage_entry_date + relativedelta(days=int(vals.get('estimated_days')))
+                estimated_times.write({
+                    'estimated_date': new_estimated
+                })
+            if 'stock_receipt_date' in vals and vals.get('stock_receipt_date'):
+                date_stock = vals.get('stock_receipt_date')
+                estimated_times.write({'real_date': date_stock})
+            return super(StockReceipt, self).write(vals)
