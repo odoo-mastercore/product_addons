@@ -51,7 +51,7 @@ class SaleOrder(models.Model):
         ],string="Pagado por"
     )
     fleet_contact_id = fields.Many2one(
-        'fleet.contact',
+        'res.partner',
         string="Fleet Contact"
     )
 
