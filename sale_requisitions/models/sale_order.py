@@ -6,7 +6,6 @@
 #
 #
 ###############################################################################
-from email.policy import default
 from odoo import models, fields, api, _
 import logging
 

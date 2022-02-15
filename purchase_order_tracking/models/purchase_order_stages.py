@@ -74,6 +74,7 @@ class OrderPurchaseProvider(models.Model):
                 res_invoice = self.env['account.move.estimated'].create({
                     'purchase_order_id': self.purchase_order_id.id,
                     'estimated_days': stage_next.estimated_time,
+                    'create_view': False,
                     'stage_entry_date': date_recognition
                 })
                 self.env['estimated.time'].create({
@@ -103,6 +104,10 @@ class AccountMoveEstimated(models.Model):
     stage_entry_date = fields.Datetime(
         string="create entry stage",
         default=fields.Datetime.now,
+    )
+    create_view = fields.Boolean(
+        string='Registro creado desde la vista',
+        default=False
     )
     estimated_date = fields.Datetime(
         string='Fecha estimada',
@@ -138,6 +143,26 @@ class AccountMoveEstimated(models.Model):
                     pass
 
     @api.model
+    def create(self, vals):
+        if not 'write_purchase_done' in self.env.context:
+            res = super(AccountMoveEstimated, self).create(vals)
+            if 'create_view' in vals and vals.get('create_view'):
+                stage_invoice = self.env.ref('purchase_dashboard_stage.stage_invoice_payment', raise_if_not_found=False)
+                real_date_invoice = vals.get('warehouse_receipt_date') \
+                    if 'warehouse_receipt_date' in vals and vals.get('warehouse_receipt_date') \
+                    else False
+                self.env['estimated.time'].create({
+                    'stage_name': stage_invoice.name,
+                    'entry_date': res.stage_entry_date,
+                    'estimated_date': fields.Datetime.from_string(res.stage_entry_date) + relativedelta(days=int(stage_invoice.estimated_time)),
+                    'purchase_order_id': res.purchase_order_id.id,
+                    'real_date': real_date_invoice,
+                    'registry_id': res.id
+                })
+            return res
+        return self
+
+    @api.model
     def write(self, vals):
         if not 'write_purchase_done' in self.env.context:
             stage_next = self.env.ref('purchase_dashboard_stage.stage_transit_warehouse', raise_if_not_found=False)
@@ -150,22 +175,28 @@ class AccountMoveEstimated(models.Model):
                 estimated_times.write({
                     'estimated_date': new_estimated
                 })
-            if 'real_date' in vals and vals.get('real_date'):
-                real_date = vals.get('real_date')
-                estimated_times.write({'real_date': real_date})
-                res_warehouse = self.env['transit.warehouse'].create({
-                    'purchase_order_id': self.purchase_order_id.id,
-                    'create_view': False,
-                    'estimated_days': stage_next.estimated_time,
-                    'stage_entry_date': real_date
-                })
-                self.env['estimated.time'].create({
-                    'stage_name': stage_next.name,
-                    'entry_date': real_date,
-                    'estimated_date': fields.Datetime.from_string(real_date) + relativedelta(days=int(stage_next.estimated_time)),
-                    'purchase_order_id': self.purchase_order_id.id,
-                    'registry_id': res_warehouse.id
-                })
+            if not self.create_view:
+                if 'real_date' in vals and vals.get('real_date'):
+                    real_date = vals.get('real_date')
+                    estimated_times.write({'real_date': real_date})
+                    res_warehouse = self.env['transit.warehouse'].create({
+                        'purchase_order_id': self.purchase_order_id.id,
+                        'create_view': False,
+                        'estimated_days': stage_next.estimated_time,
+                        'stage_entry_date': real_date
+                    })
+                    self.env['estimated.time'].create({
+                        'stage_name': stage_next.name,
+                        'entry_date': real_date,
+                        'estimated_date': fields.Datetime.from_string(real_date) + relativedelta(days=int(stage_next.estimated_time)),
+                        'purchase_order_id': self.purchase_order_id.id,
+                        'registry_id': res_warehouse.id
+                    })
+            else:
+                if 'real_date' in vals and vals.get('real_date'):
+                    real_date = vals.get('real_date')
+                    estimated_times.write({'real_date': real_date})
+
         return super(AccountMoveEstimated, self).write(vals)
 
 
@@ -235,7 +266,6 @@ class TransitWarehouse(models.Model):
     def create(self, vals):
         if not 'write_purchase_done' in self.env.context:
             res = super(TransitWarehouse, self).create(vals)
-
             if 'create_view' in vals and vals.get('create_view'):
                 stage_warehouse = self.env.ref('purchase_dashboard_stage.stage_transit_warehouse', raise_if_not_found=False)
                 real_date_warehouse = vals.get('warehouse_receipt_date') \
@@ -249,7 +279,6 @@ class TransitWarehouse(models.Model):
                     'real_date': real_date_warehouse,
                     'registry_id': res.id
                 })
-
                 if 'warehouse_receipt_date' in vals and vals.get('warehouse_receipt_date'):
                     stage_next = self.env.ref('purchase_dashboard_stage.stage_transit_marine_land', raise_if_not_found=False)
                     warehouse_date = vals.get('warehouse_receipt_date')
@@ -290,7 +319,8 @@ class TransitWarehouse(models.Model):
                 res_warehouse = self.env['transit.land.maritime'].create({
                     'purchase_order_id': self.purchase_order_id.id,
                     'estimated_days': stage_next.estimated_time,
-                    'stage_entry_date': warehouse_date
+                    'stage_entry_date': warehouse_date,
+                    'order_picking_id': self.order_picking_id.id
                 })
                 self.env['estimated.time'].create({
                     'stage_name': stage_next.name,

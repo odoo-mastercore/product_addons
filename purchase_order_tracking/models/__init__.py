@@ -12,3 +12,4 @@ from . import estimated_time
 from . import account_move
 from . import pallets
 from . import product
+from . import stock_picking

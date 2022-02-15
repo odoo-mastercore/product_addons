@@ -15,7 +15,7 @@ _logger = logging.getLogger(__name__)
 class StockPicking(models.Model):
     _inherit = 'stock.picking'
 
-    
+
     def _compute_state_invoice(self):
         if self.sale_id:
             if self.sale_id.invoice_count >= 1:

@@ -64,7 +64,11 @@
                     attrs="{
                         'invisible': [('stage_identifier', 'not in', ('invoice_payment', 'transit_warehouse', 'transit_marine_land', 'stock_reception', 'cost_verification', 'partial_delivery'))]
                     }">
-                    <field name="supplier_ids" context="{'default_purchase_order_id': id}" nolabel="1">
+                    <field
+                        name="supplier_ids"
+                        context="{'default_purchase_order_id': id, 'default_create_view': True}"
+                        nolabel="1"
+                        >
                         <tree>
                             <field name="estimated_date" />
                             <field name="invoice_id" />
@@ -232,7 +236,8 @@
                         <group>
                             <field name="purchase_order_id" invisible="1"/>
                             <field name="purchase_order_name" invisible="1"/>
-                            <field name="purchase_order_partner"  invisible="1"/>
+                            <field name="purchase_order_partner" invisible="1"/>
+                            <field name="create_view" invisible="1" />
                             <field name="estimated_days" required="1"/>
                             <field name="estimated_date" readonly="1"/>
                         </group>
