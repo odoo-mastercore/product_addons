@@ -1,3 +1,7 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 acs_fleet_contact_system,quality_fleet_contact_system,model_fleet_contact,base.group_system,1,1,1,1
+acs_fleet_contact_user,quality_fleet_contact_user,model_fleet_contact,base.group_system,1,0,0,0
+acs_fleet_contact_manager,quality_fleet_contact_manager,model_fleet_contact,sales_team.group_sale_manager,1,1,1,1
+acs_fleet_contact_salesman,quality_fleet_contact_salesman,model_fleet_contact,sales_team.group_sale_salesman,1,1,1,0
+acs_fleet_contact_all_leads,quality_fleet_contact_all_leads,model_fleet_contact,sales_team.group_sale_salesman_all_leads,1,1,1,0
 
