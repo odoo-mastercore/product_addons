@@ -27,7 +27,7 @@ class CrmLead(models.Model):
                         [('name', '=', 'Contacto Inicial')]
                     )
                     self.stage_id = stage.id
-                elif len(rec.order_ids) == 1:
+                elif len(rec.order_ids) >= 1:
                     order = rec.order_ids[0].state
                     if order == 'sale':
                         stage = self.env['crm.stage'].search(
@@ -57,8 +57,22 @@ class CrmLead(models.Model):
                     )
                     self.stage_id = stage.id
             else:
-                if rec.quotation_count > 1:
-                    for order in rec.order_ids:
-                        pass
-
+                for order in rec.order_ids:
+                    if order.state == 'sale':
+                        stage = self.env['crm.stage'].search(
+                            [('name', '=', 'Apartado de Inventario')]
+                        )
+                        self.stage_id = stage.id
+                        break
+                    elif order.state == 'sent':
+                        stage = self.env['crm.stage'].search(
+                            [('name', '=', 'Negociación de Presupuesto')]
+                        )
+                        self.stage_id = stage.id
+                        break
+                    else:
+                        stage = self.env['crm.stage'].search(
+                            [('name', '=', 'Presupuesto')]
+                        )
+                        self.stage_id = stage.id
 
