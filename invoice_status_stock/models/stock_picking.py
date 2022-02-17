@@ -65,11 +65,11 @@ class StockPicking(models.Model):
         ],string="Pagado por",
         compute="_compute_withdrawal_payment",
     )
-    # fleet_contact_id = fields.Many2one(
-        # 'res.partner',
-        # related='sale_id.fleet_contact_id',
-        # string="Fleet Contact"
-    # )
+    fleet_contact_id = fields.Many2one(
+        'res.partner',
+        related='sale_id.fleet_contact_id',
+        string="Fleet Contact"
+    )
 
 
     def button_validate(self):
