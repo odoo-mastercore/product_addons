@@ -66,7 +66,7 @@ class StockPicking(models.Model):
         compute="_compute_withdrawal_payment",
     )
     fleet_contact_id = fields.Many2one(
-        'fleet.contact',
+        'res.partner',
         related='sale_id.fleet_contact_id',
         string="Fleet Contact"
     )
