@@ -55,9 +55,9 @@
           <field name="by_payment" 
             attrs="{'invisible': [('withdrawal_type', '=', 'office_retreat')]}"
           />
-          <!--<field name="fleet_contact_id" -->
-            <!--attrs="{'invisible': [('fleet_contact_id', '=', False)]}"-->
-          <!--/>-->
+          <field name="fleet_contact_id" 
+            attrs="{'invisible': [('fleet_contact_id', '=', False)]}"
+          />
         </field>
       </field>
     </record>
