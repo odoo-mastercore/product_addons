@@ -266,20 +266,57 @@ class PurchaseOrder(models.Model):
         for estimated in estimated_times:
             if estimated.estimated_time:
                 default_total_days += int(estimated.estimated_time.strip())
-        if self.estimated_days_init != int(stage_requisition.estimated_time):
-            default_total_days -= int(stage_requisition.estimated_time)
-            default_total_days += self.estimated_days_init
-        if self.oc_provider_ids:
-            for provider in self.oc_provider_ids:
-                if provider.estimated_days != int(stage_order.estimated_time):
-                    default_total_days -= int(stage_order.estimated_time)
-                    default_total_days += provider.estimated_days
+        stock_from = 0
+        if self.stock_receipt_ids:
+            for stock in self.stock_receipt_ids:
+                if not stock.stock_receipt_date:
+                    stock_from = stock.create_from
+                    default_total_days -= int(stage_stock.estimated_time)
+                    default_total_days += int(stock.estimated_days)
+                    break
+        transit_from = 0
+        if self.transit_land_maritime_ids:
+            if stock_from != 0:
+                transit = self.mapped('transit_land_maritime_ids').filtered(
+                    lambda t: t.id == stock_from
+                )
+                transit_from = transit.create_from
+                default_total_days -= int(stage_transit.estimated_time)
+                default_total_days += int(transit.estimated_days)
+            else:
+                for transit in self.transit_land_maritime_ids:
+                    if not transit.real_date_arrival:
+                        transit_from = transit.create_from
+                        default_total_days -= int(stage_transit.estimated_time)
+                        default_total_days += int(transit.estimated_days)
+                        break
+        if self.transit_warehouse_ids:
+            if transit_from != 0:
+                warehouse = self.mapped('transit_warehouse_ids').filtered(
+                    lambda w: w.id == transit_from
+                )
+                default_total_days -= int(stage_warehouse.estimated_time)
+                default_total_days += int(warehouse.estimated_days)
+            else:
+                for warehouse in self.transit_warehouse_ids:
+                    if not warehouse.warehouse_receipt_date:
+                        default_total_days -= int(stage_warehouse.estimated_time)
+                        default_total_days += int(warehouse.estimated_days)
+                        break
         if self.supplier_ids:
             invoice = self.mapped('supplier_ids').filtered(lambda i: not i.create_view)
             if invoice.estimated_days != int(stage_invoice.estimated_time):
                 default_total_days -= int(stage_invoice.estimated_time)
                 default_total_days += invoice.estimated_days
         self.estimated_stock_date = fields.Datetime.now() + relativedelta(days=int(default_total_days))
+        if self.oc_provider_ids:
+            for provider in self.oc_provider_ids:
+                if provider.estimated_days != int(stage_order.estimated_time):
+                    default_total_days -= int(stage_order.estimated_time)
+                    default_total_days += provider.estimated_days
+        if self.estimated_days_init != int(stage_requisition.estimated_time):
+            default_total_days -= int(stage_requisition.estimated_time)
+            default_total_days += self.estimated_days_init
 
     @api.model
     def create(self, vals):

@@ -339,7 +339,6 @@
                             <field
                                 name="order_picking_id"
                                 options="{'no_open': 'True', 'no_create_edit': True, 'no_quick_create': True}"
-                                required="1"
                                 />
                             <field name="stock_receipt_date" readonly="1" force_save="1"/>
                         </group>
