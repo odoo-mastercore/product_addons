@@ -19,7 +19,6 @@ class OrderPurchaseProvider(models.Model):
     _name = "order.purchase.provider"
     _description = "Colocacion Order/Compra"
 
-
     estimated_days = fields.Integer(string='Dias estimados')
     stage_entry_date = fields.Datetime(
         string="create entry stage",
@@ -285,7 +284,9 @@ class TransitWarehouse(models.Model):
                     res_warehouse = self.env['transit.land.maritime'].create({
                         'purchase_order_id': res.purchase_order_id.id,
                         'estimated_days': stage_next.estimated_time,
-                        'stage_entry_date': warehouse_date
+                        'stage_entry_date': warehouse_date,
+                        'create_from': res.id,
+                        'order_picking_id': res.order_picking_id.id
                     })
                     self.env['estimated.time'].create({
                         'stage_name': stage_next.name,
@@ -320,7 +321,10 @@ class TransitWarehouse(models.Model):
                     'purchase_order_id': self.purchase_order_id.id,
                     'estimated_days': stage_next.estimated_time,
                     'stage_entry_date': warehouse_date,
-                    'order_picking_id': self.order_picking_id.id
+                    'create_from': self.id,
+                    'order_picking_id': int(vals.get('order_picking_id'))\
+                        if ('order_picking_id' in vals and vals.get('order_picking_id'))\
+                             else self.order_picking_id.id
                 })
                 self.env['estimated.time'].create({
                     'stage_name': stage_next.name,
@@ -349,6 +353,7 @@ class TransitLandMaritime(models.Model):
         string="create entry stage",
         default=fields.Datetime.now,
     )
+    create_from = fields.Integer(string="creado desde")
     trip_name = fields.Char(string="Nombre del viaje")
     shipowner = fields.Many2one('res.partner', string="Naviera")
     booking_number = fields.Char(string="Número de Booking")
@@ -417,7 +422,8 @@ class TransitLandMaritime(models.Model):
                 res_stock = self.env['stock.receipt'].create({
                     'purchase_order_id': self.purchase_order_id.id,
                     'estimated_days': stage_next.estimated_time,
-                    'stage_entry_date': real_date_arrival
+                    'stage_entry_date': real_date_arrival,
+                    'create_from': self.id
                 })
                 self.env['estimated.time'].create({
                     'stage_name': stage_next.name,
@@ -446,6 +452,7 @@ class StockReceipt(models.Model):
         string="create entry stage",
         default=fields.Datetime.now,
     )
+    create_from = fields.Integer(string="creado desde")
     estimated_date = fields.Datetime(
         string='Fecha estimada',
         compute="_compute_estimated_date_stock",

@@ -20,7 +20,7 @@
         'purchase',
         'purchase_dashboard_stage',
         'account',
-        'stock_account'
+        'stock_account',
     ],
     'data': [
         'security/ir.model.access.csv',

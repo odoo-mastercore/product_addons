@@ -145,6 +145,7 @@
                     <group name="transit_land_maritime" string="Tránsito">
                         <field name="transit_land_maritime_ids" context="{'default_purchase_order_id': id}" nolabel="1">
                             <tree create="false" delete="false">
+                                <field name="create_from" invisible="1"/>
                                 <field name="estimated_port_arrival" />
                                 <field name="trip_name" />
                                 <field name="shipowner" />
@@ -164,6 +165,7 @@
                     <group>
                         <field name="stock_receipt_ids" context="{'default_purchase_order_id': id}" nolabel="1">
                             <tree create="false" delete="false">
+                                <field name="create_from" invisible="1"/>
                                 <field name="estimated_date" />
                                 <field name="stock_receipt_date" />
                                 <field name="order_picking_id" />
