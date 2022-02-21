@@ -308,7 +308,6 @@ class PurchaseOrder(models.Model):
             if invoice.estimated_days != int(stage_invoice.estimated_time):
                 default_total_days -= int(stage_invoice.estimated_time)
                 default_total_days += invoice.estimated_days
-        self.estimated_stock_date = fields.Datetime.now() + relativedelta(days=int(default_total_days))
         if self.oc_provider_ids:
             for provider in self.oc_provider_ids:
                 if provider.estimated_days != int(stage_order.estimated_time):
@@ -317,6 +316,7 @@ class PurchaseOrder(models.Model):
         if self.estimated_days_init != int(stage_requisition.estimated_time):
             default_total_days -= int(stage_requisition.estimated_time)
             default_total_days += self.estimated_days_init
+        self.estimated_stock_date = fields.Datetime.now() + relativedelta(days=int(default_total_days))
 
     @api.model
     def create(self, vals):
