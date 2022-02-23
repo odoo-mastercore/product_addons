@@ -35,5 +35,5 @@ msgstr "Código de Arancel"
 #: code:addons/product_tariff_code/models/product.py:0
 #: code:addons/product_tariff_code/models/product.py:0
 #, python-format
-msgid "Tariff code must have 15 digits"
-msgstr "El Código de Arancel debe tener 15 dígitos"
+msgid "Tariff code must be between 5 to 15 digits"
+msgstr "El Código de Arancel debe estar comprendido entre 5 y 15 dígitos"
