@@ -65,7 +65,7 @@ class ProductTemplate(models.Model):
     property_stock_inventory = fields.Many2one(track_visibility='onchange')
     weight = fields.Float(tracking=True)
     volume = fields.Float(tracking=True)
-    responsible_id = fields.Float(tracking=True)
+    responsible_id = fields.Many2one(track_visibility='onchange')
     weight_kg = fields.Float(tracking=True)
     volume = fields.Float(tracking=True)
     dimensional_oum_id = fields.Many2one(track_visibility='onchange')
