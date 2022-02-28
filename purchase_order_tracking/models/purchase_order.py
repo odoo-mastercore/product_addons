@@ -39,6 +39,7 @@ class PurchaseOrder(models.Model):
         return fields.Datetime.now() + relativedelta(days=int(total_days))
 
     # stage 1
+    # date_order es la estimada de requisicion
     warehouse_company = fields.Many2one('res.partner', string="Empresa Warehouse")
     origin_purchase = fields.Many2one(
         'res.country',
@@ -141,17 +142,7 @@ class PurchaseOrder(models.Model):
         string='Tiempo estimado',
     )
 
-    # @api.depends('')
-    # def _compute_estimated_stock(self):
-    #     for record in self:
-    #         estimated_times = self.env['purchase.order.stage'].search([])
-    #         print(estimated_times)
-
-    @api.depends(
-        "order_line.weight",
-        "order_line.volume",
-        "purchase_type"
-    )
+    @api.depends("order_line.weight", "order_line.volume", "purchase_type")
     def _compute_weight_total(self):
         for order in self:
             weight = volume = 0.0
@@ -281,8 +272,18 @@ class PurchaseOrder(models.Model):
                     lambda t: t.id == stock_from
                 )
                 transit_from = transit.create_from
-                default_total_days -= int(stage_transit.estimated_time)
-                default_total_days += int(transit.estimated_days)
+                days = (transit.real_date_arrival - transit.estimated_port_arrival).days
+                if days < 0:
+                    new_days_estimated = (transit.estimated_days - abs(days))
+                    default_total_days -= transit.estimated_days
+                    default_total_days += new_days_estimated
+                elif days > 0:
+                    new_days_estimated = (transit.estimated_days + days)
+                    default_total_days -= transit.estimated_days
+                    default_total_days += new_days_estimated
+                elif days == 0:
+                    default_total_days -= int(stage_transit.estimated_time)
+                    default_total_days += int(transit.estimated_days)
             else:
                 for transit in self.transit_land_maritime_ids:
                     if not transit.real_date_arrival:
@@ -295,8 +296,18 @@ class PurchaseOrder(models.Model):
                 warehouse = self.mapped('transit_warehouse_ids').filtered(
                     lambda w: w.id == transit_from
                 )
-                default_total_days -= int(stage_warehouse.estimated_time)
-                default_total_days += int(warehouse.estimated_days)
+                days = (warehouse.warehouse_receipt_date - warehouse.estimated_date).days
+                if days < 0:
+                    new_days_estimated = (warehouse.estimated_days - abs(days))
+                    default_total_days -= warehouse.estimated_days
+                    default_total_days += new_days_estimated
+                elif days > 0:
+                    new_days_estimated = (warehouse.estimated_days + days)
+                    default_total_days -= warehouse.estimated_days
+                    default_total_days += new_days_estimated
+                elif days == 0:
+                    default_total_days -= int(stage_warehouse.estimated_time)
+                    default_total_days += int(warehouse.estimated_days)
             else:
                 for warehouse in self.transit_warehouse_ids:
                     if not warehouse.warehouse_receipt_date:
@@ -308,14 +319,45 @@ class PurchaseOrder(models.Model):
             if invoice.estimated_days != int(stage_invoice.estimated_time):
                 default_total_days -= int(stage_invoice.estimated_time)
                 default_total_days += invoice.estimated_days
+            if invoice.real_date:
+                days = (invoice.real_date - invoice.estimated_date).days
+                if days < 0:
+                    new_days_estimated = (invoice.estimated_days - abs(days))
+                    default_total_days -= invoice.estimated_days
+                    default_total_days += new_days_estimated
+                else:
+                    new_days_estimated = (invoice.estimated_days + days)
+                    default_total_days -= invoice.estimated_days
+                    default_total_days += new_days_estimated
         if self.oc_provider_ids:
             for provider in self.oc_provider_ids:
                 if provider.estimated_days != int(stage_order.estimated_time):
                     default_total_days -= int(stage_order.estimated_time)
                     default_total_days += provider.estimated_days
+                if provider.provider_recognition_date:
+                    days = (provider.provider_recognition_date - provider.provider_estimated_date).days
+                    if days < 0:
+                        new_days_estimated = (provider.estimated_days - abs(days))
+                        default_total_days -= provider.estimated_days
+                        default_total_days += new_days_estimated
+                    else:
+                        new_days_estimated = (provider.estimated_days + days)
+                        default_total_days -= provider.estimated_days
+                        default_total_days += new_days_estimated
         if self.estimated_days_init != int(stage_requisition.estimated_time):
             default_total_days -= int(stage_requisition.estimated_time)
             default_total_days += self.estimated_days_init
+        if self.date_approve:
+            estimated_date = self.estimated(self.create_date, self.estimated_days_init)
+            days = (self.date_approve - estimated_date).days
+            if days < 0:
+                new_days_estimated = (self.estimated_days_init - abs(days))
+                default_total_days -= self.estimated_days_init
+                default_total_days += new_days_estimated
+            else:
+                new_days_estimated = (self.estimated_days_init + days)
+                default_total_days -= self.estimated_days_init
+                default_total_days += new_days_estimated
         self.estimated_stock_date = fields.Datetime.now() + relativedelta(days=int(default_total_days))
 
     @api.model

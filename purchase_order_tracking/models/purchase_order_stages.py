@@ -44,13 +44,15 @@ class OrderPurchaseProvider(models.Model):
     @api.depends('estimated_days', 'stage_entry_date')
     def _compute_estimated_date(self):
         for rec in self:
-            if rec.estimated_days:
+            if rec.estimated_days and rec.stage_entry_date:
                 new_estimated = rec.stage_entry_date + relativedelta(days=int(rec.estimated_days))
                 try:
                     rec.provider_estimated_date = new_estimated
                 except Exception as e:
                     _logger.error("Error compute estimated_date provider %s" % (e))
                     pass
+            else:
+                rec.provider_estimated_date = False
 
     @api.model
     def write(self, vals):
@@ -133,13 +135,15 @@ class AccountMoveEstimated(models.Model):
     @api.depends('estimated_days', 'stage_entry_date')
     def _compute_estimated_date_invoice(self):
         for rec in self:
-            if rec.estimated_days:
+            if rec.estimated_days and rec.stage_entry_date:
                 new_estimated = rec.stage_entry_date + relativedelta(days=int(rec.estimated_days))
                 try:
                     rec.estimated_date = new_estimated
                 except Exception as e:
                     _logger.error("Error compute estimated_date invoice %s" % (e))
                     pass
+            else:
+                rec.estimated_date = False
 
     @api.model
     def create(self, vals):
@@ -259,7 +263,7 @@ class TransitWarehouse(models.Model):
                     _logger.error("Error compute estimated_date warehouse %s" % (e))
                     pass
             else:
-                rec.estimated_date = fields.Datetime.now()
+                rec.estimated_date = False
 
     @api.model
     def create(self, vals):
@@ -395,13 +399,15 @@ class TransitLandMaritime(models.Model):
     @api.depends('estimated_days', 'stage_entry_date')
     def _compute_estimated_date_land_maritime(self):
         for rec in self:
-            if rec.estimated_days:
+            if rec.estimated_days and rec.stage_entry_date:
                 new_estimated = rec.stage_entry_date + relativedelta(days=int(rec.estimated_days))
                 try:
                     rec.estimated_port_arrival = new_estimated
                 except Exception as e:
                     _logger.error("Error compute estimated_port_arrival land maritime %s" % (e))
                     pass
+            else:
+                rec.estimated_port_arrival = False
 
     @api.model
     def write(self, vals):
@@ -488,7 +494,7 @@ class StockReceipt(models.Model):
                     _logger.error("Error compute estimated_port_arrival land maritime %s" % (e))
                     pass
             else:
-                rec.estimated_date = fields.Datetime.now()
+                rec.estimated_date = False
 
     @api.model
     def write(self, vals):
