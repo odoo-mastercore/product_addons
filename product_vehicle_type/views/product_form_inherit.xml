@@ -10,6 +10,9 @@
                 <xpath expr="//field[@name='code_group_id']" position='after'>
                     <field name='vehicle_type'/>
                 </xpath>
+                <xpath expr="//field[@name='public_categ_ids']" position='attributes'>
+                    <attribute name="domain">[('vehicle_type', '=', vehicle_type)]</attribute>
+                </xpath>
             </field>
         </record>
 
@@ -23,16 +26,5 @@
                 </xpath>
             </field>
         </record>
-
-        <record model="ir.ui.view" id="product_template_form_view">
-            <field name="name">product.template.form.view.inherit.attributes.category</field>
-            <field name="model">product.template</field>
-            <field name="inherit_id" ref="product.product_template_form_view"/>
-            <field name="arch" type="xml">
-                <xpath expr="//field[@name='public_categ_ids']" position='attributes'>
-                    <attribute name="domain">[('vehicle_type', '=', vehicle_type)]</attribute>
-                </xpath>
-            </field>
-        </record>
-  </data>
+    </data>
 </odoo>
