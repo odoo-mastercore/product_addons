@@ -40,7 +40,9 @@ class SaleOrder(models.Model):
     withdrawal_type = fields.Selection(
         [
             ('office_retreat', 'Retiro en Oficina'),
-            ('shipping_to_freight', 'Envíar a Fletera')
+            ('shipping_to_freight', 'Envío por Fletera'),
+            ('personal_delivery', 'Entrega Personal al Cliente'),
+            ('by_responsibility_client', 'Por responsabilidad del Cliente')
         ],string="Tipo de Retiro",
         help="Indica si el pedido sera retirado en Oficina o enviado a Fletera."
     )

@@ -8,7 +8,7 @@
       <field name="arch" type="xml">
         <xpath expr="//form[1]/sheet[1]/notebook[1]" position="inside">
           <page string="Movimientos de Entrada">
-            <field name="product_stock_move_ids" domain="[('picking_type_id.code', '=', 'incoming')]">
+            <field name="product_stock_move_ids" >
               <!--<field name="product_move_ids">-->
               <tree editable="bottom">
                 <field name="reference" string="Referencia"/>
@@ -20,11 +20,12 @@
                 <field name="company_id" />
                 <field name="picking_type_id" invisible="True"/>
                 <field name="picking_code" invisible="True"/>
+                <field name="type_picking"/>
               </tree>
             </field>
           </page>
           <page string="Movimientos de Salida">
-            <field name="product_stock_move_ids" domain="[('picking_type_id.code', '=', 'outgoing')]">
+            <field name="product_stock_move_ids">
             <!--<field name="product_stock_move_ids">-->
               <tree editable="bottom">
                 <field name="picking_id" string="Referencia"/>
@@ -36,13 +37,13 @@
                 <field name="company_id" />
                 <field name="picking_type_id" invisible="True"/>
                 <field name="picking_code" invisible="True"/>
+                <field name="type_picking"/>
               </tree>
             </field>
           </page>
         </xpath>
       </field>
     </record>
-
   </data>
 </odoo>
         

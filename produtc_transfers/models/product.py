@@ -19,6 +19,7 @@ class ProductTemplate(models.Model):
     product_stock_move_ids = fields.One2many(
         'stock.move',
         'product_tmpl_id',
+        domain="[('type_picking', '=', 'incoming')]",
         # domain="[('picking_code', '=', 'incoming')]",
         string="Ordenes de Entrega",
         help="Historial de movimientos de entrada para este producto"
@@ -54,4 +55,9 @@ class StockMoveLine(models.Model):
         string="Fecha Programada",
         related='picking_id.scheduled_date'
     )
-    
+    type_picking = fields.Selection(
+        strinf="Tipo de Operacion",
+        related='picking_id.picking_type_id.code',
+        readonly=False,
+        store=True
+    )

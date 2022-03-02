@@ -16,6 +16,30 @@ class StockPicking(models.Model):
     _inherit = 'stock.picking'
 
 
+
+    invoice_id = fields.Many2one('account.move', string="Factura")
+    state_invoice = fields.Char(
+        string="Status Factura",
+        compute="_compute_state_invoice",
+        # store=True
+    )
+    withdrawal_type = fields.Selection(
+        strin="Tipo de Retiro",
+        related="sale_id.withdrawal_type",
+        help="Indica si el pedido sera retirado en Oficina o enviado a Fletera."
+    )
+    by_payment = fields.Selection(
+        strin="Pagado por",
+        related="sale_id.by_payment",
+    )
+    fleet_contact_id = fields.Many2one(
+        'res.partner',
+        related='sale_id.fleet_contact_id',
+        string="Fleet Contact"
+    )
+
+
+    
     def _compute_state_invoice(self):
         if self.sale_id:
             if self.sale_id.invoice_count >= 1:
@@ -34,44 +58,6 @@ class StockPicking(models.Model):
             self.state_invoice = "N/A"
 
 
-    def _compute_withdrawal_payment(self):
-        if self.sale_id:
-            for rec in self:
-                rec.withdrawal_type = rec.sale_id.withdrawal_type
-                rec.by_payment = rec.sale_id.by_payment
-        else:
-            self.withdrawal_type = ""
-            self.by_payment = ""
-
-
-    invoice_id = fields.Many2one('account.move', string="Factura")
-    state_invoice = fields.Char(
-        string="Status Factura",
-        compute="_compute_state_invoice",
-        # store=True
-    )
-    withdrawal_type = fields.Selection(
-        [
-            ('office_retreat', 'Retiro en Oficina'),
-            ('shipping_to_freight', 'Envíar a Fletera')
-        ],string="Tipo de Retiro",
-        compute="_compute_withdrawal_payment",
-        help="Indica si el pedido sera retirado en Oficina o enviado a Fletera."
-    )
-    by_payment = fields.Selection(
-        [
-            ('charge_at_destination', 'Cobro en Destino'),
-            ('pay_per_giro', 'Pago por Giro')
-        ],string="Pagado por",
-        compute="_compute_withdrawal_payment",
-    )
-    fleet_contact_id = fields.Many2one(
-        'res.partner',
-        related='sale_id.fleet_contact_id',
-        string="Fleet Contact"
-    )
-
-
     def button_validate(self):
         res = super(StockPicking, self).button_validate()
         if self.sale_id:
@@ -82,6 +68,10 @@ class StockPicking(models.Model):
                     raise UserError(_(' No puede validar una transferencia si no tiene factura pagada o factura a credito.'))
             else:
                 raise UserError(_(' No puede validar una transferencia si no tiene factura pagada o factura a credito.'))
+        # if self.move_line_ids_without_package:
+            # for line in self.move_line_ids_without_package:
+                # if line.qty_done > line.product_uom_qty:
+                    # raise UserError(_(' No puede entregar mas productos de los reservados.'))
         else:
             return res
 

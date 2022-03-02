@@ -39,6 +39,18 @@
               title="Pagada"
               attrs="{'invisible': [('state_invoice', '!=', 'PAGADA')]}"
           />
+          <widget
+              name="web_ribbon"
+              bg_color="bg-success"
+              title="Realizado"
+              attrs="{'invisible': [('state', '!=', 'done')]}"
+          />
+          <!--<widget-->
+              <!--name="web_ribbon"-->
+              <!--bg_color="bg-success"-->
+              <!--title="Parcial"-->
+              <!--attrs="{'invisible': [('state', '!=', 'done')]}"-->
+          <!--/>-->
           <field
               name="invoice_id"
               readonly="1"

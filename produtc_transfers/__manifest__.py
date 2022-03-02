@@ -18,7 +18,6 @@
         'stock',
     ],
     'data': [
-        'views/stock_picking_view.xml',
         'views/product_transfers_view.xml',
     ],
     'installable': True,
