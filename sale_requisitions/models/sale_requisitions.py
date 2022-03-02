@@ -21,6 +21,13 @@ class SaleRequisitions(models.Model):
         string="Orden de venta",
         domain="[('state', '=', 'draft')]"
     )
+    type_requisitions = fields.Selection(
+        selection=[
+            ('sale_validity', 'Por Venta Validad'),
+            ('lost_sale', 'Venta Perdida')
+        ],
+        string="Type Requisitions",
+    )
 
     @api.onchange('sale_order_id')
     def _load_sale_order_line(self):

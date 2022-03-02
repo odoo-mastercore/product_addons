@@ -1,15 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
-
-    <record id="purchase_requisition_inherit" model="ir.ui.view">
-        <field name="name">Purchase requisition inherit</field>
-        <field name="model">material.purchase.requisition</field>
-        <field name="inherit_id" ref="material_purchase_requisitions.material_purchase_requisition_form_view"/>
-        <field name="arch" type="xml">
-            <xpath expr="//field[@name='requisiton_responsible_id']" position="after">
-                <field name="sale_order_id" options="{'no_open': True, 'no_create_edit': True, 'no_quick_create': True}"/>
-            </xpath>
-        </field>
-    </record>
-
+  <record id="purchase_requisition_inherit" model="ir.ui.view">
+    <field name="name">Purchase requisition inherit</field>
+    <field name="model">material.purchase.requisition</field>
+    <field name="inherit_id" ref="material_purchase_requisitions.material_purchase_requisition_form_view"/>
+    <field name="arch" type="xml">
+      <xpath expr="//field[@name='requisiton_responsible_id']" position="after">
+        <field name="type_requisitions" placeholder="Select" required="1"/>
+        <field name="sale_order_id" options="{'no_open': True, 'no_create_edit': True, 'no_quick_create': True}"/>
+      </xpath>
+    </field>
+  </record>
 </odoo>
