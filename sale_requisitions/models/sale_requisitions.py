@@ -23,9 +23,11 @@ class SaleRequisitions(models.Model):
     )
     type_requisitions = fields.Selection(
         selection=[
-            ('sale_validity', 'Por Venta Validad'),
-            ('lost_sale', 'Venta Perdida')
+            ('internal', 'Interna'),
+            ('lost_sale', 'Venta Perdida'),
+            ('sale_validity', 'Por Venta Validada')
         ],
+        default='internal',
         string="Type Requisitions",
     )
 

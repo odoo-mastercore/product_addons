@@ -7,7 +7,9 @@
     <field name="arch" type="xml">
       <xpath expr="//field[@name='requisiton_responsible_id']" position="after">
         <field name="type_requisitions" placeholder="Select" required="1"/>
-        <field name="sale_order_id" options="{'no_open': True, 'no_create_edit': True, 'no_quick_create': True}"/>
+        <field name="sale_order_id" options="{'no_open': True, 'no_create_edit': True, 'no_quick_create': True}"
+          attrs="{'invisible': [('type_requisitions', '=', 'internal')]}"
+        />
       </xpath>
     </field>
   </record>
