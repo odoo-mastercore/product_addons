@@ -37,7 +37,29 @@ class StockPicking(models.Model):
         related='sale_id.fleet_contact_id',
         string="Fleet Contact"
     )
+    attachment_ids = fields.Many2many(
+        'ir.attachment',
+        string='Documentos Adjuntos', 
+        compute='_compute_attachment_ids', 
+        compute_sudo=True
+    )
 
+
+    @api.depends('sale_id')
+    def _compute_attachment_ids(self):
+        if self.sale_id:
+            attachments = []
+            sales = self.env['ir.attachment'].search([
+                ('res_model', '=', 'sale.order'),
+                ('res_id', '=', self.sale_id.id)
+            ])
+            _logger.info("Sale: "+str(sales))
+            if sales != None or sales != False or sales != ():
+                self.attachment_ids = sales
+            else:
+                self.attachment_ids = []
+        else:
+            self.attachment_ids = []
 
     
     def _compute_state_invoice(self):

@@ -71,6 +71,15 @@
             attrs="{'invisible': [('fleet_contact_id', '=', False)]}"
           />
         </field>
+        <field name="note" position="after">
+          <group>
+            <group>
+              <field name="attachment_ids" widget="many2many_binary"/>
+            </group>
+            <group>
+            </group>
+          </group>
+        </field>
       </field>
     </record>
 

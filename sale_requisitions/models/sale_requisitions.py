@@ -28,7 +28,7 @@ class SaleRequisitions(models.Model):
             ('sale_validity', 'Por Venta Validada')
         ],
         default='internal',
-        string="Type Requisitions",
+        string=u"Tipo de Rquisición",
     )
 
     @api.onchange('sale_order_id')
