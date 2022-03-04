@@ -7,17 +7,16 @@
 #
 ###############################################################################
 {
-    'name': 'Product vehicle type',
+    'name': 'Product Website Brand',
     'version': '13.0.0.1',
-    'summary': 'Add vehicle type field in model product',
+    'summary': 'Change the position of product brand field in product template',
     'author': 'SINAPSYS GLOBAL SA || MASTERCORE SAS',
     'website': 'https://sinapsys.global',
     'license': 'AGPL-3',
-    "category": "Product",
-    "depends": ["product", "website_sale"],
+    'category': 'product',
+    'depends': ["product", "droggol_theme_common"],
     'data': [
-        'views/product_form_inherit.xml'
+        'views/product_brand_template.xml',
     ],
-    'installable': True,
-    "auto_install": False,
 }
+
