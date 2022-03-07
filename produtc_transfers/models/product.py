@@ -19,40 +19,52 @@ class ProductTemplate(models.Model):
     purchase_stock_move_ids = fields.Many2many(
         'stock.move',
         string="Ordenes de Recepción",
+        compute='_compute_purchase_stock_move', 
         compute_sudo=True,
         help="Historial de movimientos de entrada para este producto"
     )
     sale_stock_move_ids = fields.Many2many(
         'stock.move',
         string='Ordenes de Entrega', 
-        compute='_compute_product_move', 
+        compute='_compute_sale_stock_move', 
         compute_sudo=True,
         help="Historial de movimientos de Salida para este producto"
     )
 
 
-    @api.depends('order_line.invoice_lines.move_id')
-    def _compute_invoice_warehouse_ids(self):
-        for order in self:
-            invoices = order.mapped('order_line.invoice_lines.move_id').filtered(
-                lambda inv: inv.partner_id != order.partner_id
-            )
-            order.invoice_warehouse_ids = invoices
-            weight = volume = 0
-            if invoices:
-                for invoice in invoices:
-                    weight += invoice.weight_provider_total
-                    volume += invoice.volume_provider_total
-            order.warehouse_weight_total = weight
-            order.warehouse_volume_total = volume
 
-    @api.depends('purchase_stock_move_ids', 'sale_stock_move_ids')
-    def _compute_product_stock_picking(self):
-        for moves in self:
-            move = moves.mapped('product_stock_move_ids').filtered(
-                lambda inv: inv.picking_code == 'incoming'
-            )
-            moves.product_move_ids = move
+    @api.depends('purchase_stock_move_ids')
+    def _compute_purchase_stock_move(self):
+        _logger.info("####################################")
+        for rec in self:
+            _logger.info("FOR")
+            picking = self.env['stock.move'].search([
+                ('product_tmpl_id.id', '=', rec.id),
+                ('picking_type_id.code', '=', 'incoming')
+            ])
+            _logger.info("Picking: " + str(picking))
+            if len(picking) >= 1:
+                self.purchase_stock_move_ids = picking
+        else:
+            self.purchase_stock_move_ids = []
+
+
+    @api.depends('sale_stock_move_ids')
+    def _compute_sale_stock_move(self):
+        _logger.info("###VENTA#################################")
+        for rec in self:
+            _logger.info("FOR VENTA")
+            picking = self.env['stock.move'].search([
+                ('product_tmpl_id.id', '=', rec.id),
+                ('picking_type_id.code', '=', 'outgoing')
+            ])
+            _logger.info("Picking SALE: " + str(picking))
+            if len(picking) >= 1:
+                self.sale_stock_move_ids = picking
+        else:
+            self.sale_stock_move_ids = []
+
+
 
 
     
@@ -74,3 +86,5 @@ class StockMoveLine(models.Model):
         readonly=False,
         store=True
     )
+
+
