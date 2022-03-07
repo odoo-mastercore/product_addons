@@ -21,3 +21,15 @@ class AccountMove(models.Model):
         ],string="Tipo de Pago",
         help="Seleccione el tipo de pago."
     )
+    authorized_clearence = fields.Boolean(
+        string="Despacho Autorizado",
+        default=False
+    )
+
+    def authorized_dispatch(self):
+        for record in self:
+            if (record.payment_type == 'credit_payment' and
+                    not record.authorized_clearence):
+                record.authorized_clearence = True
+
+

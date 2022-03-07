@@ -84,16 +84,17 @@ class StockPicking(models.Model):
         res = super(StockPicking, self).button_validate()
         if self.sale_id:
             if self.sale_id.invoice_count >= 1:
-                if self.state_invoice == "PAGADA" or self.state_invoice == "CREDITO":
+                if self.state_invoice == "PAGADA":
                     return res
+                elif self.state_invoice == "CREDITO":
+                    if self.sale_id.invoice_ids[0].authorized_clearence:
+                        return res
+                    else:
+                        raise UserError(_(' No puede validar una transferencia sin autorización de despacho.'))
                 else:
                     raise UserError(_(' No puede validar una transferencia si no tiene factura pagada o factura a credito.'))
             else:
                 raise UserError(_(' No puede validar una transferencia si no tiene factura pagada o factura a credito.'))
-        # if self.move_line_ids_without_package:
-            # for line in self.move_line_ids_without_package:
-                # if line.qty_done > line.product_uom_qty:
-                    # raise UserError(_(' No puede entregar mas productos de los reservados.'))
         else:
             return res
 
