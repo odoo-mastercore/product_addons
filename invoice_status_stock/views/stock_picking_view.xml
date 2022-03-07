@@ -45,12 +45,13 @@
               title="Realizado"
               attrs="{'invisible': [('state', '!=', 'done')]}"
           />
-          <!--<widget-->
-              <!--name="web_ribbon"-->
-              <!--bg_color="bg-success"-->
-              <!--title="Parcial"-->
-              <!--attrs="{'invisible': [('state', '!=', 'done')]}"-->
-          <!--/>-->
+          <field name="is_partial" invisible="1"/>
+          <widget
+              name="web_ribbon"
+              bg_color="bg-success"
+              title="Parcial"
+              attrs="{'invisible': [('is_partial', '=', False)]}"
+          />
           <field
               name="invoice_id"
               readonly="1"

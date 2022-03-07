@@ -17,6 +17,22 @@ class StockPicking(models.Model):
 
 
 
+    @api.depends('backorder_id')
+    def _compuete_delivery_is_partial(self):
+        for rec in self:
+            if not rec.backorder_id:
+                picking = self.env['stock.picking'].search([
+                    ('backorder_id.id', '=', rec.id)
+                ])
+                if len(picking) >= 1:
+                    rec.is_partial = True
+                else:
+                    rec.is_partial = False
+            elif rec.backorder_id:
+                rec.is_partial = True
+
+
+
     invoice_id = fields.Many2one('account.move', string="Factura")
     state_invoice = fields.Char(
         string="Status Factura",
@@ -43,6 +59,11 @@ class StockPicking(models.Model):
         compute='_compute_attachment_ids', 
         compute_sudo=True
     )
+    is_partial = fields.Boolean(
+        string="Entrega parcial?",
+        default=False,
+        compute=_compuete_delivery_is_partial
+    )
 
 
     @api.depends('sale_id')
@@ -53,7 +74,6 @@ class StockPicking(models.Model):
                 ('res_model', '=', 'sale.order'),
                 ('res_id', '=', self.sale_id.id)
             ])
-            _logger.info("Sale: "+str(sales))
             if sales != None or sales != False or sales != ():
                 self.attachment_ids = sales
             else:
@@ -97,4 +117,8 @@ class StockPicking(models.Model):
                 raise UserError(_(' No puede validar una transferencia si no tiene factura pagada o factura a credito.'))
         else:
             return res
+
+    
+
+
 
