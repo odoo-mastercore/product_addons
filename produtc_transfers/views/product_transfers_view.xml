@@ -16,6 +16,7 @@
                 <field name="origin" string="Documento Origen"/>
                 <field name="stage" string="Estado"/>
                 <field name="company_id" />
+                <field name="state" invisible="1" />
               </tree>
             </field>
           </page>
@@ -28,6 +29,7 @@
                 <field name="origin" string="Documento Origen"/>
                 <field name="stage" string="Estado"/>
                 <field name="company_id" />
+                <field name="state" invisible="1" />
               </tree>
             </field>
           </page>

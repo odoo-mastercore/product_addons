@@ -33,7 +33,7 @@ class ProductTemplate(models.Model):
 
 
 
-    @api.depends('purchase_stock_move_ids')
+    # @api.depends('purchase_stock_move_ids')
     def _compute_purchase_stock_move(self):
         _logger.info("####################################")
         for rec in self:
@@ -49,7 +49,7 @@ class ProductTemplate(models.Model):
             self.purchase_stock_move_ids = []
 
 
-    @api.depends('sale_stock_move_ids')
+    # @api.depends('sale_stock_move_ids')
     def _compute_sale_stock_move(self):
         _logger.info("###VENTA#################################")
         for rec in self:
@@ -63,8 +63,6 @@ class ProductTemplate(models.Model):
                 self.sale_stock_move_ids = picking
         else:
             self.sale_stock_move_ids = []
-
-
 
 
     
