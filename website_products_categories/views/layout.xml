@@ -26,36 +26,14 @@
                         <option t-att-value="m.id" t-att-selected="v_model == str(m.id)"><t t-esc="m.name"/></option>
                     </t>
                 </select>
-                <h6>Año</h6>
-                <t t-set="v_min_age" t-value="request.httprequest.args.get('year_end') or min_age"/>
-                <t t-set="v_max_age" t-value="request.httprequest.args.get('year_start') or max_age"/>
-                <div class="tp-product-price-filter my-3">
-                    <div class="form-row align-items-center justify-content-center mt-2">
-                        <div class="col-6">
-                            <p class="mb-0">
-                                Desde:
-                            </p>
-                            <select class="form-control form-field mb-3" name="year_end">
-                                <option t-att-value="None"></option>
-                                <t t-foreach="years_end" t-as="a">
-                                    <option t-att-value="a" t-att-selected="str(a) == v_min_age"><t t-esc="a"/></option>
-                                </t>
-                            </select>
-                        </div>
-                    
-                        <div class="col-6">
-                            <p class="mb-0">
-                                Hasta:
-                            </p>
-                            <select class="form-control form-field mb-3" name="year_start">
-                                <option t-att-value="None"></option>
-                                <t t-foreach="years_start" t-as="a">
-                                    <option t-att-value="a" t-att-selected="str(a) == v_max_age"><t t-esc="a"/></option>
-                                </t>
-                            </select>
-                        </div>
-                    </div>
-                </div>
+                <h6 class="mb-0">Año</h6>
+                <t t-set="v_year" t-value="request.httprequest.args.get('year') or max_age"/>
+                <select class="form-control form-field mb-3" name="year">
+                    <option t-att-value="None"></option>
+                    <t t-foreach="years" t-as="a">
+                        <option t-att-value="a" t-att-selected="str(a) == v_year"><t t-esc="a"/></option>
+                    </t>
+                </select>
             </form>
         </xpath>
     </template>

@@ -66,10 +66,15 @@ class ThemePrimeWebsiteSaleInherit(ThemePrimeWebsiteSale):
         if vehicle_type and vehicle_type != 'Todos':
             domains.append([('vehicle_type','=', vehicle_type)])
 
-        # model_id = request.httprequest.args.get('model')
-        # if model_id and vehicle_type != 'Todos':
-        #     domains.append([('fleet_models_ids', 'child_of', model_id)])
-            
+        model_id = request.httprequest.args.get('model')
+        if model_id and model_id != 'Todos':
+            domains.append([('fleet_model_ids.fleet_model_id', 'in', [int(model_id)])])
+
+        year = request.httprequest.args.get('year')
+        if year:
+            domains.append(['&',('fleet_model_ids.fleet_model_id.year_end', '>=', int(year)),('fleet_model_ids.fleet_model_id.year_start', '<=', int(year))])
+
+        
         return expression.AND(domains)
         
     @http.route()
@@ -79,17 +84,17 @@ class ThemePrimeWebsiteSaleInherit(ThemePrimeWebsiteSale):
         vehicles_types = [(False, 'Todos'),('liviano', 'Vehículo Liviano'),('pesado', 'Vehículo Pesado')]
         vehicle_models = request.env['fleet.vehicle.model'].sudo().search([], order="name")
         # Get the Years from fleet.vehicles, avoid saving duplicates in list and sort this list
-        record_fleet = request.env['fleet.vehicle.model'].sudo().search(['&',('year_start','!=',False),('year_start','!=',False)])
-        years_start = []
-        years_end = []
-        for record in record_fleet:
-            if record.year_start not in years_start:
-                years_start.append(record.year_start)
-            if record.year_end not in years_end:
-                years_end.append(record.year_end)
-        years_start.sort()
-        years_end.sort()
-        
+        # record_fleet = request.env['fleet.vehicle.model'].sudo().search(['&',('year_start','!=',False),('year_start','!=',False)])
+        # years_start = []
+        # years_end = []
+        # for record in record_fleet:
+        #     if record.year_start not in years_start:
+        #         years_start.append(record.year_start)
+        #     if record.year_end not in years_end:
+        #         years_end.append(record.year_end)
+        # years_start.sort()
+        # years_end.sort()
+        years = list(range(2022,1970,-1))
         if theme and theme.name.startswith('theme_prime'):
             prices = request.env['product.template'].read_group([], ['max_price:max(list_price)', 'min_price:min(list_price)'], [])[0]
             min_price = float(prices['min_price'] or 0)
@@ -108,7 +113,7 @@ class ThemePrimeWebsiteSaleInherit(ThemePrimeWebsiteSale):
                 max_price=request.httprequest.args.get('max_price'),
                 vehicle_type=request.httprequest.args.get('vehicle_type')
             )
-            response.qcontext.update(keep=keep, min_price=min_price, max_price=max_price, vehicles_types=vehicles_types, vehicle_models=vehicle_models, years_start=years_start, years_end=years_end)
+            response.qcontext.update(keep=keep, min_price=min_price, max_price=max_price, vehicles_types=vehicles_types, vehicle_models=vehicle_models, years=years)
 
             # Grid Sizing
             bins = []
