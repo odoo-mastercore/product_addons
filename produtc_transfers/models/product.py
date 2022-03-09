@@ -33,32 +33,24 @@ class ProductTemplate(models.Model):
 
 
 
-    # @api.depends('purchase_stock_move_ids')
     def _compute_purchase_stock_move(self):
-        _logger.info("####################################")
         for rec in self:
-            _logger.info("FOR")
             picking = self.env['stock.move'].search([
                 ('product_tmpl_id.id', '=', rec.id),
                 ('picking_type_id.code', '=', 'incoming')
             ])
-            _logger.info("Picking: " + str(picking))
             if len(picking) >= 1:
                 self.purchase_stock_move_ids = picking
         else:
             self.purchase_stock_move_ids = []
 
 
-    # @api.depends('sale_stock_move_ids')
     def _compute_sale_stock_move(self):
-        _logger.info("###VENTA#################################")
         for rec in self:
-            _logger.info("FOR VENTA")
             picking = self.env['stock.move'].search([
                 ('product_tmpl_id.id', '=', rec.id),
                 ('picking_type_id.code', '=', 'outgoing')
             ])
-            _logger.info("Picking SALE: " + str(picking))
             if len(picking) >= 1:
                 self.sale_stock_move_ids = picking
         else:

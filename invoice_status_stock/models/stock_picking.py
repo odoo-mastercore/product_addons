@@ -20,16 +20,16 @@ class StockPicking(models.Model):
     @api.depends('backorder_id')
     def _compuete_delivery_is_partial(self):
         for rec in self:
-            if not rec.backorder_id:
+            if rec.backorder_id:
+                self.is_partial = True
+            else:
                 picking = self.env['stock.picking'].search([
-                    ('backorder_id.id', '=', rec.id)
+                    ('backorder_id.name', '=', rec.name)
                 ])
                 if len(picking) >= 1:
                     rec.is_partial = True
                 else:
                     rec.is_partial = False
-            elif rec.backorder_id:
-                rec.is_partial = True
 
 
 
