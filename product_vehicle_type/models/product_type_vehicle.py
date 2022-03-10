@@ -19,4 +19,9 @@ class ProductPublicCategory(models.Model):
 
     vehicle_type = fields.Selection(string='Tipo de vehículo',
                              selection=[('liviano', 'Vehículo Liviano'),('pesado', 'Vehículo Pesado')])
-    
+
+class FleetVehicleModelBrand(models.Model):
+    _inherit = 'fleet.vehicle.model.brand'
+
+    vehicle_type = fields.Selection(string='Tipo de vehículo',
+                             selection=[('liviano', 'Vehículo Liviano'),('pesado', 'Vehículo Pesado')])

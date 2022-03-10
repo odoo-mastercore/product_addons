@@ -63,17 +63,24 @@ class ThemePrimeWebsiteSaleInherit(ThemePrimeWebsiteSale):
                 domains.append([('list_price', '<=', max_price)])
         
         vehicle_type = request.httprequest.args.get('vehicle_type')
-        if vehicle_type and vehicle_type != 'Todos':
+        if vehicle_type and vehicle_type != 'All':
             domains.append([('vehicle_type','=', vehicle_type)])
 
         model_id = request.httprequest.args.get('model')
-        if model_id and model_id != 'Todos':
+        if model_id and model_id != 'All':
             domains.append([('fleet_model_ids.fleet_model_id', 'in', [int(model_id)])])
 
+        brand_id = request.httprequest.args.get('brand_vehicle')
+        if brand_id and brand_id != 'All':
+            domains.append([('fleet_model_ids.fleet_model_id.brand_id', 'in', [int(brand_id)])])
+
         year = request.httprequest.args.get('year')
-        if year:
+        if year and year != 'All':
             domains.append(['&',('fleet_model_ids.fleet_model_id.year_end', '>=', int(year)),('fleet_model_ids.fleet_model_id.year_start', '<=', int(year))])
 
+        """ brand_id = request.httprequest.args.get('brand_id')
+        if brand_id:
+            domains.append([('fleet_model_ids.fleet_model_id.brand_id', 'in', [int(brand_id)])]) """
         
         return expression.AND(domains)
         
@@ -81,20 +88,29 @@ class ThemePrimeWebsiteSaleInherit(ThemePrimeWebsiteSale):
     def shop(self, page=0, category=None, search='', ppg=False, **post):
         response = super(ThemePrimeWebsiteSaleInherit, self).shop(page, category, search, ppg, **post)
         theme = request.website.sudo().theme_id
-        vehicles_types = [(False, 'Todos'),('liviano', 'Vehículo Liviano'),('pesado', 'Vehículo Pesado')]
-        vehicle_models = request.env['fleet.vehicle.model'].sudo().search([], order="name")
-        # Get the Years from fleet.vehicles, avoid saving duplicates in list and sort this list
-        # record_fleet = request.env['fleet.vehicle.model'].sudo().search(['&',('year_start','!=',False),('year_start','!=',False)])
-        # years_start = []
-        # years_end = []
-        # for record in record_fleet:
-        #     if record.year_start not in years_start:
-        #         years_start.append(record.year_start)
-        #     if record.year_end not in years_end:
-        #         years_end.append(record.year_end)
-        # years_start.sort()
-        # years_end.sort()
-        years = list(range(2022,1970,-1))
+        # Tipos de vehiculos
+        vehicles_types = [('liviano', 'Vehículo Liviano'),('pesado', 'Vehículo Pesado')]
+        # Marca de vehículos
+        vehicle_type_selected = request.httprequest.args.get('vehicle_type')
+        if vehicle_type_selected and vehicle_type_selected != 'All':
+            brands_vehicle = request.env['fleet.vehicle.model.brand'].sudo().search([('vehicle_type', '=', vehicle_type_selected)])
+        else:
+            brands_vehicle = request.env['fleet.vehicle.model.brand'].sudo().search([])
+        # Modelos de vehiculos
+        brand_type_selected = request.httprequest.args.get('brand_vehicle')
+        if brand_type_selected and brand_type_selected != 'All':
+            vehicle_models = request.env['fleet.vehicle.model'].sudo().search([('brand_id', 'in', [int(brand_type_selected)])], order="name")
+        else:
+            vehicle_models = request.env['fleet.vehicle.model'].sudo().search([], order="name")
+        
+        # Años
+        vehicle_models_selected = request.httprequest.args.get('model')
+        if vehicle_models_selected and vehicle_models_selected != 'All':
+            model_selected = request.env['fleet.vehicle.model'].sudo().search([('id', '=', vehicle_models_selected)])
+            years = list(range(int(model_selected.year_start),int(model_selected.year_end)-1, -1))
+        else:
+            years = list(range(2022,1970,-1))
+            
         if theme and theme.name.startswith('theme_prime'):
             prices = request.env['product.template'].read_group([], ['max_price:max(list_price)', 'min_price:min(list_price)'], [])[0]
             min_price = float(prices['min_price'] or 0)
@@ -113,7 +129,7 @@ class ThemePrimeWebsiteSaleInherit(ThemePrimeWebsiteSale):
                 max_price=request.httprequest.args.get('max_price'),
                 vehicle_type=request.httprequest.args.get('vehicle_type')
             )
-            response.qcontext.update(keep=keep, min_price=min_price, max_price=max_price, vehicles_types=vehicles_types, vehicle_models=vehicle_models, years=years)
+            response.qcontext.update(keep=keep, min_price=min_price, max_price=max_price, vehicles_types=vehicles_types, vehicle_models=vehicle_models, years=years, brands_vehicle=brands_vehicle)
 
             # Grid Sizing
             bins = []
