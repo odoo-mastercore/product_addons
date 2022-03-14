@@ -300,11 +300,7 @@
                             <field name="purchase_order_id"  invisible="1"/>
                             <field name="estimated_days" />
                             <field name="estimated_port_arrival" />
-                            <field
-                                name="order_picking_id"
-                                options="{'no_open': 'True', 'no_create_edit': True, 'no_quick_create': True}"
-                                required="1"
-                                />
+                            <field name="order_picking_id" readonly="1" />
                             <field name="trip_name" required="1"/>
                             <field name="shipowner" required="1"/>
                             <field name="booking_number" required="1"/>

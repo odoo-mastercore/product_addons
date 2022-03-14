@@ -10,6 +10,7 @@
 import logging
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
+from odoo.exceptions import UserError, ValidationError
 from odoo import api, fields, models, _, SUPERUSER_ID
 
 _logger = logging.getLogger(__name__)
@@ -268,6 +269,19 @@ class TransitWarehouse(models.Model):
     @api.model
     def create(self, vals):
         if not 'write_purchase_done' in self.env.context:
+            print("#################################")
+            print("create")
+            print(vals)
+            warehouse_exist = self.search([
+                ('purchase_order_id', '=', vals.get('purchase_order_id')),
+                ('order_picking_id', '=', vals.get('order_picking_id'))
+            ])
+            if warehouse_exist:
+                raise ValidationError(_(
+                    'La orden de entrega %s en Transito Warehouse ya se encuentra seleccionada' % (
+                        warehouse_exist.order_picking_id.name
+                    )
+                ))
             res = super(TransitWarehouse, self).create(vals)
             if 'create_view' in vals and vals.get('create_view'):
                 stage_warehouse = self.env.ref('purchase_dashboard_stage.stage_transit_warehouse', raise_if_not_found=False)
@@ -306,6 +320,20 @@ class TransitWarehouse(models.Model):
     @api.model
     def write(self, vals):
         if not 'write_purchase_done' in self.env.context:
+            print("#################################")
+            print("WRITE")
+            print(vals)
+            if 'order_picking_id' in vals and vals.get('order_picking_id'):
+                warehouse_exist = self.search([
+                    ('purchase_order_id', '=', self.purchase_order_id.id),
+                    ('order_picking_id', '=', vals.get('order_picking_id'))
+                ])
+                if warehouse_exist:
+                    raise ValidationError(_(
+                        'La orden de entrega %s en Transito Warehouse ya se encuentra seleccionada' % (
+                            warehouse_exist.order_picking_id.name
+                        )
+                    ))
             stage_next = self.env.ref('purchase_dashboard_stage.stage_transit_marine_land', raise_if_not_found=False)
             estimated_times = self.env['estimated.time'].search([
                 ('purchase_order_id', '=', self.purchase_order_id.id),
