@@ -269,9 +269,6 @@ class TransitWarehouse(models.Model):
     @api.model
     def create(self, vals):
         if not 'write_purchase_done' in self.env.context:
-            print("#################################")
-            print("create")
-            print(vals)
             warehouse_exist = self.search([
                 ('purchase_order_id', '=', vals.get('purchase_order_id')),
                 ('order_picking_id', '=', vals.get('order_picking_id'))
@@ -320,9 +317,6 @@ class TransitWarehouse(models.Model):
     @api.model
     def write(self, vals):
         if not 'write_purchase_done' in self.env.context:
-            print("#################################")
-            print("WRITE")
-            print(vals)
             if 'order_picking_id' in vals and vals.get('order_picking_id'):
                 warehouse_exist = self.search([
                     ('purchase_order_id', '=', self.purchase_order_id.id),
