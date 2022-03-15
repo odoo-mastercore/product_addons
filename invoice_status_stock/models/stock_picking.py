@@ -122,7 +122,7 @@ class StockPicking(models.Model):
     def write(self, vals):
         res = super(StockPicking, self).write(vals)
         if self.sale_id:
-            if vals['move_line_ids_without_package']:
+            if 'move_line_ids_without_package' in vals.keys():
                 for rec in vals['move_line_ids_without_package']:
                     if rec[0] == 1 and 'qty_done' in rec[2].keys():
                         qty_done = rec[2]['qty_done']
