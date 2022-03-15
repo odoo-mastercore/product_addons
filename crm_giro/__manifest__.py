@@ -22,6 +22,7 @@
         ],
     "data": [
         "data/crm.stage.csv",
-        "views/crm.xml"
+        "views/crm.xml",
+        "views/sale_order_view.xml"
     ],
 }
