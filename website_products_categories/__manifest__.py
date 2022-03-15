@@ -14,9 +14,9 @@
     'website': 'https://sinapsys.global',
     'license': 'AGPL-3',
     "category": "Product",
-    "depends": ["product", "website_sale", "droggol_theme_common", 'theme_prime'],
+    "depends": ["product", "website_sale", "droggol_theme_common", 'theme_prime', 'fleet'],
     'data': [
-        'views/layout.xml'
+        'views/layout.xml',
     ],
     'installable': True,
     "auto_install": False,

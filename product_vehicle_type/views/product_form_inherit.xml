@@ -26,5 +26,17 @@
                 </xpath>
             </field>
         </record>
+
+        <record model="ir.ui.view" id="fleet_vehicle_model_brand_form_inherit">
+            <field name='name'>fleet.vehicle.model.brand.form.inherit</field>
+            <field name='model'>fleet.vehicle.model.brand</field>
+            <field name="inherit_id" ref="fleet.fleet_vehicle_model_brand_view_form"/>
+            <field name='arch' type="xml">
+                <xpath expr="//sheet/group" position='after'>
+                    <label for="vehicle_type">Tipo de vehículo:</label>
+                    <field name='vehicle_type'/>
+                </xpath>
+            </field>
+        </record>
     </data>
 </odoo>
