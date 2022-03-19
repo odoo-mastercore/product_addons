@@ -110,7 +110,21 @@ class ThemePrimeWebsiteSaleInherit(ThemePrimeWebsiteSale):
             years = list(range(int(model_selected.year_start),int(model_selected.year_end)-1, -1))
         else:
             years = list(range(2022,1970,-1))
-            
+        
+        Category = request.env['product.public.category']
+        website_domain = request.website.website_domain()
+        if vehicle_type_selected and vehicle_type_selected != 'All':
+            categs_domain = [('parent_id', '=', False)] + [('vehicle_type', '=', vehicle_type_selected)] + website_domain
+        else:
+            categs_domain = [('parent_id', '=', False)] + website_domain
+
+        if search:
+            search_categories = Category.search([('product_tmpl_ids', 'in', search_product.ids)] + website_domain).parents_and_self
+            categs_domain.append(('id', 'in', search_categories.ids))
+        else:
+            search_categories = Category
+        categs = Category.search(categs_domain)
+
         if theme and theme.name.startswith('theme_prime'):
             prices = request.env['product.template'].read_group([], ['max_price:max(list_price)', 'min_price:min(list_price)'], [])[0]
             min_price = float(prices['min_price'] or 0)
@@ -129,7 +143,7 @@ class ThemePrimeWebsiteSaleInherit(ThemePrimeWebsiteSale):
                 max_price=request.httprequest.args.get('max_price'),
                 vehicle_type=request.httprequest.args.get('vehicle_type')
             )
-            response.qcontext.update(keep=keep, min_price=min_price, max_price=max_price, vehicles_types=vehicles_types, vehicle_models=vehicle_models, years=years, brands_vehicle=brands_vehicle)
+            response.qcontext.update(keep=keep, min_price=min_price, max_price=max_price, vehicles_types=vehicles_types, vehicle_models=vehicle_models, years=years, brands_vehicle=brands_vehicle, categories=categs)
 
             # Grid Sizing
             bins = []
