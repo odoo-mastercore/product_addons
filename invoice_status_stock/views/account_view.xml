@@ -10,11 +10,11 @@
           <button name="authorized_dispatch" type="object" string="Autorizar Despacho" class="oe_highlight" 
             attrs="{'invisible': [
               '|', '|',
-              ('state', '!=', 'posted'),
-              ('type', '=', 'out_invoice'),
-              ('payment_type', '=', 'cash_payment'),
+              ('type', '!=', 'out_invoice'),
+              ('payment_type', '!=', 'credit_payment'),
               ('authorized_clearence', '=', True)
           ]}"/>
+              <!--('state', '!=', 'posted'),-->
         </button>
         <field name="journal_id" position="after">
           <field name="payment_type" placeholder="Select" 

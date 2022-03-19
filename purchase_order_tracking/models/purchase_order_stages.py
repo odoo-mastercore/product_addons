@@ -251,7 +251,7 @@ class TransitWarehouse(models.Model):
     def _onchange_purchase_order_id(self):
         if self.order_picking_id:
             if self.create_view:
-                self.stage_entry_date = self.order_picking_id.scheduled_date
+                self.stage_entry_date = self.order_picking_id.create_date
 
     @api.depends('estimated_days', 'stage_entry_date')
     def _compute_estimated_date_warehouse(self):

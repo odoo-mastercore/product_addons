@@ -7,6 +7,7 @@
 #
 ###############################################################################
 
+from functools import partial
 import logging
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
@@ -253,6 +254,10 @@ class PurchaseOrder(models.Model):
         stage_warehouse = self.env.ref('purchase_dashboard_stage.stage_transit_warehouse', raise_if_not_found=False)
         stage_transit = self.env.ref('purchase_dashboard_stage.stage_transit_marine_land', raise_if_not_found=False)
         stage_stock = self.env.ref('purchase_dashboard_stage.stage_stock_reception', raise_if_not_found=False)
+
+        stage_verification = self.env.ref('purchase_dashboard_stage.stage_cost_verification', raise_if_not_found=False)
+        stage_partial = self.env.ref('purchase_dashboard_stage.stage_partial_delivery', raise_if_not_found=False)
+
         default_total_days = 0
         for estimated in estimated_times:
             if estimated.estimated_time:
@@ -291,6 +296,8 @@ class PurchaseOrder(models.Model):
                         default_total_days -= int(stage_transit.estimated_time)
                         default_total_days += int(transit.estimated_days)
                         break
+        partial = False
+        partial_date = False
         if self.transit_warehouse_ids:
             if transit_from != 0:
                 warehouse = self.mapped('transit_warehouse_ids').filtered(
@@ -308,57 +315,73 @@ class PurchaseOrder(models.Model):
                 elif days == 0:
                     default_total_days -= int(stage_warehouse.estimated_time)
                     default_total_days += int(warehouse.estimated_days)
+                if warehouse.create_view:
+                    partial_date = warehouse.create_date
+                    partial = True
             else:
                 for warehouse in self.transit_warehouse_ids:
                     if not warehouse.warehouse_receipt_date:
                         default_total_days -= int(stage_warehouse.estimated_time)
                         default_total_days += int(warehouse.estimated_days)
+                        if warehouse.create_view:
+                            partial_date = warehouse.create_date
+                            partial = True
                         break
-        if self.supplier_ids:
-            invoice = self.mapped('supplier_ids').filtered(lambda i: not i.create_view)
-            if invoice.estimated_days != int(stage_invoice.estimated_time):
-                default_total_days -= int(stage_invoice.estimated_time)
-                default_total_days += invoice.estimated_days
-            if invoice.real_date:
-                days = (invoice.real_date - invoice.estimated_date).days
-                if days < 0:
-                    new_days_estimated = (invoice.estimated_days - abs(days))
-                    default_total_days -= invoice.estimated_days
-                    default_total_days += new_days_estimated
-                else:
-                    new_days_estimated = (invoice.estimated_days + days)
-                    default_total_days -= invoice.estimated_days
-                    default_total_days += new_days_estimated
-        if self.oc_provider_ids:
-            for provider in self.oc_provider_ids:
-                if provider.estimated_days != int(stage_order.estimated_time):
-                    default_total_days -= int(stage_order.estimated_time)
-                    default_total_days += provider.estimated_days
-                if provider.provider_recognition_date:
-                    days = (provider.provider_recognition_date - provider.provider_estimated_date).days
+        if not partial:
+            if self.supplier_ids:
+                invoice = self.mapped('supplier_ids').filtered(lambda i: not i.create_view)
+                if invoice.estimated_days != int(stage_invoice.estimated_time):
+                    default_total_days -= int(stage_invoice.estimated_time)
+                    default_total_days += invoice.estimated_days
+                if invoice.real_date:
+                    days = (invoice.real_date - invoice.estimated_date).days
                     if days < 0:
-                        new_days_estimated = (provider.estimated_days - abs(days))
-                        default_total_days -= provider.estimated_days
+                        new_days_estimated = (invoice.estimated_days - abs(days))
+                        default_total_days -= invoice.estimated_days
                         default_total_days += new_days_estimated
                     else:
-                        new_days_estimated = (provider.estimated_days + days)
-                        default_total_days -= provider.estimated_days
+                        new_days_estimated = (invoice.estimated_days + days)
+                        default_total_days -= invoice.estimated_days
                         default_total_days += new_days_estimated
-        if self.estimated_days_init != int(stage_requisition.estimated_time):
-            default_total_days -= int(stage_requisition.estimated_time)
-            default_total_days += self.estimated_days_init
-        if self.date_approve:
-            estimated_date = self.estimated(self.create_date, self.estimated_days_init)
-            days = (self.date_approve - estimated_date).days
-            if days < 0:
-                new_days_estimated = (self.estimated_days_init - abs(days))
-                default_total_days -= self.estimated_days_init
-                default_total_days += new_days_estimated
+            if self.oc_provider_ids:
+                for provider in self.oc_provider_ids:
+                    if provider.estimated_days != int(stage_order.estimated_time):
+                        default_total_days -= int(stage_order.estimated_time)
+                        default_total_days += provider.estimated_days
+                    if provider.provider_recognition_date:
+                        days = (provider.provider_recognition_date - provider.provider_estimated_date).days
+                        if days < 0:
+                            new_days_estimated = (provider.estimated_days - abs(days))
+                            default_total_days -= provider.estimated_days
+                            default_total_days += new_days_estimated
+                        else:
+                            new_days_estimated = (provider.estimated_days + days)
+                            default_total_days -= provider.estimated_days
+                            default_total_days += new_days_estimated
+            if self.estimated_days_init != int(stage_requisition.estimated_time):
+                default_total_days -= int(stage_requisition.estimated_time)
+                default_total_days += self.estimated_days_init
+            if self.date_approve:
+                estimated_date = self.estimated(self.create_date, self.estimated_days_init)
+                days = (self.date_approve - estimated_date).days
+                if days < 0:
+                    new_days_estimated = (self.estimated_days_init - abs(days))
+                    default_total_days -= self.estimated_days_init
+                    default_total_days += new_days_estimated
+                else:
+                    new_days_estimated = (self.estimated_days_init + days)
+                    default_total_days -= self.estimated_days_init
+                    default_total_days += new_days_estimated
+        else:
+            total_day_stage = (int(stage_requisition.estimated_time) + int(stage_order.estimated_time) + int(stage_invoice.estimated_time))
+            default_total_days -= total_day_stage
+        if(self.stage_id.id == stage_verification.id or self.stage_id.id == stage_partial.id):
+            self.estimated_stock_date = False
+        else:
+            if partial:
+                self.estimated_stock_date = partial_date + relativedelta(days=int(default_total_days))
             else:
-                new_days_estimated = (self.estimated_days_init + days)
-                default_total_days -= self.estimated_days_init
-                default_total_days += new_days_estimated
-        self.estimated_stock_date = fields.Datetime.now() + relativedelta(days=int(default_total_days))
+                self.estimated_stock_date = self.create_date + relativedelta(days=int(default_total_days))
 
     @api.model
     def create(self, vals):

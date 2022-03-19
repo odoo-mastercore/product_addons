@@ -119,6 +119,21 @@ class StockPicking(models.Model):
             return res
 
     
+    def write(self, vals):
+        res = super(StockPicking, self).write(vals)
+        if self.sale_id:
+            if 'move_line_ids_without_package' in vals.keys():
+                for rec in vals['move_line_ids_without_package']:
+                    if rec[0] == 1 and 'qty_done' in rec[2].keys():
+                        qty_done = rec[2]['qty_done']
+                        p_uom_qty = self.env['stock.move.line'].search([
+                            ('id', '=', rec[1])
+                        ])
+                        if qty_done > p_uom_qty.product_uom_qty:
+                            raise UserError(_("¡No Puede entregar mas cantidad de la reservada!"))
+        return res 
+        
+    
 
 
 
