@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<odoo>
+    <data>
+        <record model="ir.ui.view" id="view_product_form_inherit_publish_button">
+            <field name='name'>product.template.form.inherit.product_vehicle_type</field>
+            <field name='model'>product.template</field>
+            <field name="inherit_id" ref="product.product_template_form_view"/>
+            <field name='arch' type="xml">
+                <xpath expr="//header" position='inside'>
+                    <field name="is_published" invisible="1"/>
+                    <button name='publish_product'  class="oe_highlight" type="object" 
+                    string="Publicar" attrs="{'invisible': [('is_published', '=', True)]}"/>
+                    <button name='hide_product'  class="oe_highlight" type="object" 
+                    string="Ocultar" attrs="{'invisible': [('is_published', '=', False)]}"/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>
