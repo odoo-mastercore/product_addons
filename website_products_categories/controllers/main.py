@@ -87,6 +87,11 @@ class ThemePrimeWebsiteSaleInherit(ThemePrimeWebsiteSale):
     @http.route()
     def shop(self, page=0, category=None, search='', ppg=False, **post):
         response = super(ThemePrimeWebsiteSaleInherit, self).shop(page, category, search, ppg, **post)
+
+        attrib_list = request.httprequest.args.getlist('attrib')
+        attrib_values = [[int(x) for x in v.split("-")] for v in attrib_list if v]
+        domain = self._get_search_domain(search, category, attrib_values)
+
         theme = request.website.sudo().theme_id
         # Tipos de vehiculos
         vehicles_types = [('liviano', 'Vehículo Liviano'),('pesado', 'Vehículo Pesado')]
@@ -117,7 +122,9 @@ class ThemePrimeWebsiteSaleInherit(ThemePrimeWebsiteSale):
             categs_domain = [('parent_id', '=', False)] + [('vehicle_type', '=', vehicle_type_selected)] + website_domain
         else:
             categs_domain = [('parent_id', '=', False)] + website_domain
-
+        
+        Product = request.env['product.template'].with_context(bin_size=True)
+        search_product = Product.search(domain, order=self._get_search_order(post))
         if search:
             search_categories = Category.search([('product_tmpl_ids', 'in', search_product.ids)] + website_domain).parents_and_self
             categs_domain.append(('id', 'in', search_categories.ids))
@@ -161,5 +168,5 @@ class ThemePrimeWebsiteSaleInherit(ThemePrimeWebsiteSale):
             attributes_ids = [v[0] for v in attrib_values]
 
             response.qcontext.update(attributes_ids=attributes_ids)
-
+            _logger.info('*****************product********************' + str(bins))
         return response

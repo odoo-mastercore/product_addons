@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <template id="website_sale_products_inherit_hide_price_list" inherit_id="website_sale.products_item">
+        <xpath expr="//div[hasclass('product_price')]/span" position="attributes">
+            <attribute name="t-if">
+                uid
+            </attribute>
+        </xpath>
+        <xpath expr="//div[hasclass('product_price')]" position="after">
+            <span t-esc="product.dr_brand_id.name"></span>
+        </xpath>
+    </template>
+
+    <template id="website_sale_products_inherit_hide_price_details" inherit_id="website_sale.product_price">
+        <xpath expr="//h4[hasclass('oe_price_h4')]" position="attributes">
+            <attribute name="t-if">
+                uid
+            </attribute>
+        </xpath>
+    </template>
+
+    <template id="droggol_theme_common_dr_sale_cart_sidebar_inherit" inherit_id="droggol_theme_common.dr_sale_cart_sidebar">
+        <xpath expr="//div[hasclass('media-body')]/div/h6[1]" position="attributes">
+            <attribute name="t-if">
+                uid
+            </attribute>
+        </xpath>
+        <xpath expr="//div[hasclass('media-body')]/div/h6[2]" position="attributes">
+            <attribute name="t-if">
+                uid
+            </attribute>
+        </xpath>
+        <xpath expr="//h6[@t-field='order.amount_untaxed']" position="attributes">
+            <attribute name="t-if">
+                uid
+            </attribute>
+        </xpath>
+        <xpath expr="//h6[@t-field='order.amount_tax']" position="attributes">
+            <attribute name="t-if">
+                uid
+            </attribute>
+        </xpath>
+        <xpath expr="//h5[@t-field='order.amount_total']" position="attributes">
+            <attribute name="t-if">
+                uid
+            </attribute>
+        </xpath>
+    </template>
+
+    <template id="website_sale_address_b2b_inherit" inherit_id="website_sale.address_b2b">
+        <xpath expr="//label[@for='vat']" position="replace">
+            <label class="col-form-label font-weight-normal label-optional" for="vat">RIF</label>
+        </xpath>
+    </template>
+</odoo>
