@@ -91,11 +91,21 @@
         </xpath>
     </template>
 
+    <template id="website_sale_confirmation_inherit" inherit_id="website_sale.confirmation">
+        <xpath expr="//strong[@t-field='order.amount_total']" position="attributes">
+            <attribute name="t-if">
+                uid
+            </attribute>
+        </xpath>
+    </template>
+
     <template id="website_sale_address_b2b_inherit" inherit_id="website_sale.address_b2b">
         <xpath expr="//label[@for='vat']" position="replace">
             <label class="col-form-label font-weight-normal label-optional" for="vat">RIF</label>
         </xpath>
     </template>
+
+    
 
     <template id="theme_prime_product_wishlist_inherit" inherit_id="website_sale_wishlist.product_wishlist">
         <xpath expr="//section[hasclass('wishlist-section')]" position="replace">
