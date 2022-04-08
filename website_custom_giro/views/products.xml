@@ -134,10 +134,10 @@
                                     <h6 class="d-product-name text-truncate">
                                         <a t-att-href="wish.product_id.website_url"><t t-esc="wish.product_id.display_name"/></a>
                                     </h6>
-                                    <div class="mt-1">
+                                    <div class="mt-1" t-if="uid">
                                         <t t-set="combination_info" t-value="wish.product_id._get_combination_info_variant()"/>
                                         <span class="font-weight-bold text-dark" t-esc="combination_info['price']" t-options="{'widget': 'monetary', 'display_currency': website.pricelist_id.currency_id}"/>
-                                        <small t-attf-class="oe_default_price ml-1 {{'' if combination_info['has_discounted_price'] else 'd-none'}}" style="text-decoration: line-through; white-space: nowrap;" t-esc="combination_info['list_price']" t-options="{'widget': 'monetary', 'display_currency': website.pricelist_id.currency_id}"/>
+                                        <small t-attf-class="oe_default_price ml-1 {{'' if combination_info['has_discounted_price'] else 'd-none'}}" style="text-decoration: line-through; white-space: nowrap;" t-esc="combination_info['list_price']" t-options="{'widget': 'monetary', 'display_currency': website.pricelist_id.currency_id}" />
                                         <t t-call="theme_prime.discount_in_percentage">
                                             <t t-set="discount_class" t-value="'font-weight-bold'"/>
                                         </t>
@@ -164,6 +164,21 @@
     <template id="website_sale_payment_inherit" inherit_id="website_sale.payment">
         <xpath expr="//div[@id='payment_method']/h3" position="replace">
             <h3 class="mb24">Ya casi esta listo tu presupuesto</h3>
+        </xpath>
+    </template>
+
+    <template id="payment_payment_tokens_list_inherit" inherit_id="payment.payment_tokens_list">
+        <xpath expr="//button[@id='o_payment_form_pay']" position="replace">
+            <button t-if="mode == 'payment'" id="o_payment_form_pay" type="submit" t-att-class="submit_class if submit_class else 'btn btn-primary btn-lg mb8 mt8'" disabled="true">
+                    <t t-if="submit_txt">
+                        <i t-if="icon_class and not icon_right" t-attf-class="fa {{icon_class}}"/>
+                        <t t-esc="'Continuar'"/>
+                        <i t-if="icon_class and icon_right" t-attf-class="fa {{icon_class}}"/>
+                    </t>
+                    <t t-else="">
+                        <i class="fa fa-lock"/> Pay
+                    </t>
+                </button>
         </xpath>
     </template>
 </odoo>
