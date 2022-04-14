@@ -1,4 +1,6 @@
-<!-- Coupon Program -->
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Coupon Program -->
     <record id="sale_coupon_program_max_view_form" model="ir.ui.view">
         <field name="name">sale.coupon.max.program.form</field>
         <field name="model">sale.coupon.program</field>
@@ -10,3 +12,5 @@
             </xpath>
         </field>
     </record>
+
+</odoo>
