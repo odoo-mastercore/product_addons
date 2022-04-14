@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <template id="website_sale_products_inherit_hide_price_list" inherit_id="website_sale.products_item">
+        <xpath expr="//div[hasclass('product_price')]/span" position="attributes">
+            <attribute name="t-if">
+                uid
+            </attribute>
+        </xpath>
+        <xpath expr="//div[hasclass('product_price')]" position="after">
+            <span t-esc="product.dr_brand_id.name"></span>
+        </xpath>
+    </template>
+
+    <template id="website_sale_products_inherit_hide_price_details" inherit_id="website_sale.product_price">
+        <xpath expr="//h4[hasclass('oe_price_h4')]" position="attributes">
+            <attribute name="t-if">
+                uid
+            </attribute>
+        </xpath>
+    </template>
+
+    <template id="droggol_theme_common_dr_sale_cart_sidebar_inherit" inherit_id="droggol_theme_common.dr_sale_cart_sidebar">
+        <xpath expr="//div[hasclass('media-body')]/div/h6[1]" position="attributes">
+            <attribute name="t-if">
+                uid
+            </attribute>
+        </xpath>
+        <xpath expr="//div[hasclass('media-body')]/div/h6[2]" position="attributes">
+            <attribute name="t-if">
+                uid
+            </attribute>
+        </xpath>
+        <xpath expr="//h6[@t-field='order.amount_untaxed']" position="attributes">
+            <attribute name="t-if">
+                uid
+            </attribute>
+        </xpath>
+        <xpath expr="//h6[@t-field='order.amount_tax']" position="attributes">
+            <attribute name="t-if">
+                uid
+            </attribute>
+        </xpath>
+        <xpath expr="//h5[@t-field='order.amount_total']" position="attributes">
+            <attribute name="t-if">
+                uid
+            </attribute>
+        </xpath>
+    </template>
+
+    <template id="website_sale_total_inherit" inherit_id="website_sale.total">
+        <xpath expr="//span[@t-field='website_sale_order.amount_untaxed']" position="attributes">
+            <attribute name="t-if">
+                uid
+            </attribute>
+        </xpath>
+        <xpath expr="//span[@t-field='website_sale_order.amount_tax']" position="attributes">
+            <attribute name="t-if">
+                uid
+            </attribute>
+        </xpath>
+        <xpath expr="//strong[@t-field='website_sale_order.amount_total']" position="attributes">
+            <attribute name="t-if">
+                uid
+            </attribute>
+        </xpath>
+    </template>
+
+    <template id="website_sale_cart_lines_inherit" inherit_id="website_sale.cart_lines">
+        <xpath expr="//span[@t-field='line.price_reduce_taxexcl']" position="attributes">
+            <attribute name="t-if">
+                uid
+            </attribute>
+        </xpath>
+        <xpath expr="//span[@t-field='line.price_reduce_taxinc']" position="attributes">
+            <attribute name="t-if">
+                uid
+            </attribute>
+        </xpath>
+    </template>
+
+    <template id="website_sale_cart_summary_inherit" inherit_id="website_sale.cart_summary">
+        <xpath expr="//span[@t-field='line.price_reduce_taxexcl']" position="attributes">
+            <attribute name="t-if">
+                uid
+            </attribute>
+        </xpath>
+        <xpath expr="//span[@t-field='line.price_reduce_taxinc']" position="attributes">
+            <attribute name="t-if">
+                uid
+            </attribute>
+        </xpath>
+    </template>
+
+    <template id="website_sale_confirmation_inherit" inherit_id="website_sale.confirmation">
+        <xpath expr="//strong[@t-field='order.amount_total']" position="attributes">
+            <attribute name="t-if">
+                uid
+            </attribute>
+        </xpath>
+    </template>
+
+    <template id="website_sale_address_b2b_inherit" inherit_id="website_sale.address_b2b">
+        <xpath expr="//label[@for='vat']" position="replace">
+            <label class="col-form-label font-weight-normal label-optional" for="vat">RIF</label>
+        </xpath>
+    </template>
+
+    
+
+    <template id="theme_prime_product_wishlist_inherit" inherit_id="website_sale_wishlist.product_wishlist">
+        <xpath expr="//section[hasclass('wishlist-section')]" position="replace">
+            <section class="container wishlist-section my-4">
+                <div class="row align-items-center">
+                    <div class="col-12">
+                        <h3 class="d-inline-block mr-2">My Wishlist</h3><span><span class="tp-wishlist-counter" t-esc="len(wishes)"/> items</span>
+                        <div class="custom-control custom-checkbox mt-2">
+                            <input type="checkbox" class="custom-control-input" id="b2b_wish" value="1"/>
+                            <label class="custom-control-label" for="b2b_wish">Add product to my cart but keep it in my wishlist</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="row py-4">
+                    <div t-foreach="wishes" t-as="wish" class="col-12 col-sm-6 col-md-4 col-lg-3 mb-4 tp-wishlist-item" t-att-data-wish-id="wish.id" t-att-data-product-id="wish.product_id.id">
+                        <div class="card">
+                            <a class="card-img-top text-center" t-att-href="wish.product_id.website_url">
+                                <img t-attf-src="/web/image/product.product/#{wish.product_id.id}/image_1920/350x350" class="img img-fluid" t-att-alt="wish.product_id.display_name"/>
+                            </a>
+                            <a href="#" class="tp_wish_rm text-body text-center" data-toggle="tooltip" title="Remove from wishlist">
+                                <i class="fa fa-times"/>
+                            </a>
+                            <span t-if="wish.product_id.dr_label_id" t-attf-class="badge dr-product-label dr-product-label-color-#{wish.product_id.dr_label_id.color}"><div class="corner"/><t t-esc="wish.product_id.dr_label_id.name"/></span>
+                            <div class="card-body p-2">
+                                <div class="card-text">
+                                    <h6 class="d-product-name text-truncate">
+                                        <a t-att-href="wish.product_id.website_url"><t t-esc="wish.product_id.display_name"/></a>
+                                    </h6>
+                                    <div class="mt-1" t-if="uid">
+                                        <t t-set="combination_info" t-value="wish.product_id._get_combination_info_variant()"/>
+                                        <span class="font-weight-bold text-dark" t-esc="combination_info['price']" t-options="{'widget': 'monetary', 'display_currency': website.pricelist_id.currency_id}"/>
+                                        <small t-attf-class="oe_default_price ml-1 {{'' if combination_info['has_discounted_price'] else 'd-none'}}" style="text-decoration: line-through; white-space: nowrap;" t-esc="combination_info['list_price']" t-options="{'widget': 'monetary', 'display_currency': website.pricelist_id.currency_id}" />
+                                        <t t-call="theme_prime.discount_in_percentage">
+                                            <t t-set="discount_class" t-value="'font-weight-bold'"/>
+                                        </t>
+                                    </div>
+                                    <span t-esc="wish.product_id.dr_brand_id.name"/>
+                                    <button type="button" role="button" class="btn btn-block btn-link tp_wish_add mt-2">
+                                        <i class="lnr lnr-cart"/> Add to cart
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </xpath>
+    </template>
+    <!-- <template id="website_sale_product_recently_viewed_inherit" inherit_id="website_sale.product">
+        <xpath expr="//h6[hasclass('product_price')]" position="after">
+            <span t-esc="product.dr_brand_id.name"></span>
+
+        </xpath>
+    </template> -->
+
+    <template id="website_sale_payment_inherit" inherit_id="website_sale.payment">
+        <xpath expr="//div[@id='payment_method']/h3" position="replace">
+            <h3 class="mb24">Ya casi esta listo tu presupuesto</h3>
+        </xpath>
+    </template>
+
+    <template id="payment_payment_tokens_list_inherit" inherit_id="payment.payment_tokens_list">
+        <xpath expr="//button[@id='o_payment_form_pay']" position="replace">
+            <button t-if="mode == 'payment'" id="o_payment_form_pay" type="submit" t-att-class="submit_class if submit_class else 'btn btn-primary btn-lg mb8 mt8'" disabled="true">
+                    <t t-if="submit_txt">
+                        <i t-if="icon_class and not icon_right" t-attf-class="fa {{icon_class}}"/>
+                        <t t-esc="'Continuar'"/>
+                        <i t-if="icon_class and icon_right" t-attf-class="fa {{icon_class}}"/>
+                    </t>
+                    <t t-else="">
+                        <i class="fa fa-lock"/> Pay
+                    </t>
+                </button>
+        </xpath>
+    </template>
+</odoo>

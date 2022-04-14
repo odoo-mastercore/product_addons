@@ -15,8 +15,14 @@
     'website': "http://sinapsys.global",
     'author': "SINAPSYS GLOBAL SA || MASTERCORE SAS",
     "license": "AGPL-3",
-    "depends": ["crm"],
+    "depends": [
+        "crm",
+        "sale_crm",
+        "crm_stage_probability",
+        ],
     "data": [
-        "views/crm.xml"
+        "data/crm.stage.csv",
+        "views/crm.xml",
+        "views/sale_order_view.xml"
     ],
 }

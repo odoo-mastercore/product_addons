@@ -8,4 +8,3 @@
 ###############################################################################
 from . import sale_requisitions
 from . import sale_order
-from . import fleet_contact

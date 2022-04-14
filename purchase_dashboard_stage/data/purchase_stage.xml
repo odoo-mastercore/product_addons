@@ -4,31 +4,37 @@
         <field name="name">Requisición</field>
         <field name="sequence">1</field>
         <field name="identifier">requisition_order</field>
+        <field name="estimated_time">3</field>
     </record>
     <record model="purchase.order.stage" id="stage_purchase_order">
         <field name="name">Colocación de Orden de compra</field>
         <field name="sequence">2</field>
         <field name="identifier">purchase_order</field>
+        <field name="estimated_time">2</field>
     </record>
     <record model="purchase.order.stage" id="stage_invoice_payment">
-        <field name="name">Facturación/Pago</field>
+        <field name="name">Facturación/Pago/Entrega</field>
         <field name="sequence">3</field>
         <field name="identifier">invoice_payment</field>
+        <field name="estimated_time">25</field>
     </record>
     <record model="purchase.order.stage" id="stage_transit_warehouse">
         <field name="name">Tránsito Warehouse</field>
         <field name="sequence">4</field>
         <field name="identifier">transit_warehouse</field>
+        <field name="estimated_time">5</field>
     </record>
     <record model="purchase.order.stage" id="stage_transit_marine_land">
         <field name="name">Tránsito Maritimo / Terrestre</field>
         <field name="sequence">5</field>
         <field name="identifier">transit_marine_land</field>
+        <field name="estimated_time">18</field>
     </record>
     <record model="purchase.order.stage" id="stage_stock_reception">
         <field name="name">Recepción almacén</field>
         <field name="sequence">6</field>
         <field name="identifier">stock_reception</field>
+        <field name="estimated_time">1</field>
     </record>
     <record model="purchase.order.stage" id="stage_cost_verification">
         <field name="name">Verificación de Costos</field>

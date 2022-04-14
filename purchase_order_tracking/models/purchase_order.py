@@ -7,6 +7,7 @@
 #
 ###############################################################################
 
+from functools import partial
 import logging
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
@@ -24,7 +25,22 @@ class PurchaseOrder(models.Model):
     def _get_default_volume_uom(self):
         return self.env['product.template']._get_volume_uom_name_from_ir_config_parameter()
 
+    def _get_detaulf_days_init(self):
+        return self.env.ref(
+            'purchase_dashboard_stage.stage_requisition_order',
+            raise_if_not_found=False
+        ).estimated_time
+
+    def _get_estimated_stock(self):
+        estimated_times = self.env['purchase.order.stage'].search([])
+        total_days = 0
+        for estimated in estimated_times:
+            if estimated.estimated_time:
+                total_days += int(estimated.estimated_time.strip())
+        return fields.Datetime.now() + relativedelta(days=int(total_days))
+
     # stage 1
+    # date_order es la estimada de requisicion
     warehouse_company = fields.Many2one('res.partner', string="Empresa Warehouse")
     origin_purchase = fields.Many2one(
         'res.country',
@@ -39,7 +55,8 @@ class PurchaseOrder(models.Model):
         selection=[('international', 'Internacional'), ('national', 'Nacional')],
         default='international')
     weight_total = fields.Float(
-        string="Peso total", compute="_compute_weight_total",
+        string="Peso total",
+        compute="_compute_weight_total",
         store=True,
     )
     weight_uom_name = fields.Char(
@@ -48,13 +65,23 @@ class PurchaseOrder(models.Model):
         default=_get_default_weight_uom
     )
     volume_total = fields.Float(
-        string="Volumen total", compute="_compute_weight_total",
+        string="Volumen total",
+        compute="_compute_weight_total",
         store=True,
     )
     volume_uom_name = fields.Char(
         string="volume uom",
         compute='_compute_volume_uom_name',
         default=_get_default_volume_uom
+    )
+    estimated_days_init = fields.Integer(
+        string="Dias estimados Requisición",
+        default=_get_detaulf_days_init
+    )
+    estimated_stock_date = fields.Datetime(
+        string='Fecha de recepción estimada',
+        default=_get_estimated_stock,
+        compute="_compute_estimated_stock"
     )
     # stage 2
     oc_provider_ids = fields.One2many(
@@ -63,20 +90,18 @@ class PurchaseOrder(models.Model):
         string='Colocación Orden/Compra',
     )
     # stage 3
-    supplier_ids = fields.Many2many(
-        'account.move',
-        string='Facturas/Pagos',
-        compute='_compute_supplier_ids',
+    supplier_ids = fields.One2many(
+        'account.move.estimated',
+        'purchase_order_id',
+        string='Factura/Pago/Entrega',
     )
     supplier_weight_total = fields.Float(
         string="Peso total",
         compute="_compute_supplier_ids",
-        store=True
     )
     supplier_volume_total = fields.Float(
         string="Volume total",
         compute="_compute_supplier_ids",
-        store=True
     )
     # stage 4
     transit_warehouse_ids = fields.One2many(
@@ -111,17 +136,14 @@ class PurchaseOrder(models.Model):
         'purchase_order_id',
         string='Recepción almacen',
     )
+    # Estimated times
     estimated_time_ids = fields.One2many(
         'estimated.time',
         'purchase_order_id',
         string='Tiempo estimado',
     )
 
-    @api.depends(
-        "order_line.weight",
-        "order_line.volume",
-        "purchase_type"
-    )
+    @api.depends("order_line.weight", "order_line.volume", "purchase_type")
     def _compute_weight_total(self):
         for order in self:
             weight = volume = 0.0
@@ -137,6 +159,7 @@ class PurchaseOrder(models.Model):
                 'weight_total': float(weight),
                 'volume_total': float(volume)
             })
+
     @api.depends("purchase_type")
     def _compute_weight_uom_name(self):
         for order in self:
@@ -155,17 +178,14 @@ class PurchaseOrder(models.Model):
             else:
                 order.volume_uom_name = "m³"
 
-    @api.depends('order_line.invoice_lines.move_id')
+    @api.depends('supplier_ids')
     def _compute_supplier_ids(self):
         for order in self:
-            invoices = order.mapped('order_line.invoice_lines.move_id').filtered(
-                lambda inv: inv.partner_id == order.partner_id
-            )
-            order.supplier_ids = invoices
             weight = volume = 0
-            for invoice in invoices:
-                weight += invoice.weight_provider_total
-                volume += invoice.volume_provider_total
+            if order.supplier_ids:
+                for supplier in order.supplier_ids:
+                    weight += supplier.invoice_id.weight_provider_total
+                    volume += supplier.invoice_id.volume_provider_total
             order.supplier_weight_total = weight
             order.supplier_volume_total = volume
 
@@ -177,9 +197,10 @@ class PurchaseOrder(models.Model):
             )
             order.invoice_warehouse_ids = invoices
             weight = volume = 0
-            for invoice in invoices:
-                weight += invoice.weight_provider_total
-                volume += invoice.volume_provider_total
+            if invoices:
+                for invoice in invoices:
+                    weight += invoice.weight_provider_total
+                    volume += invoice.volume_provider_total
             order.warehouse_weight_total = weight
             order.warehouse_volume_total = volume
 
@@ -196,28 +217,171 @@ class PurchaseOrder(models.Model):
             stage_init = self.env.ref('purchase_dashboard_stage.stage_requisition_order', raise_if_not_found=False)
             stage_next = self.env.ref('purchase_dashboard_stage.stage_purchase_order', raise_if_not_found=False)
             estimated_times = self.env['estimated.time'].search([
-                ('purchase_order_id', '=', po.id)
-            ], order="id DESC", limit=1)
+                ('purchase_order_id', '=', po.id),
+                ('registry_id', '=', po.id)
+            ])
             if stage_init.name == estimated_times.stage_name:
                 try:
                     estimated_times.write({
                         'real_date': fields.Datetime.now()
                     })
-                    po.stage_id = stage_next.id
-                    estimated_res = self.env['estimated.time'].create({
+                    res_provider = self.env['order.purchase.provider'].create({
+                        'estimated_days': stage_next.estimated_time,
+                        'stage_entry_date': fields.Datetime.now(),
+                        'purchase_order_id': po.id
+                    })
+                    self.env['estimated.time'].create({
                         'stage_name': stage_next.name,
                         'entry_date': fields.Datetime.now(),
-                        'stage_days': stage_next.estimated_time,
-                        'purchase_order_id': po.id
+                        'estimated_date': self.estimated(fields.Datetime.now(), stage_next.estimated_time),
+                        'purchase_order_id': po.id,
+                        'registry_id': res_provider.id
                     })
-                    self.env['order.purchase.provider'].create({
-                        'provider_estimated_date': estimated_res.estimated_date,
-                        'purchase_order_id': po.id
-                    })
+                    po.stage_id = stage_next.id
                 except Exception as e:
                     _logger.error("Error - button_confirm %s" % (e))
                     pass
         return rec
+
+    def estimated(self, date, estimated_days):
+        return (date + (relativedelta(days=int(estimated_days))))
+
+    def _compute_estimated_stock(self):
+        estimated_times = self.env['purchase.order.stage'].search([])
+        stage_requisition = self.env.ref('purchase_dashboard_stage.stage_requisition_order', raise_if_not_found=False)
+        stage_order = self.env.ref('purchase_dashboard_stage.stage_purchase_order', raise_if_not_found=False)
+        stage_invoice = self.env.ref('purchase_dashboard_stage.stage_invoice_payment', raise_if_not_found=False)
+        stage_warehouse = self.env.ref('purchase_dashboard_stage.stage_transit_warehouse', raise_if_not_found=False)
+        stage_transit = self.env.ref('purchase_dashboard_stage.stage_transit_marine_land', raise_if_not_found=False)
+        stage_stock = self.env.ref('purchase_dashboard_stage.stage_stock_reception', raise_if_not_found=False)
+
+        stage_verification = self.env.ref('purchase_dashboard_stage.stage_cost_verification', raise_if_not_found=False)
+        stage_partial = self.env.ref('purchase_dashboard_stage.stage_partial_delivery', raise_if_not_found=False)
+
+        default_total_days = 0
+        for estimated in estimated_times:
+            if estimated.estimated_time:
+                default_total_days += int(estimated.estimated_time.strip())
+        stock_from = 0
+        if self.stock_receipt_ids:
+            for stock in self.stock_receipt_ids:
+                if not stock.stock_receipt_date:
+                    stock_from = stock.create_from
+                    default_total_days -= int(stage_stock.estimated_time)
+                    default_total_days += int(stock.estimated_days)
+                    break
+        transit_from = 0
+        if self.transit_land_maritime_ids:
+            if stock_from != 0:
+                transit = self.mapped('transit_land_maritime_ids').filtered(
+                    lambda t: t.id == stock_from
+                )
+                transit_from = transit.create_from
+                days = (transit.real_date_arrival - transit.estimated_port_arrival).days
+                if days < 0:
+                    new_days_estimated = (transit.estimated_days - abs(days))
+                    default_total_days -= transit.estimated_days
+                    default_total_days += new_days_estimated
+                elif days > 0:
+                    new_days_estimated = (transit.estimated_days + days)
+                    default_total_days -= transit.estimated_days
+                    default_total_days += new_days_estimated
+                elif days == 0:
+                    default_total_days -= int(stage_transit.estimated_time)
+                    default_total_days += int(transit.estimated_days)
+            else:
+                for transit in self.transit_land_maritime_ids:
+                    if not transit.real_date_arrival:
+                        transit_from = transit.create_from
+                        default_total_days -= int(stage_transit.estimated_time)
+                        default_total_days += int(transit.estimated_days)
+                        break
+        partial = False
+        partial_date = False
+        if self.transit_warehouse_ids:
+            if transit_from != 0:
+                warehouse = self.mapped('transit_warehouse_ids').filtered(
+                    lambda w: w.id == transit_from
+                )
+                days = (warehouse.warehouse_receipt_date - warehouse.estimated_date).days
+                if days < 0:
+                    new_days_estimated = (warehouse.estimated_days - abs(days))
+                    default_total_days -= warehouse.estimated_days
+                    default_total_days += new_days_estimated
+                elif days > 0:
+                    new_days_estimated = (warehouse.estimated_days + days)
+                    default_total_days -= warehouse.estimated_days
+                    default_total_days += new_days_estimated
+                elif days == 0:
+                    default_total_days -= int(stage_warehouse.estimated_time)
+                    default_total_days += int(warehouse.estimated_days)
+                if warehouse.create_view:
+                    partial_date = warehouse.create_date
+                    partial = True
+            else:
+                for warehouse in self.transit_warehouse_ids:
+                    if not warehouse.warehouse_receipt_date:
+                        default_total_days -= int(stage_warehouse.estimated_time)
+                        default_total_days += int(warehouse.estimated_days)
+                        if warehouse.create_view:
+                            partial_date = warehouse.create_date
+                            partial = True
+                        break
+        if not partial:
+            if self.supplier_ids:
+                invoice = self.mapped('supplier_ids').filtered(lambda i: not i.create_view)
+                if invoice.estimated_days != int(stage_invoice.estimated_time):
+                    default_total_days -= int(stage_invoice.estimated_time)
+                    default_total_days += invoice.estimated_days
+                if invoice.real_date:
+                    days = (invoice.real_date - invoice.estimated_date).days
+                    if days < 0:
+                        new_days_estimated = (invoice.estimated_days - abs(days))
+                        default_total_days -= invoice.estimated_days
+                        default_total_days += new_days_estimated
+                    else:
+                        new_days_estimated = (invoice.estimated_days + days)
+                        default_total_days -= invoice.estimated_days
+                        default_total_days += new_days_estimated
+            if self.oc_provider_ids:
+                for provider in self.oc_provider_ids:
+                    if provider.estimated_days != int(stage_order.estimated_time):
+                        default_total_days -= int(stage_order.estimated_time)
+                        default_total_days += provider.estimated_days
+                    if provider.provider_recognition_date:
+                        days = (provider.provider_recognition_date - provider.provider_estimated_date).days
+                        if days < 0:
+                            new_days_estimated = (provider.estimated_days - abs(days))
+                            default_total_days -= provider.estimated_days
+                            default_total_days += new_days_estimated
+                        else:
+                            new_days_estimated = (provider.estimated_days + days)
+                            default_total_days -= provider.estimated_days
+                            default_total_days += new_days_estimated
+            if self.estimated_days_init != int(stage_requisition.estimated_time):
+                default_total_days -= int(stage_requisition.estimated_time)
+                default_total_days += self.estimated_days_init
+            if self.date_approve:
+                estimated_date = self.estimated(self.create_date, self.estimated_days_init)
+                days = (self.date_approve - estimated_date).days
+                if days < 0:
+                    new_days_estimated = (self.estimated_days_init - abs(days))
+                    default_total_days -= self.estimated_days_init
+                    default_total_days += new_days_estimated
+                else:
+                    new_days_estimated = (self.estimated_days_init + days)
+                    default_total_days -= self.estimated_days_init
+                    default_total_days += new_days_estimated
+        else:
+            total_day_stage = (int(stage_requisition.estimated_time) + int(stage_order.estimated_time) + int(stage_invoice.estimated_time))
+            default_total_days -= total_day_stage
+        if(self.stage_id.id == stage_verification.id or self.stage_id.id == stage_partial.id):
+            self.estimated_stock_date = False
+        else:
+            if partial:
+                self.estimated_stock_date = partial_date + relativedelta(days=int(default_total_days))
+            else:
+                self.estimated_stock_date = self.create_date + relativedelta(days=int(default_total_days))
 
     @api.model
     def create(self, vals):
@@ -225,32 +389,102 @@ class PurchaseOrder(models.Model):
         res_estimated_time = {
             'stage_name': rec.stage_id.name,
             'entry_date': rec.create_date,
-            'stage_days': rec.stage_id.estimated_time,
-            'purchase_order_id': rec.id
+            'estimated_date': self.estimated(rec.create_date, rec.estimated_days_init),
+            'purchase_order_id': rec.id,
+            'registry_id': int(rec.id)
         }
         self.env['estimated.time'].create(res_estimated_time)
         return rec
 
     def write(self, vals):
-        stage_next = self.env.ref('purchase_dashboard_stage.stage_invoice_payment', raise_if_not_found=False)
-        if vals.get('oc_provider_ids'):
-            date = vals['oc_provider_ids'][0][2]
-            if date.get('provider_recognition_date') and date.get('provider_recognition_date'):
-                date_recognition = date.get('provider_recognition_date')
-                estimated_times = self.env['estimated.time'].search([
-                    ('purchase_order_id', '=', self.id)
-                ], order="id DESC", limit=1)
-                estimated_times.write({
-                    'real_date': date_recognition
-                })
-                self.stage_id = stage_next.id
-                self.env['estimated.time'].create({
-                    'stage_name': stage_next.name,
-                    'entry_date': date_recognition,
-                    'stage_days': stage_next.estimated_time,
-                    'purchase_order_id': self.id
-                })
-        return super(PurchaseOrder, self).write(vals)
+        res = super(PurchaseOrder, self).write(vals)
+        context = dict(self.env.context)
+        context.update({'write_purchase_done': True})
+        self = self.with_context(context)
+        purchase_completed = True
+        estimated_time = self.env['estimated.time'].search([
+            ('purchase_order_id', '=', self.id),
+            ('registry_id', '=', self.id)
+        ])
+        if 'estimated_days_init' in vals and vals.get('estimated_days_init'):
+            estimated_time.write({
+                'estimated_date': self.estimated(self.create_date, int(vals.get('estimated_days_init')))
+            })
+        if self.state not in ('draft', 'sent'):
+            if self.stock_receipt_ids:
+                stock_completed = True
+                for stock in self.stock_receipt_ids:
+                    if not stock.stock_receipt_date:
+                        stock_completed = False
+                        break
+                if not stock_completed:
+                    purchase_completed = False
+                    stage_stock = self.env.ref('purchase_dashboard_stage.stage_stock_reception', raise_if_not_found=False)
+                    vals.update({'stage_id': stage_stock.id})
+                    super(PurchaseOrder, self).write(vals)
+
+            if self.transit_land_maritime_ids and purchase_completed:
+                transit_completed = True
+                for transit in self.transit_land_maritime_ids:
+                    if not transit.real_date_arrival:
+                        transit_completed = False
+                        break
+                if not transit_completed:
+                    purchase_completed = False
+                    stage_transit = self.env.ref('purchase_dashboard_stage.stage_transit_marine_land', raise_if_not_found=False)
+                    vals.update({'stage_id': stage_transit.id})
+                    super(PurchaseOrder, self).write(vals)
+
+            if self.transit_warehouse_ids and purchase_completed:
+                warehouse_completed = True
+                for warehouse in self.transit_warehouse_ids:
+                    if not warehouse.warehouse_receipt_date:
+                        warehouse_completed = False
+                        break
+                if not warehouse_completed:
+                    purchase_completed = False
+                    stage_warehouse = self.env.ref('purchase_dashboard_stage.stage_transit_warehouse', raise_if_not_found=False)
+                    vals.update({'stage_id': stage_warehouse.id})
+                    super(PurchaseOrder, self).write(vals)
+
+            if self.supplier_ids and purchase_completed:
+                supplier_completed = True
+                for supplier in self.supplier_ids:
+                    if not supplier.real_date:
+                        supplier_completed = False
+                        break
+                if not supplier_completed:
+                    purchase_completed = False
+                    stage_invoice = self.env.ref('purchase_dashboard_stage.stage_invoice_payment', raise_if_not_found=False)
+                    vals.update({'stage_id': stage_invoice.id})
+                    super(PurchaseOrder, self).write(vals)
+
+            if self.oc_provider_ids and purchase_completed:
+                provider_completed = True
+                for provider in self.oc_provider_ids:
+                    if not provider.provider_recognition_date:
+                        provider_completed = False
+                        break
+                if not provider_completed:
+                    purchase_completed = False
+                    stage_order = self.env.ref('purchase_dashboard_stage.stage_purchase_order', raise_if_not_found=False)
+                    vals.update({'stage_id': stage_order.id})
+                    super(PurchaseOrder, self).write(vals)
+
+            if purchase_completed:
+                stage_verification = self.env.ref('purchase_dashboard_stage.stage_cost_verification', raise_if_not_found=False)
+                stage_partial = self.env.ref('purchase_dashboard_stage.stage_partial_delivery', raise_if_not_found=False)
+                pickings = self.env['stock.picking'].search([
+                    ('purchase_id', '=', self.id),
+                    ('state', '=', 'assigned')
+                ])
+                if len(pickings) > 0:
+                    vals.update({'stage_id': stage_partial.id})
+                else:
+                    vals.update({'stage_id': stage_verification.id})
+                super(PurchaseOrder, self).write(vals)
+        return res
+
 
 class PurchaseOrderLine(models.Model):
     _inherit = 'purchase.order.line'
@@ -267,168 +501,3 @@ class PurchaseOrderLine(models.Model):
     volume_mc = fields.Float(
         related='product_id.product_tmpl_id.volume_mc', string="Volumen"
     )
-
-
-class OrderPurchaseProvider(models.Model):
-    _name = "order.purchase.provider"
-    _description = "Colocacion Order/Compra"
-
-    provider_estimated_date = fields.Datetime(
-        string='Fecha estamida del proveedor',
-    )
-    provider_recognition_date = fields.Datetime(
-        string='Fechas de reconocimiento',
-    )
-    provider_recognition_number = fields.Char(
-        string="Número de reconocimiento"
-    )
-    purchase_order_id = fields.Many2one(
-        'purchase.order',
-        string='Purchase Order',
-        readonly=True
-    )
-
-
-class TransitWarehouse(models.Model):
-    _name = "transit.warehouse"
-    _description = "Transito warehouse"
-
-    tracking_number = fields.Char(string="Número de Tracking")
-    shipping_company = fields.Char(string="Empresa de Envío")
-    warehouse_number = fields.Char(string="Número de Warehouse")
-    warehouse_receipt_date = fields.Datetime(
-        string="Fecha de recepción de Warehouse"
-    )
-    purchase_order_id = fields.Many2one(
-        'purchase.order',
-        string='Purchase Order',
-        readonly=True
-    )
-    order_picking_id = fields.Many2one(
-        'stock.picking',
-        string="Orden de entrega",
-        domain="[('purchase_id', '=', purchase_order_id)]"
-    )
-
-    @api.onchange('purchase_order_id')
-    def _onchange_purchase_order_id(self):
-        purchase_id = self._context.get('default_purchase_order_id')
-        picking = self.env['stock.picking'].search([
-            ('purchase_id', '=', purchase_id),
-            ('state', '=', 'assigned')
-        ],order="id DESC", limit=1)
-        if picking:
-            self.order_picking_id = picking.id
-
-
-class TransitLandMaritime(models.Model):
-    _name = "transit.land.maritime"
-    _description = "Tránsito Maritimo/Terrestre"
-
-    trip_name = fields.Char(string="Nombre del viaje")
-    shipowner = fields.Many2one('res.partner', string="Naviera")
-    booking_number = fields.Char(string="Número de Booking")
-    ship_name = fields.Char(string="Nombre del barco")
-    container_number = fields.Char(string="Número del contenedor")
-    bl = fields.Char(string="BL")
-    port_arrival = fields.Selection(
-        string='Puerto de llegada',
-        selection=[
-            ('0', 'Guanta'),
-            ('1', 'La Guaira'),
-            ('2', 'Maracaibo'),
-            ('3', 'Puerto Cabello'),
-            ('4', 'Porlamar'),
-        ],
-        default='0'
-    )
-    estimated_departure_date = fields.Datetime(
-        string="Fecha estimada de salida"
-    )
-    estimated_port_arrival = fields.Datetime(
-        string="Fecha estimada de llegada al puerto"
-    )
-    real_date_arrival = fields.Datetime(
-        string="Fecha real llegada al puerto"
-    )
-    purchase_order_id = fields.Many2one(
-        'purchase.order',
-        string='Purchase Order',
-        readonly=True
-    )
-    order_picking_id = fields.Many2one(
-        'stock.picking',
-        string="Orden de entrega",
-        domain="[('purchase_id', '=', purchase_order_id)]"
-    )
-
-    @api.onchange('purchase_order_id')
-    def _onchange_purchase_order_id(self):
-        purchase_id = self._context.get('default_purchase_order_id')
-        picking = self.env['stock.picking'].search([
-            ('purchase_id', '=', purchase_id),
-            ('state', '=', 'assigned')
-        ],order="id DESC", limit=1)
-        if picking:
-            self.order_picking_id = picking.id
-
-
-class StockReceipt(models.Model):
-    _name = 'stock.receipt'
-    _description = 'Recepción Almacen'
-
-    stock_receipt_date = fields.Datetime(
-        string="Fecha de recepción de almacén"
-    )
-    observations = fields.Text(string="Observaciones")
-    purchase_order_id = fields.Many2one(
-        'purchase.order',
-        string='Purchase Order',
-        readonly=True
-    )
-    order_picking_id = fields.Many2one(
-        'stock.picking',
-        string="Orden de entrega",
-        domain="[('purchase_id', '=', purchase_order_id)]"
-    )
-
-    @api.onchange('purchase_order_id')
-    def _onchange_purchase_order_id(self):
-        purchase_id = self._context.get('default_purchase_order_id')
-        picking = self.env['stock.picking'].search([
-            ('purchase_id', '=', purchase_id),
-            ('state', '=', 'done')
-        ],order="id DESC", limit=1)
-        if picking:
-            self.order_picking_id = picking.id
-            self.stock_receipt_date = picking.date_done
-
-
-class EstimatedTime(models.Model):
-    _name = 'estimated.time'
-    _description = 'Tiempo estimados para OC'
-
-    stage_name = fields.Char(string='Etapa')
-    stage_days = fields.Integer(
-        string='Dias estimados',
-    )
-    entry_date = fields.Datetime(string='Fecha de entrada')
-    estimated_date = fields.Datetime(
-        string='Fecha estimada',
-        compute="_compute_estimated_date"
-    )
-    real_date = fields.Datetime(string='Fecha real')
-
-    purchase_order_id = fields.Many2one(
-        'purchase.order',
-        string='Purchase Order',
-        readonly=True
-    )
-
-    @api.depends('stage_days', 'entry_date')
-    def _compute_estimated_date(self):
-        for record in self:
-            estimated_time = record.create_date + (
-                relativedelta(days=int(record.stage_days))
-            )
-            record.estimated_date = estimated_time

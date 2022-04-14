@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="products_attributes_inherit_giro_custom" inherit_id="website_sale.products_categories" name="Product Attribute's Filters Inherit">
+        <xpath expr="//div[@id='wsale_products_categories_collapse']" position="before">
+            <form class="js_attributes mb-2" method="get">
+                <t t-set="v_vehicle_type" t-value="request.httprequest.args.get('vehicle_type') or vehicle_type"/>
+                <h6>Tipo</h6>
+                <select class="form-control form-field mb-3" name="vehicle_type">
+                    <option t-att-value="'All'">Todos</option>
+                    <t t-foreach="vehicles_types" t-as="v">
+                        <option t-att-value="v[0]" t-att-selected="v_vehicle_type == v[0]"><t t-esc="v[1]"/></option>
+                    </t>
+                </select>
+                <t t-set="v_brand_vehicle" t-value="request.httprequest.args.get('brand_vehicle') or brand_vehicle"/>
+                <h6 class="mb-0">Marca de vehículo:</h6>
+                <select class="form-control form-field mb-3" name="brand_vehicle">
+                    <option t-att-value="'All'">Todos</option>
+                    <t t-foreach="brands_vehicle" t-as="b">
+                        <option t-att-value="b.id" t-att-selected="v_brand_vehicle == str(b.id)"><t t-esc="b.name"/></option>
+                    </t>
+                </select>
+                <h6 class="mb-0">Modelo</h6>
+                <t t-set="v_model" t-value="request.httprequest.args.get('model') or model"/>
+                <select class="form-control form-field mb-3" name="model">
+                    <option t-att-value="'All'">Todos</option>
+                    <t t-foreach="vehicle_models" t-as="m">
+                        <option t-att-value="m.id" t-att-selected="v_model == str(m.id)"><t t-esc="m.name"/></option>
+                    </t>
+                </select>
+                <h6 class="mb-0">Año</h6>
+                <t t-set="v_year" t-value="request.httprequest.args.get('year') or max_age"/>
+                <select class="form-control form-field mb-3" name="year">
+                    <option t-att-value="'All'">Todos</option>
+                    <t t-foreach="years" t-as="a">
+                        <option t-att-value="a" t-att-selected="str(a) == v_year"><t t-esc="a"/></option>
+                    </t>
+                </select>
+            </form>
+        </xpath>
+    </template>
+</odoo>

@@ -7,6 +7,9 @@
 #
 ###############################################################################
 from . import purchase_order
+from . import purchase_order_stages
+from . import estimated_time
 from . import account_move
 from . import pallets
 from . import product
+from . import stock_picking

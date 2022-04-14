@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id='product_template_product_form_inherit_brand_general_info' model='ir.ui.view'>
+        <field name="name">product.template.product_form_inherit_brand_general_info</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='company_id']" position="after">
+                <field name="dr_brand_id" />
+                <field name="alternative_product_ids"  />
+                <field name="accessory_product_ids"  />
+            </xpath>
+            <xpath expr="//field[@name='categ_id']" position="attributes">
+                <attribute name="options">{'no_create_edit': True, 'no_create':True}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='manufacturer']" position="attributes">
+                <attribute name="options">{'no_create_edit': True, 'no_create':True}</attribute>
+            </xpath>
+        </field>
+    </record>
+    <record id='product_template_form_inherit_droggol_theme_common_inherit' model='ir.ui.view'>
+        <field name="name">product.template.form_inherit_droggol_theme_common_inherit</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="droggol_theme_common.product_template_form_view_inherit_droggol_theme_common"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='dr_brand_id']" position="attributes">
+                <attribute name="invisible">1</attribute>
+                <attribute name="options">{'no_create_edit': True, 'no_create':True}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='alternative_product_ids']" position="attributes">
+                <!-- <attribute name="invisible">1</attribute> -->
+                <attribute name="options">{'no_create_edit': True, 'no_create':True}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='accessory_product_ids']" position="attributes">
+                <!-- <attribute name="invisible">1</attribute> -->
+                <attribute name="options">{'no_create_edit': True, 'no_create':True}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='public_categ_ids']" position="attributes">
+                <attribute name="options">{'no_create_edit': True, 'no_create':True}</attribute>
+            </xpath>
+        </field>
+    </record>
+    <record id='product_template_fleet_form_view_inherit_block' model='ir.ui.view'>
+        <field name="name">product.template.product_form_inherit_block</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product_fleet.product_template_fleet_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='fleet_model_id']" position="attributes">
+                <attribute name="options">{'no_create_edit': True, 'no_create':True}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='maker_id']" position="attributes">
+                <attribute name="options">{'no_create_edit': True, 'no_create':True}</attribute>
+            </xpath>
+        </field>
+    </record>
+</odoo>

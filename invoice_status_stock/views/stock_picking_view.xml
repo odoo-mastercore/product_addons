@@ -30,7 +30,7 @@
           <widget
               name="web_ribbon"
               bg_color="bg-success"
-              title="Cretido"
+              title="Credito"
               attrs="{'invisible': [('state_invoice', '!=', 'CREDITO')]}"
           />
           <widget
@@ -38,6 +38,19 @@
               bg_color="bg-success"
               title="Pagada"
               attrs="{'invisible': [('state_invoice', '!=', 'PAGADA')]}"
+          />
+          <widget
+              name="web_ribbon"
+              bg_color="bg-success"
+              title="Realizado"
+              attrs="{'invisible': [('state', '!=', 'done')]}"
+          />
+          <field name="is_partial" invisible="1"/>
+          <widget
+              name="web_ribbon"
+              bg_color="bg-success"
+              title="Parcial"
+              attrs="{'invisible': [('is_partial', '=', False)]}"
           />
           <field
               name="invoice_id"
@@ -58,6 +71,15 @@
           <field name="fleet_contact_id" 
             attrs="{'invisible': [('fleet_contact_id', '=', False)]}"
           />
+        </field>
+        <field name="note" position="after">
+          <group>
+            <group>
+              <field name="attachment_ids" widget="many2many_binary"/>
+            </group>
+            <group>
+            </group>
+          </group>
         </field>
       </field>
     </record>
