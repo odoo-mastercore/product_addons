@@ -14,6 +14,9 @@ _logger = logging.getLogger(__name__)
 class SaleCouponProgram(models.Model):
     _inherit = 'sale.coupon.program'
 
+    rule_max_quantity = fields.Integer(string="Maximun Quantity",
+        help="Maximun required product quantity to get the reward")
+
     def _filter_programs_on_products(self, order):
         """
         To get valid programs according to product list.
