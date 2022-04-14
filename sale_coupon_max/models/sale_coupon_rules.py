@@ -9,8 +9,8 @@
 from odoo import models, fields, api, _
 
 
-class SaleCouponRule(models.Model):
-    _inherit = 'sale.coupon.rule'
+class SaleCouponProgram(models.Model):
+    _inherit = 'sale.coupon.program'
 
     rule_max_quantity = fields.Integer(string="Maximun Quantity",
         help="Maximun required product quantity to get the reward")
