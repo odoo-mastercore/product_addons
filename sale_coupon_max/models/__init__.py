@@ -6,5 +6,5 @@
 #
 #
 ###############################################################################
-import sale_coupon_rules
-import sale_coupon_program
+from . import sale_coupon_rules
+from . import sale_coupon_program
