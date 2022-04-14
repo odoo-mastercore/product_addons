@@ -8,7 +8,7 @@
         <field name="mode">primary</field>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='rule_min_quantity']" position="after">
-                <field name="rule_max_quantity" class="oe_inline"/>
+                <!-- <field name="rule_max_quantity" class="oe_inline"/> -->
             </xpath>
         </field>
     </record>
