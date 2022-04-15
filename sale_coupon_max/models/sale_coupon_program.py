@@ -44,8 +44,8 @@ class SaleCouponProgram(models.Model):
             if program.promo_applicability == 'on_current_order' and \
                program.reward_type == 'product' and program._get_valid_products(program.reward_product_id):
                 ordered_rule_products_qty -= program.reward_product_quantity
-            if program.rule_max_quantity >= 0:
-                if ordered_rule_products_qty < program.rule_max_quantity:
+            if program.rule_max_quantity > 0:
+                if ordered_rule_products_qty <= program.rule_max_quantity:
                     valid_program_ids.append(program.id)
             else:
                 if ordered_rule_products_qty >= program.rule_min_quantity:
