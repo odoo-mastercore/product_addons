@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Coupon Program -->
+    <record id="sale_coupon_program_max_view_form" model="ir.ui.view">
+        <field name="name">sale.coupon.max.program.form</field>
+        <field name="model">sale.coupon.program</field>
+        <field name="inherit_id" ref="sale_coupon.sale_coupon_program_view_promo_program_form"/>
+        <field name="mode">primary</field>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='rule_minimum_amount']" position="before">
+                <field name="rule_max_quantity" class="oe_inline"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>
