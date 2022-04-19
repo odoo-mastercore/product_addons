@@ -150,7 +150,7 @@
                                     </div>
                                     <span t-esc="wish.product_id.dr_brand_id.name"/>
                                     <button type="button" role="button" class="btn btn-block btn-link tp_wish_add mt-2">
-                                        <i class="lnr lnr-cart"/> Add to cart
+                                        <i class="lnr lnr-cart"/> Agregar al carrito
                                     </button>
                                 </div>
                             </div>
