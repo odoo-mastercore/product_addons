@@ -18,7 +18,7 @@ class StockPicking(models.Model):
 
     def button_validate(self):
         res = super(StockPicking, self).button_validate()
-        if self.purchase_id:
+        if self.purchase_id and self.purchase_id.purchase_type == 'international':
             if self.purchase_id.transit_warehouse_ids:
                 Warehouse = self.mapped('purchase_id.transit_warehouse_ids')\
                     .filtered(lambda p: p.order_picking_id.id == self.id)
