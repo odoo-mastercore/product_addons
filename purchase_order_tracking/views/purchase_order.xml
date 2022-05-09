@@ -10,20 +10,36 @@
                 <attribute name="string">Número factura del proveedor</attribute>
             </xpath>
             <xpath expr="//field[@name='currency_id']" position="after">
-                <field name="warehouse_company" />
-                <field name="estimated_days_init" attrs="{'readonly': [('stage_identifier', 'not in', ('requisition_order'))]}"/>
-                <field name="estimated_stock_date" readonly="1" force_save="1"/>
+                <field
+                    name="warehouse_company"
+                    attrs="{'invisible': [('purchase_type', '!=', 'international')]}" />
+                <field
+                    name="estimated_days_init"
+                    attrs="{'readonly': [('stage_identifier', 'not in', ('requisition_order'))], 'invisible': [('purchase_type', '!=', 'international')]}" />
+                <field
+                    name="estimated_stock_date"
+                    readonly="1"
+                    force_save="1"
+                    attrs="{'invisible': [('purchase_type', '!=', 'international')]}" />
             </xpath>
             <xpath expr="//field[@name='date_order']" position="after">
-                <field name="purchase_type" string="Tipo de Compra"/>
+                <field
+                    name="purchase_type"
+                    string="Tipo de Compra"
+                    attrs="{'readonly': [('stage_identifier', '!=', 'requisition_order')]}"
+                    />
                 <field
                     name="origin_purchase"
                     string="Origen de la compra"
                     placeholder="Pais"
                     class="o_address_country"
                     options='{"no_open": True, "no_create": True}'
+                    attrs="{'invisible': [('purchase_type', '!=', 'international')], 'required': [('purchase_type', '=', 'international')]}"
                     />
-                <field name="load_type" string="Tipo de carga"/>
+                <field
+                    name="load_type"
+                    attrs="{'invisible': [('purchase_type', '!=', 'international')]}"
+                    string="Tipo de carga"/>
                 <field name="stage_identifier" invisible="1"/>
                 <label for="weight_total" />
                 <div class="o_row" name="weight_total">
@@ -181,7 +197,7 @@
                 </page>
             </xpath>
             <xpath expr="//page[@name='purchase_delivery_invoice']" position="after">
-                <page string="Tiempos estimados">
+                <page string="Tiempos estimados" attrs="{'invisible': [('purchase_type', '!=', 'international')]}">
                     <group>
                         <field
                             name="estimated_time_ids"

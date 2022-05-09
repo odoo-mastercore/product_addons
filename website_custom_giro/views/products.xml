@@ -105,6 +105,12 @@
         </xpath>
     </template>
 
+    <template id="website_sale_address_inherit" inherit_id="website_sale.address">
+        <xpath expr="//label[@for='name']" position="replace">
+            <label class="col-form-label" for="name">Nombre y Apellido</label>
+        </xpath>
+    </template>
+
     
 
     <template id="theme_prime_product_wishlist_inherit" inherit_id="website_sale_wishlist.product_wishlist">
@@ -112,10 +118,10 @@
             <section class="container wishlist-section my-4">
                 <div class="row align-items-center">
                     <div class="col-12">
-                        <h3 class="d-inline-block mr-2">My Wishlist</h3><span><span class="tp-wishlist-counter" t-esc="len(wishes)"/> items</span>
+                        <h3 class="d-inline-block mr-2">Mi lista de deseos</h3><span><span class="tp-wishlist-counter" t-esc="len(wishes)"/> items</span>
                         <div class="custom-control custom-checkbox mt-2">
                             <input type="checkbox" class="custom-control-input" id="b2b_wish" value="1"/>
-                            <label class="custom-control-label" for="b2b_wish">Add product to my cart but keep it in my wishlist</label>
+                            <label class="custom-control-label" for="b2b_wish">Agregar producto a mi carrito y mantenerlo en mi lista de deseos</label>
                         </div>
                     </div>
                 </div>
@@ -144,7 +150,7 @@
                                     </div>
                                     <span t-esc="wish.product_id.dr_brand_id.name"/>
                                     <button type="button" role="button" class="btn btn-block btn-link tp_wish_add mt-2">
-                                        <i class="lnr lnr-cart"/> Add to cart
+                                        <i class="lnr lnr-cart"/> Agregar al carrito
                                     </button>
                                 </div>
                             </div>
@@ -154,12 +160,10 @@
             </section>
         </xpath>
     </template>
-    <!-- <template id="website_sale_product_recently_viewed_inherit" inherit_id="website_sale.product">
-        <xpath expr="//h6[hasclass('product_price')]" position="after">
-            <span t-esc="product.dr_brand_id.name"></span>
+    
 
-        </xpath>
-    </template> -->
+    
+   
 
     <template id="website_sale_payment_inherit" inherit_id="website_sale.payment">
         <xpath expr="//div[@id='payment_method']/h3" position="replace">

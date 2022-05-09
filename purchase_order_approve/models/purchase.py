@@ -17,7 +17,7 @@ class PurchaseOrder(models.Model):
     _inherit = "purchase.order"
 
     validator_user_id = fields.Many2one('res.users', "Validator User")
-    
+
     def button_approve(self, force=False):
         self.write({
             'state': 'purchase',

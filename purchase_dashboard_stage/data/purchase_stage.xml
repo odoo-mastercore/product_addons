@@ -46,4 +46,9 @@
         <field name="sequence">8</field>
         <field name="identifier">partial_delivery</field>
     </record>
+    <record model="purchase.order.stage" id="stage_national_purchase">
+        <field name="name">Compras Nacionales</field>
+        <field name="sequence">9</field>
+        <field name="identifier">national_purchase</field>
+    </record>
 </odoo>

@@ -14,7 +14,7 @@
     'website': 'https://sinapsys.global',
     'license': 'AGPL-3',
     "category": "Product",
-    "depends": ["product", "website_sale", "fleet"],
+    "depends": ["product", "website_sale", "fleet", "product_group_code"],
     'data': [
         'views/product_form_inherit.xml'
     ],

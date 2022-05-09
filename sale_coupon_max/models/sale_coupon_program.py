@@ -42,10 +42,12 @@ class SaleCouponProgram(models.Model):
                 products_qties[product] for product in valid_products)
             # Avoid program if 1 ordered foo on a program '1 foo, 1 free foo'
             if program.promo_applicability == 'on_current_order' and \
-               program.reward_type == 'product' and program._get_valid_products(program.reward_product_id):
+               program.reward_type == 'product' and \
+                   program._get_valid_products(program.reward_product_id):
                 ordered_rule_products_qty -= program.reward_product_quantity
             if program.rule_max_quantity > 0:
-                if ordered_rule_products_qty <= program.rule_max_quantity:
+                if ordered_rule_products_qty >= program.rule_min_quantity and \
+                    ordered_rule_products_qty <= program.rule_max_quantity:
                     valid_program_ids.append(program.id)
             else:
                 if ordered_rule_products_qty >= program.rule_min_quantity:
