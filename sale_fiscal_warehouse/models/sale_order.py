@@ -35,7 +35,8 @@ class SaleOrder(models.Model):
                 ('code', '=', 'outgoing')
             ], limit=1)
             fiscal_pick = pick_init.copy({
-                'picking_type_id': picking_type_id.id
+                'picking_type_id': picking_type_id.id,
+                'location_id': picking_type_id.default_location_src_id.id
             })
             fiscal_pick.action_confirm()
             fiscal_pick.action_assign()
