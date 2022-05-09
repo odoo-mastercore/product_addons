@@ -29,8 +29,22 @@ class SaleOrder(models.Model):
     def action_confirm(self):
         rec = super(SaleOrder, self).action_confirm()
         if self.fiscal_sale:
-            picks = self.mapped('picking_ids').filtered(
-                lambda p: p.state in 'assigned')
-            for pick in picks:
-                pick.action_pick_cavv()
+            pick_init = self.mapped('picking_ids').filtered(lambda p: p.state in 'assigned')
+            picking_type_id = self.env['stock.picking.type'].search([
+                ('warehouse_id.fiscal_warehouse', '=', True),
+                ('code', '=', 'outgoing')
+            ], limit=1)
+            fiscal_pick = pick_init.copy({
+                'picking_type_id': picking_type_id.id
+            })
+            fiscal_pick.action_confirm()
+            fiscal_pick.action_assign()
         return rec
+
+    def _prepare_invoice(self):
+        res = super(SaleOrder, self)._prepare_invoice()
+        if self.fiscal_sale:
+            res.update({
+                'journal_id': self.warehouse_fiscal_id.journal_fiscal_id.id
+            })
+        return res
