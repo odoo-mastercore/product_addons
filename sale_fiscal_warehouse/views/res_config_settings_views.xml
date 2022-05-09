@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="res_config_settings_view_form_inherit_bcv" model="ir.ui.view">
+            <field name="name">res.config.settings.view.form.inherit.bcv</field>
+            <field name="model">res.config.settings</field>
+            <field name="priority" eval="40"/>
+            <field name="inherit_id" ref="stock.res_config_settings_view_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//div[@data-key='stock']//field[@name='group_stock_multi_warehouses']/../.." position="after">
+                    <div class="col-xs-12 col-md-6 o_setting_box" name="warehouse_cron_fiscal_validation" attrs="{'invisible': [('group_stock_multi_warehouses', '=', False)]}">
+                        <div class="o_setting_left_pane">
+                            <field name="warehouse_fiscal" />
+                        </div>
+                        <div class="o_setting_right_pane">
+                            <label for="warehouse_fiscal"/>
+                            <span class="fa fa-lg fa-building-o" title="Values set here are company-specific." />
+                            <div class="text-muted">
+                                Use no fiscal warehouse
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-md-6 o_setting_box" name="warehouse_cron_fiscal" attrs="{'invisible': [('warehouse_fiscal', '=', False)]}">
+                        <div class="o_setting_left_pane">
+                        </div>
+                        <div class="o_setting_right_pane">
+                            <label for="warehouse_fiscal_id"/>
+                            <span class="fa fa-lg fa-building-o" title="Values set here are company-specific." />
+                            <div class="text-muted">
+                                Fiscal warehouse
+                            </div>
+                            <field name="warehouse_fiscal_id"/>
+                        </div>
+                    </div>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>
