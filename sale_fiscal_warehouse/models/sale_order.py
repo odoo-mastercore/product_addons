@@ -45,11 +45,16 @@ class SaleOrder(models.Model):
                 ('monthly_fiscal_purchase', '=', True)
             ], limit=1)
             if not Purchase:
+                wh_id = self.env['stock.picking.type'].search([
+                    ('warehouse_id.fiscal_warehouse', '=', True),
+                    ('code', '=', 'incoming')
+                ], limit=1)
                 Purchase = self.env['purchase.order'].sudo().create({
                     'date_order': fields.Datetime.now(),
-                    'partner_id': self.company_id.partner_id.id,
+                    'partner_id': self.env.ref('__giro__.partner_fiscal').id or self.company_id.partner_id.id,
                     'purchase_type': 'national',
-                    'monthly_fiscal_purchase': True
+                    'monthly_fiscal_purchase': True,
+                    'picking_type_id': wh_id.id
                 })
             order_line = []
             if self.order_line:
@@ -58,13 +63,14 @@ class SaleOrder(models.Model):
                     taxes = fpos.map_tax(line.product_id.supplier_taxes_id) if fpos else line.product_id.supplier_taxes_id
                     if taxes:
                         taxes = taxes.filtered(lambda t: t.company_id.id == self.company_id.id)
+                    price = line.price_unit - ((line.price_unit * 30) / 100)
                     order_line.append([0, 0, {
                         'name': line.name,
                         'product_qty': line.product_uom_qty,
                         'product_id': line.product_id.id,
                         'product_uom': line.product_id.uom_po_id.id,
                         'date_planned': fields.Datetime.now(),
-                        'price_unit': 1.0,
+                        'price_unit': float(price),
                         'taxes_id': [(6, 0, taxes.ids)],
                         'sale_origin_create': self.id,
                     }])
