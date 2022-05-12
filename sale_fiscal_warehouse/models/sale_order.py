@@ -6,7 +6,6 @@
 #
 #
 ###############################################################################
-from locale import currency
 from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError
 
