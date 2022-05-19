@@ -7,11 +7,10 @@
 #
 ###############################################################################
 
-from functools import partial
 import logging
-from datetime import datetime
 from dateutil.relativedelta import relativedelta
 from odoo import api, fields, models, _, SUPERUSER_ID
+from odoo.exceptions import UserError, ValidationError
 
 _logger = logging.getLogger(__name__)
 

@@ -31,7 +31,8 @@ class SaleOrder(models.Model):
             pick_init = self.mapped('picking_ids').filtered(lambda p: p.state in 'assigned')
             picking_type_id = self.env['stock.picking.type'].search([
                 ('warehouse_id.fiscal_warehouse', '=', True),
-                ('code', '=', 'outgoing')
+                ('code', '=', 'outgoing'),
+                ('company_id', '=', self.company_id.id)
             ], limit=1)
             fiscal_pick = pick_init.copy({
                 'picking_type_id': picking_type_id.id,
@@ -42,14 +43,21 @@ class SaleOrder(models.Model):
 
             Purchase = self.env['purchase.order'].sudo().search([
                 ('state', '=', 'draft'),
-                ('monthly_fiscal_purchase', '=', True)
+                ('monthly_fiscal_purchase', '=', True),
+                ('company_id', '=', self.company_id.id)
             ], limit=1)
             if not Purchase:
+                wh_id = self.env['stock.picking.type'].search([
+                    ('warehouse_id.fiscal_warehouse', '=', True),
+                    ('code', '=', 'incoming'),
+                    ('company_id', '=', self.company_id.id)
+                ], limit=1)
                 Purchase = self.env['purchase.order'].sudo().create({
                     'date_order': fields.Datetime.now(),
-                    'partner_id': self.company_id.partner_id.id,
+                    'partner_id': self.env.ref('__giro__.partner_fiscal').id or self.company_id.partner_id.id,
                     'purchase_type': 'national',
-                    'monthly_fiscal_purchase': True
+                    'monthly_fiscal_purchase': True,
+                    'picking_type_id': wh_id.id
                 })
             order_line = []
             if self.order_line:
@@ -58,13 +66,18 @@ class SaleOrder(models.Model):
                     taxes = fpos.map_tax(line.product_id.supplier_taxes_id) if fpos else line.product_id.supplier_taxes_id
                     if taxes:
                         taxes = taxes.filtered(lambda t: t.company_id.id == self.company_id.id)
+
+                    rate = (1 / self.currency_rate)
+                    amount = line.price_unit * rate
+                    price_unit = amount - ((amount * 30) / 100)
+
                     order_line.append([0, 0, {
                         'name': line.name,
                         'product_qty': line.product_uom_qty,
                         'product_id': line.product_id.id,
                         'product_uom': line.product_id.uom_po_id.id,
                         'date_planned': fields.Datetime.now(),
-                        'price_unit': 1.0,
+                        'price_unit': float(price_unit),
                         'taxes_id': [(6, 0, taxes.ids)],
                         'sale_origin_create': self.id,
                     }])
