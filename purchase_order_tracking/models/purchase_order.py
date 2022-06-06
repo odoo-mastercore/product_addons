@@ -40,7 +40,13 @@ class PurchaseOrder(models.Model):
 
     # stage 1
     # date_order es la estimada de requisicion
-    warehouse_company = fields.Many2one('res.partner', string="Empresa Warehouse")
+    warehouse_company = fields.Many2one(
+        'res.partner',
+        string="Empresa Warehouse",
+        compute="_compute_warehouse_company",
+        store=True,
+        readonly=False
+    )
     origin_purchase = fields.Many2one(
         'res.country',
         string='Origin of the purchase', ondelete='restrict'
@@ -142,6 +148,17 @@ class PurchaseOrder(models.Model):
         string='Tiempo estimado',
     )
 
+    @api.depends('transit_warehouse_ids')
+    def _compute_warehouse_company(self):
+        for order in self:
+            if not order.warehouse_company:
+                warehouse = False
+                if order.transit_warehouse_ids:
+                    for wh in order.transit_warehouse_ids:
+                        warehouse = wh.shipping_company
+                order.warehouse_company = warehouse
+
+
     @api.depends("order_line.weight", "order_line.volume", "purchase_type")
     def _compute_weight_total(self):
         for order in self:
@@ -204,10 +221,12 @@ class PurchaseOrder(models.Model):
             order.warehouse_volume_total = volume
 
     def action_view_invoice(self):
+        stage_invoice = self.env.ref('purchase_dashboard_stage.stage_invoice_payment', raise_if_not_found=False)
+        if len(self.supplier_ids) == 0:
+            if self.stage_id.id != stage_invoice.id:
+                raise ValidationError(_("Debe estar en la etapa << %s >> para poder crear una factura" % (stage_invoice.name)))
         result = super().action_view_invoice()
-        result['context'].update({
-            'default_purchase_type': self.purchase_type,
-        })
+        result['context'].update({'default_purchase_type': self.purchase_type})
         return result
 
     def button_confirm(self):
@@ -412,6 +431,9 @@ class PurchaseOrder(models.Model):
         self = self.with_context(context)
         if self.purchase_type == 'international':
             purchase_completed = True
+            purchase_cancel = False
+            if self.state == 'cancel':
+                purchase_cancel = True
             estimated_time = self.env['estimated.time'].search([
                 ('purchase_order_id', '=', self.id),
                 ('registry_id', '=', self.id)
@@ -481,7 +503,7 @@ class PurchaseOrder(models.Model):
                         vals.update({'stage_id': stage_order.id})
                         super(PurchaseOrder, self).write(vals)
 
-                if purchase_completed:
+                if purchase_completed and not purchase_cancel:
                     stage_verification = self.env.ref('purchase_dashboard_stage.stage_cost_verification', raise_if_not_found=False)
                     stage_partial = self.env.ref('purchase_dashboard_stage.stage_partial_delivery', raise_if_not_found=False)
                     pickings = self.env['stock.picking'].search([
@@ -492,6 +514,11 @@ class PurchaseOrder(models.Model):
                         vals.update({'stage_id': stage_partial.id})
                     else:
                         vals.update({'stage_id': stage_verification.id})
+                    super(PurchaseOrder, self).write(vals)
+
+                if purchase_cancel:
+                    stage_cancel = self.env.ref('purchase_dashboard_stage.stage_purchase_cancel', raise_if_not_found=False)
+                    vals.update({'stage_id': stage_cancel.id})
                     super(PurchaseOrder, self).write(vals)
 
         return res

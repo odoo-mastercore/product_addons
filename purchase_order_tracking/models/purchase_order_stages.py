@@ -149,6 +149,16 @@ class AccountMoveEstimated(models.Model):
     @api.model
     def create(self, vals):
         if not 'write_purchase_done' in self.env.context:
+            invoice_exist = self.search([
+                ('purchase_order_id', '=', vals.get('purchase_order_id')),
+                ('invoice_id', '=', vals.get('invoice_id'))
+            ])
+            if invoice_exist:
+                raise ValidationError(_(
+                    'La factura << %s >> en Facturación/Pago/Entrega ya se encuentra seleccionada' % (
+                        invoice_exist.invoice_id.name
+                    )
+                ))
             res = super(AccountMoveEstimated, self).create(vals)
             if 'create_view' in vals and vals.get('create_view'):
                 stage_invoice = self.env.ref('purchase_dashboard_stage.stage_invoice_payment', raise_if_not_found=False)
@@ -187,7 +197,8 @@ class AccountMoveEstimated(models.Model):
                         'purchase_order_id': self.purchase_order_id.id,
                         'create_view': False,
                         'estimated_days': stage_next.estimated_time,
-                        'stage_entry_date': real_date
+                        'stage_entry_date': real_date,
+                        'shipping_company': self.purchase_order_id.warehouse_company.id or False
                     })
                     self.env['estimated.time'].create({
                         'stage_name': stage_next.name,
@@ -231,7 +242,7 @@ class TransitWarehouse(models.Model):
         compute="_compute_estimated_date_warehouse",
     )
     tracking_number = fields.Char(string="Número de Tracking")
-    shipping_company = fields.Char(string="Empresa de Envío")
+    shipping_company = fields.Many2one('res.partner', string="Empresa de Envío")
     warehouse_number = fields.Char(string="Número de Warehouse")
     warehouse_receipt_date = fields.Datetime(
         string="Fecha de recepción de Warehouse"
@@ -275,7 +286,7 @@ class TransitWarehouse(models.Model):
             ])
             if warehouse_exist:
                 raise ValidationError(_(
-                    'La orden de entrega %s en Transito Warehouse ya se encuentra seleccionada' % (
+                    'La orden de entrega << %s >> en Transito Warehouse ya se encuentra seleccionada' % (
                         warehouse_exist.order_picking_id.name
                     )
                 ))
@@ -291,7 +302,8 @@ class TransitWarehouse(models.Model):
                     'estimated_date': fields.Datetime.from_string(res.stage_entry_date) + relativedelta(days=int(stage_warehouse.estimated_time)),
                     'purchase_order_id': res.purchase_order_id.id,
                     'real_date': real_date_warehouse,
-                    'registry_id': res.id
+                    'registry_id': res.id,
+                    'pick_id': res.order_picking_id.id if res.order_picking_id else False
                 })
                 if 'warehouse_receipt_date' in vals and vals.get('warehouse_receipt_date'):
                     stage_next = self.env.ref('purchase_dashboard_stage.stage_transit_marine_land', raise_if_not_found=False)
@@ -308,11 +320,11 @@ class TransitWarehouse(models.Model):
                         'entry_date': warehouse_date,
                         'estimated_date': fields.Datetime.from_string(warehouse_date) + relativedelta(days=int(stage_next.estimated_time)),
                         'purchase_order_id': res.purchase_order_id.id,
-                        'registry_id': res_warehouse.id
+                        'registry_id': res_warehouse.id,
+                        'pick_id': res.order_picking_id.id if res.order_picking_id else False
                     })
             return res
         return self
-
 
     @api.model
     def write(self, vals):
@@ -336,13 +348,19 @@ class TransitWarehouse(models.Model):
 
             if 'estimated_days' in vals and vals.get('estimated_days'):
                 new_estimated = self.stage_entry_date + relativedelta(days=int(vals.get('estimated_days')))
-                estimated_times.write({
-                    'estimated_date': new_estimated
-                })
+                estimated_times.write({'estimated_date': new_estimated})
+
+            if 'order_picking_id' in vals and vals.get('order_picking_id'):
+                pick = self.env['stock.picking'].sudo().search([('id', '=', int(vals.get('order_picking_id')))])
+                if pick:
+                    estimated_times.write({'pick_id': pick.id})
 
             if 'warehouse_receipt_date' in vals and vals.get('warehouse_receipt_date'):
                 warehouse_date = vals.get('warehouse_receipt_date')
-                estimated_times.write({'real_date': warehouse_date})
+                estimated_times.write({
+                    'real_date': warehouse_date,
+                    'pick_id': self.order_picking_id.id if self.order_picking_id else False
+                })
                 res_warehouse = self.env['transit.land.maritime'].create({
                     'purchase_order_id': self.purchase_order_id.id,
                     'estimated_days': stage_next.estimated_time,
@@ -357,7 +375,8 @@ class TransitWarehouse(models.Model):
                     'entry_date': warehouse_date,
                     'estimated_date': fields.Datetime.from_string(warehouse_date) + relativedelta(days=int(stage_next.estimated_time)),
                     'purchase_order_id': self.purchase_order_id.id,
-                    'registry_id': res_warehouse.id
+                    'registry_id': res_warehouse.id,
+                    'pick_id': res_warehouse.order_picking_id.id
                 })
         return super(TransitWarehouse, self).write(vals)
 
@@ -444,6 +463,11 @@ class TransitLandMaritime(models.Model):
                 estimated_times.write({
                     'estimated_date': new_estimated
                 })
+            if 'order_picking_id' in vals and vals.get('order_picking_id'):
+                pick = self.env['stock.picking'].sudo().search([('id', '=', int(vals.get('order_picking_id')))])
+                if pick:
+                    estimated_times.write({'pick_id': pick.id})
+
             if 'real_date_arrival' in vals and vals.get('real_date_arrival'):
                 real_date_arrival = vals.get('real_date_arrival')
                 estimated_times.write({'real_date': real_date_arrival})
