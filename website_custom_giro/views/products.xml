@@ -19,6 +19,18 @@
         </xpath>
     </template>
 
+    <template id="website_sale_product_inherit_hide_add_to_cart" inherit_id="website_sale.product">
+        <xpath expr="//a[@id='add_to_cart']" position="replace">
+           <span></span>
+        </xpath>
+    </template>
+
+    <template id="website_sale_product_mini_inherit_hide_add_to_cart" inherit_id="droggol_theme_common.product">
+        <xpath expr="//a[@id='add_to_cart']" position="replace">
+           <span></span>
+        </xpath>
+    </template>
+
     <template id="droggol_theme_common_dr_sale_cart_sidebar_inherit" inherit_id="droggol_theme_common.dr_sale_cart_sidebar">
         <xpath expr="//div[hasclass('media-body')]/div/h6[1]" position="attributes">
             <attribute name="t-if">
@@ -119,10 +131,10 @@
                 <div class="row align-items-center">
                     <div class="col-12">
                         <h3 class="d-inline-block mr-2">Mi lista de deseos</h3><span><span class="tp-wishlist-counter" t-esc="len(wishes)"/> items</span>
-                        <div class="custom-control custom-checkbox mt-2">
+                        <!-- <div class="custom-control custom-checkbox mt-2">
                             <input type="checkbox" class="custom-control-input" id="b2b_wish" value="1"/>
                             <label class="custom-control-label" for="b2b_wish">Agregar producto a mi carrito y mantenerlo en mi lista de deseos</label>
-                        </div>
+                        </div> -->
                     </div>
                 </div>
                 <div class="row py-4">
@@ -149,9 +161,9 @@
                                         </t>
                                     </div>
                                     <span t-esc="wish.product_id.dr_brand_id.name"/>
-                                    <button type="button" role="button" class="btn btn-block btn-link tp_wish_add mt-2">
-                                        <i class="lnr lnr-cart"/> Agregar al carrito
-                                    </button>
+                                    <!-- <button type="button" role="button" class="btn btn-block btn-link tp_wish_add mt-2"> -->
+                                        <!-- <i class="lnr lnr-cart"/> Agregar al carrito -->
+                                    <!-- </button> -->
                                 </div>
                             </div>
                         </div>
