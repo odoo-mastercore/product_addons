@@ -6,13 +6,19 @@
         <field name="model">purchase.order</field>
         <field name="inherit_id" ref="purchase.purchase_order_form"/>
         <field name="arch" type="xml">
+            <xpath expr="//form" position="attributes">
+                <attribute name="duplicate">false</attribute>
+            </xpath>
             <xpath expr="//field[@name='partner_ref']" position="attributes">
                 <attribute name="string">Número factura del proveedor</attribute>
             </xpath>
             <xpath expr="//field[@name='currency_id']" position="after">
                 <field
                     name="warehouse_company"
-                    attrs="{'invisible': [('purchase_type', '!=', 'international')]}" />
+                    attrs="{
+                        'invisible': [('purchase_type', '!=', 'international')],
+                        'required': [('stage_identifier', 'in', ('transit_warehouse', 'transit_marine_land', 'stock_reception', 'cost_verification', 'partial_delivery'))]
+                    }"/>
                 <field
                     name="estimated_days_init"
                     attrs="{'readonly': [('stage_identifier', 'not in', ('requisition_order'))], 'invisible': [('purchase_type', '!=', 'international')]}" />
@@ -85,7 +91,7 @@
                         context="{'default_purchase_order_id': id, 'default_create_view': True}"
                         nolabel="1"
                         >
-                        <tree>
+                        <tree delete="false">
                             <field name="estimated_date" />
                             <field name="invoice_id" />
                             <field name="real_date" />
@@ -112,8 +118,8 @@
                         'invisible': [('stage_identifier', 'not in', ('transit_warehouse', 'transit_marine_land', 'stock_reception', 'cost_verification', 'partial_delivery'))]
                     }">
                     <group string="Warehouses">
-                        <field name="transit_warehouse_ids" context="{'default_purchase_order_id': id, 'default_create_view': True}" nolabel="1">
-                            <tree>
+                        <field name="transit_warehouse_ids" context="{'default_purchase_order_id': id, 'default_create_view': True, 'default_shipping_company': warehouse_company}" nolabel="1">
+                            <tree delete="false">
                                 <field name="estimated_date" />
                                 <field name="tracking_number" />
                                 <field name="shipping_company" />
@@ -125,7 +131,7 @@
                     </group>
                     <group name="warehouse_invoices" string="Facturas Warehouse">
                         <field name="invoice_warehouse_ids" widget="many2many" nolabel="1">
-                            <tree>
+                            <tree delete="false">
                                 <field name="name" />
                                 <field name="partner_id" string="Empresa warehouse"/>
                                 <field name="invoice_date" string="Fecha factura" />
@@ -209,6 +215,7 @@
                                 <field name="entry_date" />
                                 <field name="estimated_date" />
                                 <field name="real_date" />
+                                <field name="pick_id" />
                             </tree>
                         </field>
                     </group>
@@ -379,6 +386,7 @@
                             <field name="registry_id" invisible="1"/>
                             <field name="estimated_date" readonly="1"/>
                             <field name="real_date" readonly="1" />
+                            <field name="pick_id" readonly="1" />
                         </group>
                     </group>
                 </sheet>

@@ -8,8 +8,6 @@
 ###############################################################################
 
 import logging
-from datetime import datetime
-from dateutil.relativedelta import relativedelta
 from odoo import api, fields, models, _, SUPERUSER_ID
 
 _logger = logging.getLogger(__name__)
@@ -30,3 +28,7 @@ class EstimatedTime(models.Model):
         readonly=True
     )
     registry_id = fields.Integer(string="id de registro")
+    pick_id = fields.Many2one(
+        'stock.picking',
+        string='Descripción',
+    )
