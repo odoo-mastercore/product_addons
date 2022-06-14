@@ -11,13 +11,13 @@
             attrs="{'invisible': [
               '|', '|',
               ('type', '!=', 'out_invoice'),
-              ('payment_type', '!=', 'credit_payment'),
+              ('payment_type2', '!=', 'credit_payment'),
               ('authorized_clearence', '=', True)
           ]}"/>
               <!--('state', '!=', 'posted'),-->
         </button>
         <field name="journal_id" position="after">
-          <field name="payment_type" placeholder="Select" 
+          <field name="payment_type2" placeholder="Select" 
             attrs="{
               'invisible': [('type', '!=', 'out_invoice')],
               'required': [('type', '=', 'out_invoice')]

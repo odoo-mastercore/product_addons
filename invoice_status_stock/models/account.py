@@ -14,7 +14,7 @@ _logger = logging.getLogger(__name__)
 class AccountMove(models.Model):
     _inherit = 'account.move'
 
-    payment_type = fields.Selection(
+    payment_type2 = fields.Selection(
         selection=[
             ('cash_payment','Pago de Contado'), 
             ('credit_payment','Pago a Credito')
