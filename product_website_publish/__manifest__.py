@@ -7,16 +7,18 @@
 #
 ###############################################################################
 {
-    'name': 'Product vehicle type',
+    'name': 'Product Website Published',
     'version': '13.0.0.1',
-    'summary': 'Add vehicle type field in model product',
+    'summary': 'Add button to published product in product form and massive published',
     'author': 'SINAPSYS GLOBAL SA || MASTERCORE SAS',
     'website': 'https://sinapsys.global',
     'license': 'AGPL-3',
     "category": "Product",
-    "depends": ["product", "website_sale", "fleet", "product_fleet"],
+    "depends": ["product"],
     'data': [
-        'views/product_form_inherit.xml'
+        'views/product_template.xml',
+        'wizard/to_publish_product.xml',
+        'wizard/to_hide_product.xml'
     ],
     'installable': True,
     "auto_install": False,

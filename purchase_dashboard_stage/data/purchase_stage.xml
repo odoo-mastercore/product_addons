@@ -46,4 +46,14 @@
         <field name="sequence">8</field>
         <field name="identifier">partial_delivery</field>
     </record>
+    <record model="purchase.order.stage" id="stage_national_purchase">
+        <field name="name">Compras Nacionales</field>
+        <field name="sequence">9</field>
+        <field name="identifier">national_purchase</field>
+    </record>
+    <record model="purchase.order.stage" id="stage_purchase_cancel">
+        <field name="name">Compras Canceladas</field>
+        <field name="sequence">10</field>
+        <field name="identifier">purchase_cancel</field>
+    </record>
 </odoo>

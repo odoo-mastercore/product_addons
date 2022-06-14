@@ -7,16 +7,16 @@
 #
 ###############################################################################
 {
-    'name': 'Product vehicle type',
+    'name': 'Website custom giro',
     'version': '13.0.0.1',
-    'summary': 'Add vehicle type field in model product',
+    'summary': 'custom website giro',
     'author': 'SINAPSYS GLOBAL SA || MASTERCORE SAS',
     'website': 'https://sinapsys.global',
     'license': 'AGPL-3',
     "category": "Product",
-    "depends": ["product", "website_sale", "fleet", "product_fleet"],
+    "depends": ["website_sale", "droggol_theme_common", 'theme_prime'],
     'data': [
-        'views/product_form_inherit.xml'
+        'views/products.xml'
     ],
     'installable': True,
     "auto_install": False,

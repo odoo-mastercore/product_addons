@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <record id="to_hide_product_wizard_form" model="ir.ui.view">
+    <field name="name">to_hide_product_wizard_form</field>
+    <field name="model">to.hide.product.wizard</field>
+    <field name="arch" type="xml">
+      <form string="Asistente de ocultar de productos">
+        <group>
+        <p>¿Esta seguro que desea ocultar los productos Seleccionados?</p> 
+        </group>
+        <footer>
+          <button string="Confirmar" name="confirm" type="object" class="oe_highlight" />
+          or
+          <button string="Cancel" class="oe_link" special="cancel"/>
+        </footer>
+      </form>
+    </field>
+  </record>
+
+  <record id="consult_to_hide_product_wizard_confirm" model="ir.ui.view">
+    <field name="name">Consult to hide Product Wizard Confirm</field>
+    <field name="model">to.hide.product.wizard</field>
+    <field name="arch" type="xml">
+      <form string="Asistente de Activacion">
+        <group>
+        <p>Operación Realizada con Exito!</p>
+        </group>
+        <footer>
+          <button string="Cerrar" class="oe_highlight" special="cancel"/>
+        </footer>
+      </form>
+    </field>
+  </record>
+
+  <record id="action_to_hide_wizard" model="ir.actions.act_window">
+    <field name="name">Asistente para ocultar los productos</field>
+    <field name="type">ir.actions.act_window</field>
+    <field name="res_model">to.hide.product.wizard</field>
+    <field name="view_mode">form</field>
+    <field name="view_id" ref="to_hide_product_wizard_form"/>
+    <field name="target">new</field>
+    <field name="context">{}</field>
+    <field name="binding_view_types">list</field>
+    <field name="help">Asistente para Activar Los productos seleccionados.</field>
+    <field name="binding_model_id" ref="product.model_product_template" />
+  </record>
+</odoo>

@@ -27,6 +27,7 @@
         'views/purchase_order.xml',
         'views/account_move.xml',
         'views/pallets.xml',
-        'views/product_template.xml'
+        'views/product_template.xml',
+        'views/stock_picking.xml'
     ],
 }
