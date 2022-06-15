@@ -28,7 +28,7 @@ class AccountMove(models.Model):
 
     def authorized_dispatch(self):
         for record in self:
-            if (record.payment_type == 'credit_payment' and
+            if (record.payment_type2 == 'credit_payment' and
                     not record.authorized_clearence):
                 record.authorized_clearence = True
 
