@@ -15,7 +15,7 @@
                 </xpath>
             </field>
         </record>
-
+is_warning_admin_user
         <record id="header_view" model="ir.ui.view">
             <field name="name">Credit  Limit</field>
             <field name="model">sale.order</field>
@@ -24,10 +24,14 @@
                 <xpath expr="//field[@name='payment_term_id']" position="after">
                     <field name="due_amount" invisible="1"/>
                     <field name="is_warning" invisible="1"/>
+                    <field name="is_warning_admin_user" invisible="1" />
                 </xpath>
                 <xpath expr="//header" position="after">
                     <div class="alert alert-info" role="alert" style="display: inline-block; margin-bottom:0px;" attrs="{'invisible':[('is_warning','=',False)]}">
                         El cliente tiene una deuda por la cantidad de: <strong><field name="due_amount"/></strong>. en las ordenes <field name="invoices_debts_name"/>
+                    </div>
+                    <div class="alert alert-danger" role="alert" style="display: inline-block; margin-bottom:0px;" attrs="{'invisible':[('is_warning_admin_user','=',False)]}">
+                        El cliente tiene una deuda por la cantidad de: <strong><field name="due_amount"/></strong>. en las ordenes <field name="invoices_debts_name"/>. ¿Seguro que quiere continuar?
                     </div>
                 </xpath>
             </field>
