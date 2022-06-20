@@ -10,6 +10,9 @@
                 <field name="probability"/>
                 <label> %</label>
             </xpath>
+            <field name="stage_id" position="attributes">
+              <attribute name="readonly">1</attribute>
+            </field>
         </field>
     </record>
     <record id="crm_lead_view_form_inherit" model="ir.ui.view">
@@ -17,6 +20,9 @@
         <field name="model">crm.lead</field>
         <field name="inherit_id" ref="crm.crm_lead_view_form" />
         <field name="arch" type="xml">
+          <field name="stage_id" position="attributes">
+            <attribute name="readonly">True</attribute>
+          </field>
             <h2 class="o_row row no-gutters d-flex" position="replace">
                 <h2 class="o_row row no-gutters d-flex">
                     <div class="col" attrs="{'invisible': [('type', '=', 'lead')]}">

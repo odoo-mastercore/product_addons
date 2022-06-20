@@ -92,7 +92,7 @@ class StockPicking(models.Model):
                         rec.state_invoice = "PROCESO"
                     else:
                         rec.state_invoice = "NO_PAGO"
-                        if rec.sale_id.invoice_ids[0].payment_type == 'credit_payment':
+                        if rec.sale_id.invoice_ids[0].payment_type2 == 'credit_payment':
                             rec.state_invoice = 'CREDITO'
             else:
                 self.state_invoice = "SIN_FACTURA"

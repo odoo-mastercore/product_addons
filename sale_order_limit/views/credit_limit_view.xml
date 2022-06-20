@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <record id="view_customer_form_inherit" model="ir.ui.view">
+            <field name="name">Credit  Limit</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//page[@name='accounting']" position="inside">
+                    <group string="Credit Limit">
+                        <field name="active_limit"/>
+                        <field name="warning_stage"  attrs="{'invisible':[('active_limit','=',False)]}"/>
+                        <field name="blocking_stage" attrs="{'invisible':[('active_limit','=',False)]}"/>
+                    </group>
+                </xpath>
+            </field>
+        </record>
+is_warning_admin_user
+        <record id="header_view" model="ir.ui.view">
+            <field name="name">Credit  Limit</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_order_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='payment_term_id']" position="after">
+                    <field name="due_amount" invisible="1"/>
+                    <field name="is_warning" invisible="1"/>
+                    <field name="is_warning_admin_user" invisible="1" />
+                </xpath>
+                <xpath expr="//header" position="after">
+                    <div class="alert alert-info" role="alert" style="display: inline-block; margin-bottom:0px;" attrs="{'invisible':[('is_warning','=',False)]}">
+                        El cliente tiene una deuda por la cantidad de: <strong><field name="due_amount"/></strong>. en las ordenes <field name="invoices_debts_name"/>
+                    </div>
+                    <div class="alert alert-danger" role="alert" style="display: inline-block; margin-bottom:0px;" attrs="{'invisible':[('is_warning_admin_user','=',False)]}">
+                        El cliente tiene una deuda por la cantidad de: <strong><field name="due_amount"/></strong>. en las ordenes <field name="invoices_debts_name"/>. ¿Seguro que quiere continuar?
+                    </div>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

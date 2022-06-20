@@ -14,7 +14,7 @@ _logger = logging.getLogger(__name__)
 class AccountMove(models.Model):
     _inherit = 'account.move'
 
-    payment_type = fields.Selection(
+    payment_type2 = fields.Selection(
         selection=[
             ('cash_payment','Pago de Contado'), 
             ('credit_payment','Pago a Credito')
@@ -28,7 +28,7 @@ class AccountMove(models.Model):
 
     def authorized_dispatch(self):
         for record in self:
-            if (record.payment_type == 'credit_payment' and
+            if (record.payment_type2 == 'credit_payment' and
                     not record.authorized_clearence):
                 record.authorized_clearence = True
 
