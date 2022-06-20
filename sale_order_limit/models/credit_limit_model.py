@@ -32,12 +32,11 @@ class ResPartner(models.Model):
         for rec in self:
             if not rec.id:
                 continue
-            debts_amount = rec.env['account.move'].search([
+            debts_amount = rec.env['account.move'].sudo().search([
                 ('partner_id', '=', rec.id),
                 ('type', '=', 'out_invoice'),
                 ('invoice_payment_state', 'in', ['not_paid','in_payment']),
                 ('state', '=', 'posted')])
-            
             debit_amount = 0
             invoice_debts = ''
             if debts_amount:
