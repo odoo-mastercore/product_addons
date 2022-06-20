@@ -148,6 +148,21 @@ class PurchaseOrder(models.Model):
         string='Tiempo estimado',
     )
 
+    # compute inherit
+    # def _compute_invoice(self):
+    #     super(PurchaseOrder, self)._compute_invoice()
+    #     for order in self:
+    #         invoices_others = self.env['account.move'].sudo().search([
+    #             ('partner_id', '!=', order.warehouse_company.id),
+    #             ('invoice_origin', '=', order.name),
+    #             ('type', '=', 'in_invoice')]
+    #         )
+    #         print("############################")
+    #         print(invoices_others)
+            # invoices = order.mapped('order_line.invoice_lines.move_id')
+            # order.invoice_ids = invoices
+            # order.invoice_count = len(invoices)
+
     @api.depends('transit_warehouse_ids')
     def _compute_warehouse_company(self):
         for order in self:
@@ -208,15 +223,23 @@ class PurchaseOrder(models.Model):
     @api.depends('order_line.invoice_lines.move_id')
     def _compute_invoice_warehouse_ids(self):
         for order in self:
-            invoices = order.mapped('order_line.invoice_lines.move_id').filtered(
-                lambda inv: inv.partner_id != order.partner_id
+            # invoices = order.mapped('order_line.invoice_lines.move_id').filtered(
+            #     lambda inv: inv.partner_id == order.warehouse_company \
+            #         and inv.invoice_origin == order.name
+            # )
+            invoices = self.env['account.move'].sudo().search([
+                ('partner_id', '=', order.warehouse_company.id),
+                ('invoice_origin', '=', order.name),
+                ('type', '=', 'in_invoice')]
             )
-            order.invoice_warehouse_ids = invoices
             weight = volume = 0
             if invoices:
+                order.invoice_warehouse_ids = invoices
                 for invoice in invoices:
                     weight += invoice.weight_provider_total
                     volume += invoice.volume_provider_total
+            else:
+                order.invoice_warehouse_ids = False
             order.warehouse_weight_total = weight
             order.warehouse_volume_total = volume
 
@@ -407,11 +430,7 @@ class PurchaseOrder(models.Model):
 
                 if len(self.picking_ids) == 1:
                     if self.state != 'cancel':
-                        print("Pasando por aqui")
                         self.picking_ids[0].write({'scheduled_date': self.estimated_stock_date})
-                # print("############################################")
-                # print(stock_from)
-                # print(transit_from)
         else:
             self.estimated_stock_date = False
 
