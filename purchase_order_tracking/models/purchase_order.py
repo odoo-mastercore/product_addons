@@ -406,11 +406,12 @@ class PurchaseOrder(models.Model):
                     self.estimated_stock_date = self.create_date + relativedelta(days=int(default_total_days))
 
                 if len(self.picking_ids) == 1:
-                    if self.picking_ids[0].state == 'cancel':
+                    if self.state != 'cancel':
+                        print("Pasando por aqui")
                         self.picking_ids[0].write({'scheduled_date': self.estimated_stock_date})
-                print("############################################")
-                print(stock_from)
-                print(transit_from)
+                # print("############################################")
+                # print(stock_from)
+                # print(transit_from)
         else:
             self.estimated_stock_date = False
 
