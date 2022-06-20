@@ -22,13 +22,13 @@
                 <field
                     name="estimated_days_init"
                     attrs="{'readonly': [('stage_identifier', 'not in', ('requisition_order'))], 'invisible': [('purchase_type', '!=', 'international')]}" />
+            </xpath>
+            <xpath expr="//field[@name='date_order']" position="after">
                 <field
                     name="estimated_stock_date"
                     readonly="1"
                     force_save="1"
                     attrs="{'invisible': [('purchase_type', '!=', 'international')]}" />
-            </xpath>
-            <xpath expr="//field[@name='date_order']" position="after">
                 <field
                     name="purchase_type"
                     string="Tipo de Compra"
@@ -40,11 +40,11 @@
                     placeholder="Pais"
                     class="o_address_country"
                     options='{"no_open": True, "no_create": True}'
-                    attrs="{'invisible': [('purchase_type', '!=', 'international')], 'required': [('purchase_type', '=', 'international')]}"
+                    attrs="{'invisible': [('purchase_type', '!=', 'international')], 'required': [('purchase_type', '=', 'international')], 'readonly': [('stage_identifier', 'not in', ('requisition_order'))]}"
                     />
                 <field
                     name="load_type"
-                    attrs="{'invisible': [('purchase_type', '!=', 'international')]}"
+                    attrs="{'invisible': [('purchase_type', '!=', 'international')], 'readonly': [('stage_identifier', 'not in', ('requisition_order'))]}"
                     string="Tipo de carga"/>
                 <field name="stage_identifier" invisible="1"/>
                 <label for="weight_total" />
@@ -57,6 +57,12 @@
                     <field name="volume_total"/>
                     <span><field name="volume_uom_name"/></span>
                 </div>
+            </xpath>
+            <xpath expr="//field[@name='date_order']" position="attributes">
+                <attribute name="attrs">{'invisible': [('purchase_type', '!=', 'national')]}</attribute>
+            </xpath>
+            <xpath expr="//group[@name='planning']//div/field[@name='date_planned']" position="attributes">
+                <attribute name="attrs">{'invisible': [('purchase_type', '!=', 'national')]}</attribute>
             </xpath>
             <xpath expr="//field[@name='product_qty']" position="before">
                 <field name="weight" attrs="{'column_invisible': [('parent.purchase_type', 'in', 'national')]}" />
