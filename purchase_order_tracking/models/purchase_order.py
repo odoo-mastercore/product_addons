@@ -244,10 +244,11 @@ class PurchaseOrder(models.Model):
             order.warehouse_volume_total = volume
 
     def action_view_invoice(self):
-        stage_invoice = self.env.ref('purchase_dashboard_stage.stage_invoice_payment', raise_if_not_found=False)
-        if len(self.supplier_ids) == 0:
-            if self.stage_id.id != stage_invoice.id:
-                raise ValidationError(_("Debe estar en la etapa << %s >> para poder crear una factura" % (stage_invoice.name)))
+        if self.purchase_type == 'international':
+            stage_invoice = self.env.ref('purchase_dashboard_stage.stage_invoice_payment', raise_if_not_found=False)
+            if len(self.supplier_ids) == 0:
+                if self.stage_id.id != stage_invoice.id:
+                    raise ValidationError(_("Debe estar en la etapa << %s >> para poder crear una factura" % (stage_invoice.name)))
         result = super().action_view_invoice()
         result['context'].update({'default_purchase_type': self.purchase_type})
         return result
@@ -429,7 +430,7 @@ class PurchaseOrder(models.Model):
                     self.estimated_stock_date = self.create_date + relativedelta(days=int(default_total_days))
 
                 if len(self.picking_ids) == 1:
-                    if self.state not in ('done', 'cancel'):
+                    if self.picking_ids[0].state not in ('done', 'cancel'):
                         self.picking_ids[0].write({'scheduled_date': self.estimated_stock_date})
         else:
             self.estimated_stock_date = False
