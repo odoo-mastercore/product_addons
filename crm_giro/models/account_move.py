@@ -20,10 +20,6 @@ class AccountMove(models.Model):
             order = self.env['sale.order'].search(
                 [('name', '=', self.invoice_origin)]
             )
-            _logger.info("########################################")
-            _logger.info("Self Origen: " + str(self.invoice_origin))
-            _logger.info("Vals: " + str(vals))
-            _logger.info("Orden: " + str(order))
             if not order or order != False or order != "":
                 lead = self.env['crm.lead'].search(
                     [('name', '=', order.opportunity_id.name)]

@@ -7,12 +7,32 @@
 #
 ###############################################################################
 from odoo import models, fields, api, _
+from odoo.exceptions import UserError
 import logging
 _logger = logging.getLogger(__name__)
 
 class CrmLead(models.Model):
     _inherit = 'crm.lead'
 
+
+
+    def action_sale_quotations_new(self):
+        res = super(CrmLead, self).action_sale_quotations_new()
+        orders = self.mapped('order_ids').filtered(
+            lambda o: o.state in ('draft', 'sent', 'sale')
+        )
+        if orders:
+            raise UserError(_("No puede crear mas de un pedido de venta a una aportunidad"))
+
+        return res
+
+    @api.depends('order_ids')
+    def _compute_quotation(self):
+        orders = self.mapped('order_ids').filtered(
+            lambda o: o.state in ('draft', 'sent', 'sale')
+        )
+        if orders:
+            self.order = True
 
     @api.depends('quotation_count')
     def _compute_stage(self):
@@ -46,11 +66,26 @@ class CrmLead(models.Model):
                 pass
 
 
+    order = fields.Boolean(
+        string="Orden",
+        compute="_compute_quotation"
+    )
+
     stage_id = fields.Many2one(
         compute="_compute_stage",
         index=True,
         store=True,
         readonly=True
+    )
+    state_picking = fields.Selection(
+        selection=[
+            ('assigned', 'PREPARADO'),
+            ('partial', 'PARCIALMENTE'),
+            ('done', 'REALIZADO'),
+            ('returns', 'DEVOLUCIONES'),
+            ('mediation', 'RECLAMOS')
+        ],
+        string="Estado del Picking"
     )
 
 
