@@ -350,16 +350,17 @@ class TransitWarehouse(models.Model):
                 new_estimated = self.stage_entry_date + relativedelta(days=int(vals.get('estimated_days')))
                 estimated_times.write({'estimated_date': new_estimated})
 
+            pick_id = 0
             if 'order_picking_id' in vals and vals.get('order_picking_id'):
-                pick = self.env['stock.picking'].sudo().search([('id', '=', int(vals.get('order_picking_id')))])
-                if pick:
-                    estimated_times.write({'pick_id': pick.id})
+                pick_id = self.env['stock.picking'].sudo().search([('id', '=', int(vals.get('order_picking_id')))]).id
+                if pick_id:
+                    estimated_times.write({'pick_id': pick_id})
 
             if 'warehouse_receipt_date' in vals and vals.get('warehouse_receipt_date'):
                 warehouse_date = vals.get('warehouse_receipt_date')
                 estimated_times.write({
                     'real_date': warehouse_date,
-                    'pick_id': self.order_picking_id.id if self.order_picking_id else False
+                    'pick_id': pick_id if pick_id else False
                 })
                 res_warehouse = self.env['transit.land.maritime'].create({
                     'purchase_order_id': self.purchase_order_id.id,

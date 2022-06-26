@@ -32,12 +32,11 @@ class ResPartner(models.Model):
         for rec in self:
             if not rec.id:
                 continue
-            debts_amount = rec.env['account.move'].search([
+            debts_amount = rec.env['account.move'].sudo().search([
                 ('partner_id', '=', rec.id),
                 ('type', '=', 'out_invoice'),
                 ('invoice_payment_state', 'in', ['not_paid','in_payment']),
                 ('state', '=', 'posted')])
-            
             debit_amount = 0
             invoice_debts = ''
             if debts_amount:
@@ -71,14 +70,19 @@ class SaleOrder(models.Model):
     is_warning = fields.Boolean()
     due_amount = fields.Float(related='partner_id.due_amount')
     invoices_debts_name = fields.Char(related='partner_id.invoices_debts_name')
+    is_warning_admin_user = fields.Boolean('Mensaje de advertencia admins', default=False)
 
     @api.onchange('partner_id')
     def check_due(self):
 
-        if self.partner_id and self.partner_id.active_limit:
+        if self.user_has_groups('sale_order_limit.allow_sales_order_with_debts'):
             if self.partner_id.is_debtor:
-                raise UserError('Se ha superado el limite de crédito de este cliente y no se podra generar una orden de venta. Las facturas con deudas son:' + str(self.invoices_debts_name))
-            elif self.partner_id and not self.partner_id.is_debtor and self.partner_id.due_amount > self.partner_id.warning_stage:
-                self.is_warning = True
-            else:
-                self.is_warning = False
+                self.is_warning_admin_user = True
+        else:
+            if self.partner_id and self.partner_id.active_limit:
+                if self.partner_id.is_debtor:
+                    raise UserError('Se ha superado el limite de crédito de este cliente y no se podra generar una orden de venta. Las facturas con deudas son:' + str(self.invoices_debts_name))
+                elif self.partner_id and not self.partner_id.is_debtor and self.partner_id.due_amount > self.partner_id.warning_stage:
+                    self.is_warning = True
+                else:
+                    self.is_warning = False

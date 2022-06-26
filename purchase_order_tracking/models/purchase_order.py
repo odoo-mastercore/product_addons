@@ -148,6 +148,21 @@ class PurchaseOrder(models.Model):
         string='Tiempo estimado',
     )
 
+    # compute inherit
+    # def _compute_invoice(self):
+    #     super(PurchaseOrder, self)._compute_invoice()
+    #     for order in self:
+    #         invoices_others = self.env['account.move'].sudo().search([
+    #             ('partner_id', '!=', order.warehouse_company.id),
+    #             ('invoice_origin', '=', order.name),
+    #             ('type', '=', 'in_invoice')]
+    #         )
+    #         print("############################")
+    #         print(invoices_others)
+            # invoices = order.mapped('order_line.invoice_lines.move_id')
+            # order.invoice_ids = invoices
+            # order.invoice_count = len(invoices)
+
     @api.depends('transit_warehouse_ids')
     def _compute_warehouse_company(self):
         for order in self:
@@ -208,23 +223,32 @@ class PurchaseOrder(models.Model):
     @api.depends('order_line.invoice_lines.move_id')
     def _compute_invoice_warehouse_ids(self):
         for order in self:
-            invoices = order.mapped('order_line.invoice_lines.move_id').filtered(
-                lambda inv: inv.partner_id != order.partner_id
+            # invoices = order.mapped('order_line.invoice_lines.move_id').filtered(
+            #     lambda inv: inv.partner_id == order.warehouse_company \
+            #         and inv.invoice_origin == order.name
+            # )
+            invoices = self.env['account.move'].sudo().search([
+                ('partner_id', '=', order.warehouse_company.id),
+                ('invoice_origin', '=', order.name),
+                ('type', '=', 'in_invoice')]
             )
-            order.invoice_warehouse_ids = invoices
             weight = volume = 0
             if invoices:
+                order.invoice_warehouse_ids = invoices
                 for invoice in invoices:
                     weight += invoice.weight_provider_total
                     volume += invoice.volume_provider_total
+            else:
+                order.invoice_warehouse_ids = False
             order.warehouse_weight_total = weight
             order.warehouse_volume_total = volume
 
     def action_view_invoice(self):
-        stage_invoice = self.env.ref('purchase_dashboard_stage.stage_invoice_payment', raise_if_not_found=False)
-        if len(self.supplier_ids) == 0:
-            if self.stage_id.id != stage_invoice.id:
-                raise ValidationError(_("Debe estar en la etapa << %s >> para poder crear una factura" % (stage_invoice.name)))
+        if self.purchase_type == 'international':
+            stage_invoice = self.env.ref('purchase_dashboard_stage.stage_invoice_payment', raise_if_not_found=False)
+            if len(self.supplier_ids) == 0:
+                if self.stage_id.id != stage_invoice.id:
+                    raise ValidationError(_("Debe estar en la etapa << %s >> para poder crear una factura" % (stage_invoice.name)))
         result = super().action_view_invoice()
         result['context'].update({'default_purchase_type': self.purchase_type})
         return result
@@ -257,6 +281,8 @@ class PurchaseOrder(models.Model):
                             'registry_id': res_provider.id
                         })
                         po.stage_id = stage_next.id
+
+                        self.picking_ids[0].write({'scheduled_date': self.estimated_stock_date})
                     except Exception as e:
                         _logger.error("Error - button_confirm %s" % (e))
                         pass
@@ -402,6 +428,10 @@ class PurchaseOrder(models.Model):
                     self.estimated_stock_date = partial_date + relativedelta(days=int(default_total_days))
                 else:
                     self.estimated_stock_date = self.create_date + relativedelta(days=int(default_total_days))
+
+                if len(self.picking_ids) == 1:
+                    if self.picking_ids[0].state not in ('done', 'cancel'):
+                        self.picking_ids[0].write({'scheduled_date': self.estimated_stock_date})
         else:
             self.estimated_stock_date = False
 
