@@ -26,16 +26,11 @@
     'website': 'https://store.webkul.com/Odoo-Inventory-Barcode-Scanning.html',
     'license': 'Other proprietary',
     'category': 'Warehouse',
-    'sequence': '10',
-    'version': '1.0.0',
-    'live_test_url': 'http://odoodemo.webkul.com/?module=barcode_stock&version=12.0',
+    'version': '13.0.0',
     'depends': ['stock'],
     'data': [
         'views/stock_picking_views.xml',
     ],
     'images': ['static/description/Banner.png'],
     'application': True,
-    'pre_init_hook': 'pre_init_check',
-    'price': 15,
-    'currency': 'EUR',
 }
