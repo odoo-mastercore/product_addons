@@ -10,6 +10,9 @@
                 <field name="probability"/>
                 <label> %</label>
             </xpath>
+            <field name="stage_id" position="attributes">
+              <attribute name="readonly">1</attribute>
+            </field>
         </field>
     </record>
     <record id="crm_lead_view_form_inherit" model="ir.ui.view">
@@ -17,26 +20,40 @@
         <field name="model">crm.lead</field>
         <field name="inherit_id" ref="crm.crm_lead_view_form" />
         <field name="arch" type="xml">
-            <h2 class="o_row row no-gutters d-flex" position="replace">
-                <h2 class="o_row row no-gutters d-flex">
-                    <div class="col" attrs="{'invisible': [('type', '=', 'lead')]}">
-                        <label for="planned_revenue" class="oe_edit_only"/>
-                        <div class="o_row">
-                            <field name="company_currency" invisible="1"/>
-                            <field name="planned_revenue" class="oe_inline" widget="monetary" options="{'currency_field': 'company_currency'}"/>
-                            <span class="oe_grey p-2"> en </span>
-                        </div>
-                    </div>
-                    <div class="col">
-                        <label for="probability" class="oe_edit_only"/>
-                        <div id="probability" class="o_row">
-                            <field name="is_automated_probability" invisible="1"/>
-                            <field name="probability" widget="float" class="oe_inline" readonly="1"/>
-                            <span class="oe_grey p-2"> %</span>
-                        </div>
-                    </div>
-                </h2>
+          <div class="oe_title" position="before">
+            <field name="state_picking" invisible="1"/>
+            <field name="order" invisible="1"/>
+            <widget name="web_ribbon" title="Parcialmente" attrs="{'invisible': [('state_picking', '!=', 'partial')]}"/>
+            <widget name="web_ribbon" title="Realizado" attrs="{'invisible': [('state_picking', '!=', 'done')]}"/>
+            <widget name="web_ribbon" title="devolucion" attrs="{'invisible': [('state_picking', '!=', 'returns')]}"/>
+            <widget name="web_ribbon" title="Reclamo" attrs="{'invisible': [('state_picking', '!=', 'mediation')]}"/>
+          </div>
+          <field name="stage_id" position="attributes">
+            <attribute name="readonly">True</attribute>
+          </field>
+          <xpath expr="//sheet[1]/group[1]/group[2]/field[@name='partner_id']" position="attributes">
+            <attribute name="attrs">{'readonly': [('order', '=', True)]}</attribute>
+          </xpath>
+          <h2 class="o_row row no-gutters d-flex" position="replace">
+            <h2 class="o_row row no-gutters d-flex">
+              <div class="col" attrs="{'invisible': [('type', '=', 'lead')]}">
+                <label for="planned_revenue" class="oe_edit_only"/>
+                <div class="o_row">
+                  <field name="company_currency" invisible="1"/>
+                  <field name="planned_revenue" class="oe_inline" widget="monetary" options="{'currency_field': 'company_currency'}"/>
+                  <span class="oe_grey p-2"> en </span>
+                </div>
+              </div>
+              <div class="col">
+                <label for="probability" class="oe_edit_only"/>
+                <div id="probability" class="o_row">
+                  <field name="is_automated_probability" invisible="1"/>
+                  <field name="probability" widget="float" class="oe_inline" readonly="1"/>
+                  <span class="oe_grey p-2"> %</span>
+                </div>
+              </div>
             </h2>
+          </h2>
         </field>
     </record>
 </odoo>
