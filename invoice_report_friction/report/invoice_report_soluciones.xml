@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
   <data>
-    <template id="inherit_report_invoice_document">
+    <template id="inherit_report_invoice_document_friction">
       <t t-call="web.external_layout">
         <t t-set="o" t-value="o.with_context(lang=lang)" />
         <br/>
@@ -105,63 +105,63 @@
               </tbody>
             </table>
           </div>
-          <br/><br/><br/><br/>
+          <br/><br/><br/><br/><br/>
           <div class="container" style="font-family: Arial,sans-serif,Helvetica,Monaco,Georgia,Futura,Verdana;">
             <div class="row">
               <t t-set="iva" t-value="o.amount_by_group[0][1]"/>
-              <div class="col-8" style="border-color: black; border-width: 2px; border-style: solid;">
+              <div class="col-8" style="border-color: blue; border-width: 2px; border-style: solid;">
                 <p>
                   Conversión a la tasa BCV Bs US$, según fecha de emisión del documento, con lo establacido en el ART.116 del banco de BCV y el ART.25 de la lay IVA
                 </p>
                 <center>
                   <table>
                     <tr>
-                      <th class="text-right" style="padding-right: 50px; padding-top: 10;">
+                      <td class="text-right" style="padding-right: 50px; padding-top: 10;">
                         Base $
-                      </th>
-                      <td class="text-left">
-                        <span t-field="o.amount_untaxed"/>
                       </td>
+                      <th class="text-left">
+                        <span t-field="o.amount_untaxed"/>
+                      </th>
                     </tr>
                     <tr>
-                      <th class="text-right" style="padding-right: 50px; padding-top: 10;">IVA $ 16%</th>
-                      <td class="text-left">
+                      <td class="text-right" style="padding-right: 50px; padding-top: 10;">IVA $ 16%</td>
+                      <th class="text-left">
                         <span>$</span>
                         <span t-esc="iva"/>
-                      </td>
+                      </th>
                     </tr>
                     <tr>
-                      <th class="text-right" style="padding-right: 50px; padding-top: 10;">Total $</th>
-                      <td class="text-left">
+                      <td class="text-right" style="padding-right: 50px; padding-top: 10;">Total $</td>
+                      <th class="text-left">
                         <span t-field="o.amount_total"/>
-                      </td>
+                      </th>
                     </tr>
                   </table>
                   <br/>
                 </center>
               </div>
-              <div class="col-4" style="border-color: black; border-width: 2px; border-style: solid;">
+              <div class="col-4" style="border-color: blue; border-width: 2px; border-style: solid;">
                 <br/>
                 <table>
                   <tr>
-                    <th class="text-right" style="padding-right: 50px; padding-top: 10;">
+                    <td class="text-right" style="padding-right: 50px; padding-top: 10;">
                       Sub-Total
-                    </th>
-                    <td class="text-left">
+                    </td>
+                    <th class="text-left">
                       <span t-field="o.amount_untaxed"/>
-                    </td>
+                    </th>
                   </tr>
                   <tr>
-                    <th class="text-right" style="padding-right: 50px; padding-top: 10;">IVA</th>
-                    <td class="text-left">
+                    <td class="text-right" style="padding-right: 50px; padding-top: 10;">IVA</td>
+                    <th class="text-left">
                       <span t-esc="iva"/>
-                    </td>
+                    </th>
                   </tr>
                   <tr>
-                    <th class="text-right" style="padding-right: 50px; padding-top: 10;">Total Factura</th>
-                    <td class="text-left">
+                    <td class="text-right" style="padding-right: 50px; padding-top: 10;">Total Factura</td>
+                    <th class="text-left">
                       <span t-field="o.amount_total"/>
-                    </td>
+                    </th>
                   </tr>
                 </table>
                 <br/>
@@ -170,13 +170,13 @@
             </div>
             <div class="row">
               <div class="col-12 text-center">
-                <p style="font-size: 90%;">
-                  <strong>GRAFICAS NERIO TIP, C.A.</strong> RIF.: J-07032562-3 - TELF.:. (0261) 7516963 - 7529054. AV. 28 LA LIMPIA URB. SUCRE Nº 61-111. 
+                <p style="font-size: 90%; color: blue;">
+                  <strong style="color: blue;">GRAFICAS NERIO TIP, C.A.</strong> RIF.: J-07032562-3 - TELF.:. (0261) 7516963 - 7529054. AV. 28 LA LIMPIA URB. SUCRE Nº 61-111. 
                   (No PROVIDENCIA SENIAT/04/00171 DE FECHA: 08/02/2008) REGIÓN ZULIANA. No DE CONTROL DESDE 00-000501 HASTA EL No. 00-000750 
                   (5/50/03) (FECHA LIBRE) FECHA DE ELEBORACIÓN 26/06/2019
                 </p>
                 <div class="text-right">
-                  <strong>ORIGINAL - CLIENTE</strong>
+                  <strong style="color: blue;">ORIGINAL - CLIENTE</strong>
                 </div>
               </div>
             </div>
@@ -185,21 +185,21 @@
       </t>
     </template>
  
-    <template id="template_invoice_document">
+    <template id="template_invoice_document_friction">
       <t t-call="web.html_container">
         <t t-foreach="docs" t-as="o">
           <t t-set="lang" t-value="o.partner_id.lang"/>
-          <t t-call="invoice_report_friction.inherit_report_invoice_document" t-lang="lang"/>
+          <t t-call="invoice_report_friction.inherit_report_invoice_document_friction" t-lang="lang"/>
         </t>
       </t>
     </template>
 
     <report 
-      id="action_report_invoice_document"
+      id="action_report_invoice_document_soluciones"
       model="account.move"
       string="Factura Friction"
-      name="invoice_report_friction.template_invoice_document"
-      file="invoice_report_friction.template_invoice_document"
+      name="invoice_report_friction.template_invoice_document_friction"
+      file="invoice_report_friction.template_invoice_document_friction"
       report_type="qweb-pdf"
       print_report_name="'Factura - %s' % (object.name).replace('/','-')"
     />
