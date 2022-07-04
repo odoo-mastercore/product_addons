@@ -10,7 +10,7 @@
         <div class="container" style="font-family: Arial,sans-serif,Helvetica,Monaco,Georgia,Futura,Verdana; font-size: 80%;">
           <div class="row">
             <div class="col-7">
-              <table>
+              <table class="table">
                 <br/>
                 <tr style="padding-top: 25;">
                   <td class="text-left" style="padding-right: 50px; padding-top: 20;">Cliente</td>
@@ -52,7 +52,7 @@
               </table>
             </div>
             <div class="col-5">
-              <table>
+              <table class="table">
                 <br/>
                 <tr style="padding-top: 25;">
                   <td class="text-left" style="padding-left: 15px; padding-right: 20px; padding-top: 10;">
