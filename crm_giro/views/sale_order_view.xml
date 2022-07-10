@@ -8,6 +8,9 @@
       <field name="arch" type="xml">
         <xpath expr="//button[@name='action_confirm'][2]" position="replace">
         </xpath>
+        <field name="opportunity_id" position="attributes">
+          <attribute name="readonly">True</attribute>
+        </field>
       </field>
     </record>
   </data>

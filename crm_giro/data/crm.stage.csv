@@ -5,7 +5,8 @@ crm_state_003,"Negociación de Presupuesto",False,3,False,True,50.00
 crm_state_004,"Apartado de Inventario",False,4,False,True,80.00
 crm_state_005,"Pago por Confirmar",False,5,False,True,90.00
 crm_state_006,"Facturación",False,6,False,True,95.00
-crm_state_007,"Despachado",True,7,False,True,100.00
+crm_state_007,"Despachado",False,7,False,True,100.00
 crm_state_008,"Perdida",False,8,True,True,0.00
 crm_state_009,"Reclamos/ Devoluciones",False,9,True,True,0.00
+crm_state_010,"Ganado",True,10,True,True,0.00
 
