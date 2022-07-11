@@ -42,12 +42,13 @@
         <field name="res_model">account.move</field>
         <field name="view_mode">tree</field>
         <field name="view_ids"
-                   eval="[(5, 0, 0),(0, 0, {'view_mode': 'tree','view_id': ref('sales_report_advance.account_move_advance_tree')})]"/>
+                   eval="[(5, 0, 0),(0, 0, {'view_mode': 'tree','view_id': ref('sales_report_advance.account_move_advance_tree')}),(0, 0, {'view_mode': 'form', 'view_id': ref('account.view_move_form')})]"/>
     </record>
 
     <menuitem action="account_move_advance_tree" 
         id="button_action_account_move_advance" 
-        parent="account.menu_finance_receivables" 
-        name="Avanzado" 
-        sequence="2"/>
+        parent="account.menu_finance_receivables"
+        groups="sales_report_advance.allow_sales_report_advance"
+        name="Información avanzada" 
+        sequence="10"/>
 </odoo>

@@ -21,7 +21,8 @@
         'account'
     ],
     'data': [
-        'views/account_move_tree.xml'
+        'views/account_move_tree.xml',
+        'security/security.xml'
     ],
     'installable': True,
 

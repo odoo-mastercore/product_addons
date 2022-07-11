@@ -20,13 +20,11 @@ class AccountMove(models.Model):
     # @api.depends('invoice_line_ids')
     def _compute_product_line_cost_total(self):
         for rec in self:
-            _logger.info('***********************' + str(rec.invoice_line_ids))
             cost = 0
             price = 0
             for line in rec.invoice_line_ids:
                 cost += line.product_id.standard_price
                 price += line.price_total
-                _logger.info('***********COSTO&***********' + str(cost))
             rec.product_line_cost_totals = cost
             rec.product_line_price_totals = price
             rec.product_line_margin_totals = price - cost if cost > 0 else 1
