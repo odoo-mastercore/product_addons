@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="moves_lines_package_wizard_form" model="ir.ui.view">
+        <field name="name">stock.picking.package.wizard.form</field>
+        <field name="model">stock.picking.package.wizard</field>
+        <field name="arch" type="xml">
+            <form>
+                <!-- <field name="name" /> -->
+                <group name="stages">
+                    <field name="move_line_ids">
+                        <tree editable="bottom" create="false" >
+                            <field name="location_dest_id" invisible="1" />
+                            <field name="company_id" invisible="1" />
+                            <field name="product_id" />
+                            <field name="location_id" />
+                            <field name="package_id"  />
+                            <field name="result_package_id" />
+                            <field name="product_uom_qty" />
+                            <field name="qty_done" />
+                        </tree>
+                    </field>
+                </group>
+                <footer>
+                    <button
+                        name="execute"
+                        string="Guardar"
+                        type="object"
+                        class="btn-primary"
+                    />
+                    <button string="Cancel" class="btn-secondary" special="cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+    <!-- <act_window
+        id="action_move_lines_package_wizard"
+        name="Asignar paquetes"
+        res_model="stock_picking_package_wizard"
+        view_mode="form"
+        target="new"
+        view_id="package_details.moves_lines_package_wizard_form"
+    /> -->
+</odoo>

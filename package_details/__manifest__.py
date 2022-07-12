@@ -19,6 +19,8 @@
     ],
     "data": [
         "views/view_quant_package_form.xml",
+        "wizard/move_lines_package.xml"
+        # "views/picking.xml"
     ],
     "auto_install": False,
     "installable": True,

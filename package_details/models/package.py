@@ -13,7 +13,7 @@ import logging
 _logger = logging.getLogger(__name__)
 
 
-class ProductTemplate(models.Model):
+class StockQuantPackage(models.Model):
     _inherit = "stock.quant.package"
 
     width = fields.Float(string="Ancho")
