@@ -16,11 +16,11 @@ _logger = logging.getLogger(__name__)
 class StockQuantPackage(models.Model):
     _inherit = "stock.quant.package"
 
-    width = fields.Float(string="Ancho")
-    height = fields.Float(string="Alto")
-    length = fields.Float(string="Largo")
-    weight = fields.Float(string="Peso")
-    volumen = fields.Float(string="Volumen")
+    width = fields.Float(string="Ancho", default=0)
+    height = fields.Float(string="Alto", default=0)
+    length = fields.Float(string="Largo", default=0)
+    weight = fields.Float(string="Peso", default=0)
+    volumen = fields.Float(string="Volumen", default=0)
     package_type = fields.Selection([
         ('box', 'Caja'),
         ('envelope', 'Sobre')

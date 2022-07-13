@@ -1,15 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
-  <odoo>
-    <record id="stock_picking_form_form_inherit_details" model="ir.ui.view">
+<odoo>
+  <record id="stock_picking_form_form_inherit_details" model="ir.ui.view">
         <field name="name">stock.picking.form.form.inherit.details</field>
         <field name="model">stock.picking</field>
         <field name="inherit_id" ref="stock.view_picking_form"/>
         <field name="arch" type="xml">
+              
             <xpath expr="//notebook" position="inside">
-              <page string="Paquetes">
-                
-              </page>
+                <page string="Detalles del paquete" attrs="{'invisible': [('has_packages', '=', False)]}">
+                    <group>
+                        <group>
+                          <field name="dispatcher_id" />
+                          <field name="width_total" />
+                          <field name="height_total" />
+                          <field name="length_total" />
+                        </group>
+                        <group>
+                          <field name="weight_total" />
+                          <field name="volumen_total" />
+                          <field name="packages_total" />
+                        </group>
+                    </group>
+                </page>
             </xpath>
         </field>
-      </record>
-  </odoo>
+    </record>
+</odoo>
