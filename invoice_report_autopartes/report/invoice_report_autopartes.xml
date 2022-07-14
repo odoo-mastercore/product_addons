@@ -158,7 +158,7 @@
                       I.V.A 16%
                     </td>
                     <th class="text-right" style="padding-left: 50px; padding-top: 5;">
-                      <span t-field="o.amount_untaxed"/>
+                      <span t-esc="iva"/>
                     </th>
                   </tr>
                   <tr>
@@ -166,7 +166,7 @@
                       TOTAL BS.
                     </th>
                     <th class="text-right" style="padding-left: 50px; padding-top: 5;">
-                      <span t-field="o.amount_untaxed"/>
+                      <span t-field="o.amount_total"/>
                     </th>
                   </tr>
                 </table>

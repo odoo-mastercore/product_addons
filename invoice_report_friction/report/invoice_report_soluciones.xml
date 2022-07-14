@@ -7,7 +7,7 @@
         <br/>
         <div class="container" style="font-family: Arial,sans-serif,Helvetica,Monaco,Georgia,Futura,Verdana; font-size: 80%;">
           <div class="row">
-            <div class="col-7">
+            <div class="col-6">
               <table>
                 <tr>
                   <th class="text-left" style="padding-right: 50px; padding-top: 10;">Cliente</th>
@@ -18,7 +18,8 @@
                 <tr>
                   <th class="text-left" style="padding-right: 50px; padding-top: 10;">R.I.F</th>
                   <td class="text-left">
-                    <span t-field="o.partner_id.l10n_latam_identification_type_id"/>
+                    <span t-field="o.partner_id.l10n_latam_identification_type_id.l10n_ve_code"/>
+                    <span>-</span>
                     <span t-field="o.partner_id.vat"/>
                   </td>
                 </tr>
@@ -37,14 +38,14 @@
                 </tr>
               </table>
             </div>
-            <div class="col-5">
+            <div class="col-6">
               <table>
                 <tr>
                   <th class="text-right" style="padding-right: 25px; padding-top: 10;">
-                    <h3>Factura Nº</h3>
+                    <h4>Factura Nº</h4>
                   </th>
                   <td class="text-left">
-                    <h3 t-field="o.name"/>
+                    <h4 t-field="o.name"/>
                   </td>
                 </tr>
                 <tr>
@@ -108,10 +109,12 @@
           <br/><br/><br/><br/><br/>
           <div class="container" style="font-family: Arial,sans-serif,Helvetica,Monaco,Georgia,Futura,Verdana;">
             <div class="row">
-              <t t-set="iva" t-value="o.amount_by_group[0][1]"/>
+              <t t-set="taxes" t-value="o.amount_by_group[0][1]"/>
+              <t t-set="currency" t-value="1 / o.currency_id.rate" />
               <div class="col-8" style="border-color: blue; border-width: 2px; border-style: solid;">
                 <p>
-                  Conversión a la tasa BCV Bs US$, según fecha de emisión del documento, con lo establacido en el ART.116 del banco de BCV y el ART.25 de la lay IVA
+                  Conversión a la tasa BCV Bs <span t-esc="currency" t-options="{'widget': 'float', 'precision': 2}"/> 
+                  por US$, según fecha de emisión del documento, con lo establacido en el ART.116 del banco de BCV y el ART.25 de la lay IVA
                 </p>
                 <center>
                   <table>
@@ -125,9 +128,9 @@
                     </tr>
                     <tr>
                       <td class="text-right" style="padding-right: 50px; padding-top: 10;">IVA $ 16%</td>
-                      <th class="text-left">
+                      <th class="text-right">
                         <span>$</span>
-                        <span t-esc="iva"/>
+                        <span t-esc="taxes" t-options="{'widget': 'float', 'precision': 2}"/>
                       </th>
                     </tr>
                     <tr>
@@ -143,24 +146,27 @@
               <div class="col-4" style="border-color: blue; border-width: 2px; border-style: solid;">
                 <br/>
                 <table>
+                  <t t-set="subtotal" t-value="o.amount_untaxed * currency"/>
+                  <t t-set="iva" t-value="taxes * currency"/>
+                  <t t-set="total" t-value="o.amount_total * currency"/>
                   <tr>
                     <td class="text-right" style="padding-right: 50px; padding-top: 10;">
                       Sub-Total
                     </td>
                     <th class="text-left">
-                      <span t-field="o.amount_untaxed"/>
+                      <span t-esc="subtotal" t-options="{'widget': 'float', 'precision': 2}"/>
                     </th>
                   </tr>
                   <tr>
-                    <td class="text-right" style="padding-right: 50px; padding-top: 10;">IVA</td>
-                    <th class="text-left">
-                      <span t-esc="iva"/>
+                    <td class="text-right" style="padding-right: 50px; padding-top: 10;">IVA 16%</td>
+                    <th class="text-right">
+                      <span t-esc="iva" t-options="{'widget': 'float', 'precision': 2}"/>
                     </th>
                   </tr>
                   <tr>
                     <td class="text-right" style="padding-right: 50px; padding-top: 10;">Total Factura</td>
                     <th class="text-left">
-                      <span t-field="o.amount_total"/>
+                      <span t-esc="total" t-options="{'widget': 'float', 'precision': 2}"/>
                     </th>
                   </tr>
                 </table>
@@ -168,18 +174,18 @@
                 <br/>
               </div>
             </div>
-            <div class="row">
-              <div class="col-12 text-center">
-                <p style="font-size: 90%; color: blue;">
-                  <strong style="color: blue;">GRAFICAS NERIO TIP, C.A.</strong> RIF.: J-07032562-3 - TELF.:. (0261) 7516963 - 7529054. AV. 28 LA LIMPIA URB. SUCRE Nº 61-111. 
-                  (No PROVIDENCIA SENIAT/04/00171 DE FECHA: 08/02/2008) REGIÓN ZULIANA. No DE CONTROL DESDE 00-000501 HASTA EL No. 00-000750 
-                  (5/50/03) (FECHA LIBRE) FECHA DE ELEBORACIÓN 26/06/2019
-                </p>
-                <div class="text-right">
-                  <strong style="color: blue;">ORIGINAL - CLIENTE</strong>
-                </div>
-              </div>
-            </div>
+            <!--<div class="row">-->
+              <!--<div class="col-12 text-center">-->
+                <!--<p style="font-size: 90%; color: blue;">-->
+                  <!--<strong style="color: blue;">GRAFICAS NERIO TIP, C.A.</strong> RIF.: J-07032562-3 - TELF.:. (0261) 7516963 - 7529054. AV. 28 LA LIMPIA URB. SUCRE Nº 61-111. -->
+                  <!--(No PROVIDENCIA SENIAT/04/00171 DE FECHA: 08/02/2008) REGIÓN ZULIANA. No DE CONTROL DESDE 00-000501 HASTA EL No. 00-000750 -->
+                  <!--(5/50/03) (FECHA LIBRE) FECHA DE ELEBORACIÓN 26/06/2019-->
+                <!--</p>-->
+                <!--<div class="text-right">-->
+                  <!--<strong style="color: blue;">ORIGINAL - CLIENTE</strong>-->
+                <!--</div>-->
+              <!--</div>-->
+            <!--</div>-->
           </div>
         </div>
       </t>
