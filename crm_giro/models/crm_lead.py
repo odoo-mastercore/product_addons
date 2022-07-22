@@ -87,3 +87,5 @@ class CrmLead(models.Model):
         )
         if orders:
             self.order = True
+        else:
+            self.order = False
