@@ -14,8 +14,6 @@ _logger = logging.getLogger(__name__)
 class CrmLead(models.Model):
     _inherit = 'crm.lead'
 
-
-
     def action_sale_quotations_new(self):
         res = super(CrmLead, self).action_sale_quotations_new()
         orders = self.mapped('order_ids').filtered(
@@ -26,13 +24,6 @@ class CrmLead(models.Model):
 
         return res
 
-    @api.depends('order_ids')
-    def _compute_quotation(self):
-        orders = self.mapped('order_ids').filtered(
-            lambda o: o.state in ('draft', 'sent', 'sale')
-        )
-        if orders:
-            self.order = True
 
     @api.depends('quotation_count')
     def _compute_stage(self):
@@ -68,7 +59,8 @@ class CrmLead(models.Model):
 
     order = fields.Boolean(
         string="Orden",
-        compute="_compute_quotation"
+        compute="_compute_quotation",
+        default=False
     )
 
     stage_id = fields.Many2one(
@@ -88,4 +80,10 @@ class CrmLead(models.Model):
         string="Estado del Picking"
     )
 
-
+    @api.depends('order_ids')
+    def _compute_quotation(self):
+        orders = self.mapped('order_ids').filtered(
+            lambda o: o.state in ('draft', 'sent', 'sale')
+        )
+        if orders:
+            self.order = True
