@@ -143,7 +143,6 @@
           <br/><br/><br/><br/><br/>
           <div class="container" style="font-family: Arial,sans-serif,Helvetica,Monaco,Georgia,Futura,Verdana; font-size: 90%;">
             <div class="row">
-              <!--<t t-set="iva" t-value="o.amount_by_group[0][1]"/>-->
               <t t-set="taxes" t-value="o.amount_by_group[0][1]"/>
               <t t-set="currency" t-value="1 / o.currency_id.rate" />
               <t t-set="subtotal" t-value="o.amount_untaxed * currency"/>
