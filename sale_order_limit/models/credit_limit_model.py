@@ -99,6 +99,8 @@ class SaleOrderInherit(models.Model):
                         'target': 'new',
                         'context': ctx,
                     }
+            else:
+                return self.action_quotation_send()
         else:
             if self.partner_id and self.partner_id.active_limit:
                 if self.partner_id.is_debtor:
