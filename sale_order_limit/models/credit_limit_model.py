@@ -8,8 +8,10 @@
 ###############################################################################
 from odoo import models, fields, api, _
 from odoo.tools.translate import _
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, ValidationError
+from datetime import datetime
 import logging
+
 
 _logger = logging.getLogger(__name__)
 
@@ -24,7 +26,7 @@ class ResPartner(models.Model):
                                   help="No se pueden realizar ventas una vez que se cruza el monto de bloqueo del cliente seleccionado"
                                   )
     due_amount = fields.Float(string="Total de deuda", compute="compute_due_amount")
-    is_debtor = fields.Boolean(string="Es deudor", compute="_compute_debts_active")
+    is_debtor = fields.Boolean(string="Es deudor", compute="_compute_debts_active", default=False)
     active_limit = fields.Boolean("Activar limite de credito", default=False)
     invoices_debts_name = fields.Char("Facturas adeudadas")
 
@@ -41,10 +43,18 @@ class ResPartner(models.Model):
             invoice_debts = ''
             if debts_amount:
                 for debt in debts_amount:
-                    debit_amount += debt.amount_residual
+                    if debt.currency_id.name == 'VEF':
+                        last_rate = self.env['res.currency.rate'].search([
+                            ('currency_id.name', '=', 'USD'),
+                            ('name', '<=', datetime.strftime(debt.date, "%Y-%m-%d"))
+                        ], limit=1).rate
+                        debit_amount += debt.amount_residual * last_rate
+                    else:
+                        debit_amount += debt.amount_residual
                     invoice_debts += ' ' + debt.name
             rec.invoices_debts_name = invoice_debts
             rec.due_amount = debit_amount
+
     
     @api.depends('due_amount')
     def _compute_debts_active(self):
@@ -63,7 +73,7 @@ class ResPartner(models.Model):
                 if self.blocking_stage > 0:
                     raise UserError(_("Monto de advertencia debe ser menor al monto de bloqueo"))
 
-class SaleOrder(models.Model):
+class SaleOrderInherit(models.Model):
     _inherit = 'sale.order'
 
     has_due = fields.Boolean()
@@ -71,18 +81,45 @@ class SaleOrder(models.Model):
     due_amount = fields.Float(related='partner_id.due_amount')
     invoices_debts_name = fields.Char(related='partner_id.invoices_debts_name')
     is_warning_admin_user = fields.Boolean('Mensaje de advertencia admins', default=False)
-
-    @api.onchange('partner_id')
-    def check_due(self):
-
+    
+    def action_pre_quotation_send(self):
         if self.user_has_groups('sale_order_limit.allow_sales_order_with_debts'):
-            if self.partner_id.is_debtor:
-                self.is_warning_admin_user = True
+            if self.partner_id and self.partner_id.active_limit:
+                if self.partner_id.is_debtor:
+                    ctx = {
+                        'default_invoice_debts': str(self.invoices_debts_name),
+                        'default_sale_order_id': self.id,
+                    }
+                    return {
+                        'type': 'ir.actions.act_window',
+                        'view_mode': 'form',
+                        'res_model': 'confirm.sale.order.wizard',
+                        'views': [(False, 'form')],
+                        'view_id': False,
+                        'target': 'new',
+                        'context': ctx,
+                    }
         else:
             if self.partner_id and self.partner_id.active_limit:
                 if self.partner_id.is_debtor:
-                    raise UserError('Se ha superado el limite de crédito de este cliente y no se podra generar una orden de venta. Las facturas con deudas son:' + str(self.invoices_debts_name))
+                    raise ValidationError('Se ha superado el limite de crédito de este cliente y no se podra generar una orden de venta. Las facturas con deudas son:' + str(self.invoices_debts_name))
                 elif self.partner_id and not self.partner_id.is_debtor and self.partner_id.due_amount > self.partner_id.warning_stage:
                     self.is_warning = True
+                    return self.action_quotation_send()
                 else:
                     self.is_warning = False
+                    
+            elif self.partner_id:
+                debts_amount = self.env['account.move'].sudo().search([
+                    ('partner_id', '=', self.partner_id.id),
+                    ('type', '=', 'out_invoice'),
+                    ('invoice_payment_state', 'in', ['not_paid','in_payment']),
+                    ('state', '=', 'posted')]
+                )
+                _logger.info('***************' + str(debts_amount))
+                if len(debts_amount) > 0:
+                    invoice_debts_name = ''
+                    for debt in debts_amount:
+                        invoice_debts_name += ' ' + debt.name
+                    raise UserError('El cliente debe la factura: ' + invoice_debts_name)
+                return self.action_quotation_send()

@@ -17,7 +17,8 @@
     'depends': ['base', 'sale'],
     'data': [
         'views/credit_limit_view.xml',
-        'security/security.xml'
+        'security/security.xml',
+        'wizard/confirm_sale_order.xml'
     ],
     'installable': True,
     'auto_install': False,
