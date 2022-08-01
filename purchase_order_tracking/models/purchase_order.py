@@ -148,6 +148,9 @@ class PurchaseOrder(models.Model):
         string='Tiempo estimado',
     )
 
+    # fields stage
+    active = fields.Boolean(string='compra activa', default=True)
+
     # compute inherit
     # def _compute_invoice(self):
     #     super(PurchaseOrder, self)._compute_invoice()
@@ -287,6 +290,10 @@ class PurchaseOrder(models.Model):
                         _logger.error("Error - button_confirm %s" % (e))
                         pass
         return rec
+
+    def button_cancel(self):
+        self.active = False
+        return super(PurchaseOrder, self).button_cancel()
 
     def estimated(self, date, estimated_days):
         return (date + (relativedelta(days=int(estimated_days))))
@@ -545,12 +552,6 @@ class PurchaseOrder(models.Model):
                     else:
                         vals.update({'stage_id': stage_verification.id})
                     super(PurchaseOrder, self).write(vals)
-
-                if purchase_cancel:
-                    stage_cancel = self.env.ref('purchase_dashboard_stage.stage_purchase_cancel', raise_if_not_found=False)
-                    vals.update({'stage_id': stage_cancel.id})
-                    super(PurchaseOrder, self).write(vals)
-
         return res
 
 
