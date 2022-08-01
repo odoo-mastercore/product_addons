@@ -37,6 +37,23 @@ class CrmLead(models.Model):
         ],
         string="Estado del Picking"
     )
+    amount_total_sale = fields.Char(
+        compute='_compute_amount_total_sale', 
+        string="Sum of Orders", 
+        help="Untaxed Total of Confirmed Orders", 
+    )
+
+    @api.depends('order_ids.currency_id')
+    def _compute_amount_total_sale(self):
+        for lead in self:
+            total = 0.0
+            if lead.order_ids:
+                for order in lead.order_ids:
+                    total += order.amount_total
+                lead.amount_total_sale = str(total) +" "+ str(lead.order_ids[0].currency_id.name) 
+            else:
+                lead.amount_total_sale = None
+
 
     @api.depends('order_ids')
     def _compute_quotation(self):

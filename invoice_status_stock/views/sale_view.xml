@@ -13,7 +13,12 @@
               name="web_ribbon"
               bg_color="bg-danger"
               title="Sin Factura"
-              attrs="{'invisible': [('state_invoice', '!=', 'SIN_FACTURA')]}"
+              attrs="{'invisible': 
+                [ '|',
+                  ('state', '!=', 'sale'),
+                  ('state_invoice', '!=', 'SIN_FACTURA')
+                ]
+              }"
           />
           <widget
               name="web_ribbon"

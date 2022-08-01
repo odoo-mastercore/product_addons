@@ -11,6 +11,9 @@
         <field name="opportunity_id" position="attributes">
           <attribute name="readonly">True</attribute>
         </field>
+        <field name="partner_id" position="attributes">
+          <attribute name="attrs">{'readonly': [('opportunity_id', '!=', False)]}</attribute>
+        </field>
       </field>
     </record>
   </data>
