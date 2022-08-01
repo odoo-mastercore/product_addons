@@ -2,7 +2,7 @@
 <odoo>
   <data>
     <template id="inherit_report_invoice_document_giro">
-      <t t-call="web.external_layout">
+      <t t-call="web_template_report.inherit_internal_layout">
         <t t-set="o" t-value="o.with_context(lang=lang)" />
         <br/>
         <br/>
@@ -56,12 +56,12 @@
                 <br/>
                 <tr style="padding-top: 25;">
                   <th class="text-left" style="padding-left: 20px; padding-right: 25px; padding-top: 10;">
-                    <!--<h4>Factura Nº</h4>-->
-                    <strong>Factura Nº</strong>
+                    <h5>Factura Nº</h5>
+                    <!--<strong>Factura Nº</strong>-->
                   </th>
-                  <th class="text-right">
-                    <!--<h3 t-field="o.name"/>-->
-                    <strong t-field="o.name"/>
+                  <th class="text-left">
+                    <h5 t-field="o.name"/>
+                    <!--<strong t-field="o.name"/>-->
                   </th>
                 </tr>
                 <tr style="padding-top: 25;">
@@ -85,8 +85,7 @@
                 <tr style="padding-top: 25;">
                   <td class="text-left" style="padding-left: 20px; padding-right: 25px; padding-top: 10;">Vendedor:</td>
                   <th class="text-left">
-                    <!--<span t-field="o.invoice_date"/>-->
-                    <span>GIRO SERVICIOS, C.A.</span>
+                    <span t-field="o.invoice_user_id"/>
                   </th>
                 </tr>
                 <br/>
@@ -144,7 +143,11 @@
           <br/><br/><br/><br/><br/>
           <div class="container" style="font-family: Arial,sans-serif,Helvetica,Monaco,Georgia,Futura,Verdana; font-size: 90%;">
             <div class="row">
-              <t t-set="iva" t-value="o.amount_by_group[0][1]"/>
+              <t t-set="taxes" t-value="o.amount_by_group[0][1]"/>
+              <t t-set="currency" t-value="1 / o.currency_id.rate" />
+              <t t-set="subtotal" t-value="o.amount_untaxed * currency"/>
+              <t t-set="iva" t-value="taxes * currency"/>
+              <t t-set="total" t-value="o.amount_total * currency"/>
               <div class="col-4" style="border-color: black; border-width: 2px; border-style: solid;">
                 <br/>
                 <table>
@@ -153,15 +156,16 @@
                       Monto Facturado Bs
                     </th>
                     <td class="text-right">
-                      <!--<span t-field="o.amount_untaxed"/>-->
+                      <span t-esc="subtotal" t-options="{'widget': 'float', 'precision': 2}"/>
                     </td>
                   </tr>
                   <tr>
                     <th class="text-left" style="padding-right: 20px; padding-top: 10;">
-                      Base Excenta Bs
+                      Base Exenta Bs
                     </th>
                     <td class="text-right">
-                      <!--<span t-field="o.amount_untaxed"/>-->
+                      <t t-set="b_exento" t-value="o.base_exenta() * currency" />
+                      <span t-esc="b_exento" t-options="{'widget': 'float', 'precision': 2}"/>
                     </td>
                   </tr>
                   <tr>
@@ -169,20 +173,20 @@
                       Base Gravable Bs
                     </th>
                     <td class="text-right">
-                      <!--<span t-field="o.amount_untaxed"/>-->
+                      <t t-set="b_gravable" t-value="o.base_gravable() * currency" />
+                      <span t-esc="b_gravable" t-options="{'widget': 'float', 'precision': 2}"/>
                     </td>
                   </tr>
                   <tr>
                     <th class="text-left" style="padding-right: 20px; padding-top: 10;">IVA 16%</th>
                     <td class="text-right">
-                      <!--<span>$</span>-->
-                      <!--<span t-esc="iva"/>-->
+                      <span t-esc="iva" t-options="{'widget': 'float', 'precision': 2}"/>
                     </td>
                   </tr>
                   <tr>
                     <th class="text-left" style="padding-right: 20px; padding-top: 10;">Total Factura Bs</th>
                     <td class="text-right">
-                      <span t-field="o.amount_total"/>
+                      <span t-esc="total" t-options="{'widget': 'float', 'precision': 2}"/>
                     </td>
                   </tr>
                 </table>
@@ -203,7 +207,7 @@
                 <table>
                   <tr>
                     <th class="text-left" style="padding-right: 20px; padding-top: 10;">
-                      Monto Facturado USD
+                      Monto Facturado
                     </th>
                     <td class="text-right">
                       <span t-field="o.amount_untaxed"/>
@@ -211,28 +215,28 @@
                   </tr>
                   <tr>
                     <th class="text-left" style="padding-right: 20px; padding-top: 10;">
-                      Base Excenta USD
+                      Base Exenta
                     </th>
                     <td class="text-right">
-                      <span t-field="o.amount_untaxed"/>
+                      <span t-esc="round(o.base_exenta())" t-options="{'widget': 'float', 'precision': 2}"/>
                     </td>
                   </tr>
                   <tr>
                     <th class="text-left" style="padding-right: 20px; padding-top: 10;">
-                      Base Gravable USD
+                      Base Gravable
                     </th>
                     <td class="text-right">
-                      <span t-field="o.amount_untaxed"/>
+                      <span t-esc="round(o.base_gravable())" t-options="{'widget': 'float', 'precision': 2}"/>
                     </td>
                   </tr>
                   <tr>
                     <th class="text-left" style="padding-right: 20px; padding-top: 10;">IVA 16%</th>
                     <td class="text-right">
-                      <span t-esc="iva"/>
+                      <span t-esc="taxes" t-options="{'widget': 'float', 'precision': 2}"/>
                     </td>
                   </tr>
                   <tr>
-                    <th class="text-left" style="padding-right: 20px; padding-top: 10;">Total Factura USD</th>
+                    <th class="text-left" style="padding-right: 20px; padding-top: 10;">Total Factura</th>
                     <td class="text-right">
                       <span t-field="o.amount_total"/>
                     </td>
@@ -247,7 +251,10 @@
                 <br/>
                 <p style="font-size: 90%;">
                   NOTA: Cumpliendo con el Art. 25 de la Ley del Impuesto del Valor Agregado, se establece la conversión en Bs según el tipo de cambio
-                  en moneda extranjera del Banco Central de Venezuela, Tasa de cambio Bolivares por Dólar.
+                  en moneda extranjera del Banco Central de Venezuela, Tasa de cambio <span t-esc="currency" t-options="{'widget': 'float', 'precision': 2}" /> Bolivares por Dólar.
+                </p>
+                <p style="font-size: 90%;">
+                  verificar en la factura del cliente
                 </p>
               </div>
             </div>

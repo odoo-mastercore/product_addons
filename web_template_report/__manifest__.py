@@ -8,19 +8,18 @@
 ###############################################################################
 
 {
-    "name": "Invoice Report Soluciones",
+    "name": "Web Report Template",
     "summary": "",
     "version": "13.0.1.0.0",
-    "category": "Sales/CRM",
+    "category": "report/template",
     'website': "http://sinapsys.global",
     'author': "SINAPSYS GLOBAL SA || MASTERCORE SAS",
     "license": "AGPL-3",
     "depends": [
         "account",
-        "web_template_report"
-        ],
+    ],
     "data": [
         "templates/report_templates.xml",
-        "report/invoice_report_soluciones.xml"
     ],
 }
+

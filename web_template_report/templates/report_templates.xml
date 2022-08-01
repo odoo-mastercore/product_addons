@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+  <data>
+    <template id="inherit_internal_layout">
+      <t t-if="not o" t-set="o" t-value="doc"/>
+
+      <t t-if="not company">
+        <!-- Multicompany -->
+        <t t-if="company_id">
+            <t t-set="company" t-value="company_id"/>
+        </t>
+        <t t-elif="o and 'company_id' in o">
+            <t t-set="company" t-value="o.company_id.sudo()"/>
+        </t>
+        <t t-else="else">
+            <t t-set="company" t-value="res_company"/>
+        </t>
+      </t>
+
+      <div class="header">
+      </div>
+      <div class="article" t-att-data-oe-model="o and o._name" t-att-data-oe-id="o and o.id" t-att-data-oe-lang="o and o.env.context.get('lang')">
+        <t t-raw="0"/>
+      </div>
+    </template>
+
+    <template id="inherit_preview_internalreport">
+      <t t-call="web.html_container">
+        <t t-set="o" t-value="res_company"/>
+        <t t-call="web_template_report.inherit_internal_layout">
+          <div class="page">
+            <p>This is a sample of an internal report.</p>
+          </div>
+        </t>
+      </t>
+    </template>
+
+    <report id="inherit_action_report_internalpreview"
+        model="res.company"
+        name="web_template_report.inherit_preview_internalreport"
+        file="web_template_report.inherit_preview_internalreport"
+        string="Previsualizar Reporte Interno"
+        report_type="qweb-pdf"/>
+
+  </data>
+</odoo>

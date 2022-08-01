@@ -2,7 +2,7 @@
 <odoo>
   <data>
     <template id="inherit_report_invoice_document_autopartes">
-      <t t-call="web.external_layout">
+      <t t-call="web_template_report.inherit_internal_layout">
         <t t-set="o" t-value="o.with_context(lang=lang)" />
         <br/>
         <br/>
@@ -158,7 +158,7 @@
                       I.V.A 16%
                     </td>
                     <th class="text-right" style="padding-left: 50px; padding-top: 5;">
-                      <span t-field="o.amount_untaxed"/>
+                      <span t-esc="iva"/>
                     </th>
                   </tr>
                   <tr>
@@ -166,7 +166,7 @@
                       TOTAL BS.
                     </th>
                     <th class="text-right" style="padding-left: 50px; padding-top: 5;">
-                      <span t-field="o.amount_untaxed"/>
+                      <span t-field="o.amount_total"/>
                     </th>
                   </tr>
                 </table>
