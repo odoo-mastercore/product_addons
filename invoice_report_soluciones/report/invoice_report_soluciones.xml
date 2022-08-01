@@ -2,7 +2,7 @@
 <odoo>
   <data>
     <template id="inherit_report_invoice_document_soluciones">
-      <t t-call="web.external_layout">
+      <t t-call="web_template_report.inherit_internal_layout">
         <t t-set="o" t-value="o.with_context(lang=lang)" />
         <br/>
         <div class="container" style="font-family: Arial,sans-serif,Helvetica,Monaco,Georgia,Futura,Verdana; font-size: 80%;">
@@ -41,10 +41,10 @@
               <table>
                 <tr>
                   <th class="text-right" style="padding-right: 25px; padding-top: 10;">
-                    <h3>Factura Nº</h3>
+                    <h5>Factura Nº</h5>
                   </th>
                   <td class="text-left">
-                    <h3 t-field="o.name"/>
+                    <h5 t-field="o.name"/>
                   </td>
                 </tr>
                 <tr>
@@ -107,11 +107,16 @@
           </div>
           <br/><br/><br/><br/>
           <div class="container" style="font-family: Arial,sans-serif,Helvetica,Monaco,Georgia,Futura,Verdana;">
+              <t t-set="taxes" t-value="o.amount_by_group[0][1]"/>
+              <t t-set="currency" t-value="1 / o.currency_id.rate" />
+              <t t-set="subtotal" t-value="o.amount_untaxed * currency"/>
+              <t t-set="iva" t-value="taxes * currency"/>
+              <t t-set="total" t-value="o.amount_total * currency"/>
             <div class="row">
               <t t-set="iva" t-value="o.amount_by_group[0][1]"/>
               <div class="col-8" style="border-color: black; border-width: 2px; border-style: solid;">
                 <p>
-                  Conversión a la tasa BCV Bs US$, según fecha de emisión del documento, con lo establacido en el ART.116 del banco de BCV y el ART.25 de la lay IVA
+                  Conversión a la tasa BCV Bs <span t-esc="currency" t-options="{'widget': 'float', 'precision': 2}" /> por US$, según fecha de emisión del documento, con lo establacido en el ART.116 del banco de BCV y el ART.25 de la lay IVA
                 </p>
                 <center>
                   <table>
@@ -127,7 +132,7 @@
                       <th class="text-right" style="padding-right: 50px; padding-top: 10;">IVA $ 16%</th>
                       <td class="text-left">
                         <span>$</span>
-                        <span t-esc="iva"/>
+                      <span t-esc="taxes" t-options="{'widget': 'float', 'precision': 2}"/>
                       </td>
                     </tr>
                     <tr>
@@ -148,19 +153,19 @@
                       Sub-Total
                     </th>
                     <td class="text-left">
-                      <span t-field="o.amount_untaxed"/>
+                      <span t-esc="subtotal" t-options="{'widget': 'float', 'precision': 2}"/>
                     </td>
                   </tr>
                   <tr>
                     <th class="text-right" style="padding-right: 50px; padding-top: 10;">IVA</th>
                     <td class="text-left">
-                      <span t-esc="iva"/>
+                      <span t-esc="iva" t-options="{'widget': 'float', 'precision': 2}"/>
                     </td>
                   </tr>
                   <tr>
                     <th class="text-right" style="padding-right: 50px; padding-top: 10;">Total Factura</th>
                     <td class="text-left">
-                      <span t-field="o.amount_total"/>
+                      <span t-esc="total" t-options="{'widget': 'float', 'precision': 2}"/>
                     </td>
                   </tr>
                 </table>
@@ -168,18 +173,18 @@
                 <br/>
               </div>
             </div>
-            <div class="row">
-              <div class="col-12 text-center">
-                <p style="font-size: 90%;">
-                  <strong>GRAFICAS NERIO TIP, C.A.</strong> RIF.: J-07032562-3 - TELF.:. (0261) 7516963 - 7529054. AV. 28 LA LIMPIA URB. SUCRE Nº 61-111. 
-                  (No PROVIDENCIA SENIAT/04/00171 DE FECHA: 08/02/2008) REGIÓN ZULIANA. No DE CONTROL DESDE 00-000501 HASTA EL No. 00-000750 
-                  (5/50/03) (FECHA LIBRE) FECHA DE ELEBORACIÓN 26/06/2019
-                </p>
-                <div class="text-right">
-                  <strong>ORIGINAL - CLIENTE</strong>
-                </div>
-              </div>
-            </div>
+            <!--<div class="row">-->
+              <!--<div class="col-12 text-center">-->
+                <!--<p style="font-size: 90%;">-->
+                  <!--<strong>GRAFICAS NERIO TIP, C.A.</strong> RIF.: J-07032562-3 - TELF.:. (0261) 7516963 - 7529054. AV. 28 LA LIMPIA URB. SUCRE Nº 61-111. -->
+                  <!--(No PROVIDENCIA SENIAT/04/00171 DE FECHA: 08/02/2008) REGIÓN ZULIANA. No DE CONTROL DESDE 00-000501 HASTA EL No. 00-000750 -->
+                  <!--(5/50/03) (FECHA LIBRE) FECHA DE ELEBORACIÓN 26/06/2019-->
+                <!--</p>-->
+                <!--<div class="text-right">-->
+                  <!--<strong>ORIGINAL - CLIENTE</strong>-->
+                <!--</div>-->
+              <!--</div>-->
+            <!--</div>-->
           </div>
         </div>
       </t>

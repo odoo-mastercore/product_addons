@@ -2,7 +2,7 @@
 <odoo>
   <data>
     <template id="inherit_report_invoice_document_friction">
-      <t t-call="web.external_layout">
+      <t t-call="web_template_report.inherit_internal_layout">
         <t t-set="o" t-value="o.with_context(lang=lang)" />
         <br/>
         <div class="container" style="font-family: Arial,sans-serif,Helvetica,Monaco,Georgia,Futura,Verdana; font-size: 80%;">
@@ -42,10 +42,10 @@
               <table>
                 <tr>
                   <th class="text-right" style="padding-right: 25px; padding-top: 10;">
-                    <h4>Factura Nº</h4>
+                    <h5>Factura Nº</h5>
                   </th>
                   <td class="text-left">
-                    <h4 t-field="o.name"/>
+                    <h5 t-field="o.name"/>
                   </td>
                 </tr>
                 <tr>

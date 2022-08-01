@@ -17,6 +17,7 @@
     "license": "AGPL-3",
     "depends": [
         "account",
+        "web_template_report"
         ],
     "data": [
         "templates/report_templates.xml",

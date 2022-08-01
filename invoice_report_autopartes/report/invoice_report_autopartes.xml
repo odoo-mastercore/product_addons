@@ -2,7 +2,7 @@
 <odoo>
   <data>
     <template id="inherit_report_invoice_document_autopartes">
-      <t t-call="web.external_layout">
+      <t t-call="web_template_report.inherit_internal_layout">
         <t t-set="o" t-value="o.with_context(lang=lang)" />
         <br/>
         <br/>
