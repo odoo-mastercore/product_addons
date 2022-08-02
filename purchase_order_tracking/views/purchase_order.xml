@@ -6,6 +6,9 @@
         <field name="model">purchase.order</field>
         <field name="inherit_id" ref="purchase.purchase_order_form"/>
         <field name="arch" type="xml">
+            <xpath expr="//form/sheet" position="inside">
+                <field name="active" invisible="1" />
+            </xpath>
             <xpath expr="//button[@name='button_draft']" position="attributes">
                 <attribute name="invisible">1</attribute>
             </xpath>
@@ -22,17 +25,22 @@
             </xpath>
             <xpath expr="//field[@name='partner_ref']" position="attributes">
                 <attribute name="string">Número factura del proveedor</attribute>
+                <attribute name="attrs">{'readonly': [('active', '=', False)]}</attribute>
             </xpath>
             <xpath expr="//field[@name='currency_id']" position="after">
                 <field
                     name="warehouse_company"
                     attrs="{
+                        'readonly': [('active', '=' , False)],
                         'invisible': [('purchase_type', '!=', 'international')],
                         'required': [('stage_identifier', 'in', ('transit_warehouse', 'transit_marine_land', 'stock_reception', 'cost_verification', 'partial_delivery'))]
                     }"/>
                 <field
                     name="estimated_days_init"
-                    attrs="{'readonly': [('stage_identifier', 'not in', ('requisition_order'))], 'invisible': [('purchase_type', '!=', 'international')]}" />
+                    attrs="{
+                        'readonly': ['|', ('stage_identifier', 'not in', ('requisition_order')), ('active', '=', False)],
+                        'invisible': [('purchase_type', '!=', 'international')]
+                    }" />
             </xpath>
             <xpath expr="//field[@name='date_order']" position="after">
                 <field
@@ -43,20 +51,27 @@
                 <field
                     name="purchase_type"
                     string="Tipo de Compra"
-                    attrs="{'readonly': [('stage_identifier', '!=', 'requisition_order')]}"
-                    />
+                    attrs="{
+                        'readonly': ['|', ('stage_identifier', '!=', 'requisition_order'), ('active', '=', False)]
+                    }"/>
                 <field
                     name="origin_purchase"
                     string="Origen de la compra"
                     placeholder="Pais"
                     class="o_address_country"
                     options='{"no_open": True, "no_create": True}'
-                    attrs="{'invisible': [('purchase_type', '!=', 'international')], 'required': [('purchase_type', '=', 'international')], 'readonly': [('stage_identifier', 'not in', ('requisition_order'))]}"
-                    />
+                    attrs="{
+                        'invisible': [('purchase_type', '!=', 'international')],
+                        'required': [('purchase_type', '=', 'international')],
+                        'readonly': ['|', ('stage_identifier', 'not in', ('requisition_order')), ('active', '=', False)]
+                    }"/>
                 <field
                     name="load_type"
-                    attrs="{'invisible': [('purchase_type', '!=', 'international')], 'readonly': [('stage_identifier', 'not in', ('requisition_order'))]}"
-                    string="Tipo de carga"/>
+                    string="Tipo de carga"
+                    attrs="{
+                        'invisible': [('purchase_type', '!=', 'international')],
+                        'readonly': ['|', ('stage_identifier', 'not in', ('requisition_order')), ('active', '=', False)]
+                    }"/>
                 <field name="stage_identifier" invisible="1"/>
                 <label for="weight_total" />
                 <div class="o_row" name="weight_total">
@@ -84,11 +99,13 @@
             <xpath expr="//page[@name='purchase_delivery_invoice']" position="before">
                 <page
                     string="Colocación de Orden de Compra"
-                    attrs="{
-                        'invisible': [('stage_identifier', 'not in', ('purchase_order', 'invoice_payment', 'transit_warehouse', 'transit_marine_land', 'stock_reception', 'cost_verification', 'partial_delivery'))]
-                    }">
+                    attrs="{'invisible': [('stage_identifier', 'not in', ('purchase_order', 'invoice_payment', 'transit_warehouse', 'transit_marine_land', 'stock_reception', 'cost_verification', 'partial_delivery'))]}">
                     <group name="order_privider">
-                        <field name="oc_provider_ids" context="{'default_purchase_order_id': id}" nolabel="1">
+                        <field
+                            name="oc_provider_ids"
+                            context="{'default_purchase_order_id': id}"
+                            nolabel="1"
+                            attrs="{'readonly': [('active', '=', False)]}">
                             <tree create="false" delete="false">
                                 <field name="provider_estimated_date" />
                                 <field name="provider_recognition_date" />
@@ -100,14 +117,12 @@
                 </page>
                 <page
                     string="Facturación/Pago/Entrega"
-                    attrs="{
-                        'invisible': [('stage_identifier', 'not in', ('invoice_payment', 'transit_warehouse', 'transit_marine_land', 'stock_reception', 'cost_verification', 'partial_delivery'))]
-                    }">
+                    attrs="{'invisible': [('stage_identifier', 'not in', ('invoice_payment', 'transit_warehouse', 'transit_marine_land', 'stock_reception', 'cost_verification', 'partial_delivery'))]}">
                     <field
                         name="supplier_ids"
                         context="{'default_purchase_order_id': id, 'default_create_view': True}"
                         nolabel="1"
-                        >
+                        attrs="{'readonly': [('active', '=', False)]}">
                         <tree delete="false">
                             <field name="estimated_date" />
                             <field name="invoice_id" />
@@ -131,11 +146,13 @@
                 </page>
                 <page
                     string="Tránsito Warehouse"
-                    attrs="{
-                        'invisible': [('stage_identifier', 'not in', ('transit_warehouse', 'transit_marine_land', 'stock_reception', 'cost_verification', 'partial_delivery'))]
-                    }">
+                    attrs="{'invisible': [('stage_identifier', 'not in', ('transit_warehouse', 'transit_marine_land', 'stock_reception', 'cost_verification', 'partial_delivery'))]}">
                     <group string="Warehouses">
-                        <field name="transit_warehouse_ids" context="{'default_purchase_order_id': id, 'default_create_view': True, 'default_shipping_company': warehouse_company}" nolabel="1">
+                        <field
+                            name="transit_warehouse_ids"
+                            context="{'default_purchase_order_id': id, 'default_create_view': True, 'default_shipping_company': warehouse_company}"
+                            nolabel="1"
+                            attrs="{'readonly': [('active', '=', False)]}">
                             <tree delete="false">
                                 <field name="estimated_date" />
                                 <field name="tracking_number" />
@@ -147,7 +164,11 @@
                         </field>
                     </group>
                     <group name="warehouse_invoices" string="Facturas Warehouse">
-                        <field name="invoice_warehouse_ids" widget="many2many" nolabel="1">
+                        <field
+                            name="invoice_warehouse_ids"
+                            widget="many2many"
+                            nolabel="1"
+                            attrs="{'readonly': [('active', '=', False)]}">
                             <tree delete="false">
                                 <field name="name" />
                                 <field name="partner_id" string="Empresa warehouse"/>
@@ -178,11 +199,13 @@
                 </page>
                 <page
                     string="Tránsito Maritimo/Terrestre"
-                    attrs="{
-                        'invisible': [('stage_identifier', 'not in', ('transit_marine_land', 'stock_reception', 'cost_verification', 'partial_delivery'))]
-                    }">
+                    attrs="{'invisible': [('stage_identifier', 'not in', ('transit_marine_land', 'stock_reception', 'cost_verification', 'partial_delivery'))]}">
                     <group name="transit_land_maritime" string="Tránsito">
-                        <field name="transit_land_maritime_ids" context="{'default_purchase_order_id': id}" nolabel="1">
+                        <field
+                            name="transit_land_maritime_ids"
+                            context="{'default_purchase_order_id': id}"
+                            nolabel="1"
+                            attrs="{'readonly': [('active', '=', False)]}">
                             <tree create="false" delete="false">
                                 <field name="create_from" invisible="1"/>
                                 <field name="estimated_port_arrival" />
@@ -198,11 +221,13 @@
                 </page>
                 <page
                     string="Recepción almacén"
-                    attrs="{
-                        'invisible': [('stage_identifier', 'not in', ('stock_reception', 'cost_verification', 'partial_delivery'))]
-                    }">
+                    attrs="{'invisible': [('stage_identifier', 'not in', ('stock_reception', 'cost_verification', 'partial_delivery'))]}">
                     <group>
-                        <field name="stock_receipt_ids" context="{'default_purchase_order_id': id}" nolabel="1">
+                        <field
+                            name="stock_receipt_ids"
+                            context="{'default_purchase_order_id': id}"
+                            nolabel="1"
+                            attrs="{'readonly': [('active', '=', False)]}">
                             <tree create="false" delete="false">
                                 <field name="create_from" invisible="1"/>
                                 <field name="estimated_date" />
@@ -214,9 +239,7 @@
                 </page>
                 <page
                     string="Verificacón de Costos"
-                    attrs="{
-                        'invisible': [('stage_identifier', 'not in', ('cost_verification'))]
-                    }">
+                    attrs="{'invisible': [('stage_identifier', 'not in', ('cost_verification'))]}">
                 </page>
             </xpath>
             <xpath expr="//page[@name='purchase_delivery_invoice']" position="after">
@@ -224,9 +247,9 @@
                     <group>
                         <field
                             name="estimated_time_ids"
-                            options="{'no_open': True,'no_create_edit': True}"
+                            options="{'no_open': True, 'no_create_edit': True}"
                             nolabel="1"
-                            >
+                            attrs="{'readonly': [('active', '=', False)]}">
                             <tree delete="false" create="false">
                                 <field name="stage_name" />
                                 <field name="entry_date" />
