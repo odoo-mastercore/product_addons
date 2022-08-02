@@ -15,12 +15,14 @@
                 </xpath>
             </field>
         </record>
-is_warning_admin_user
         <record id="header_view" model="ir.ui.view">
             <field name="name">Credit  Limit</field>
             <field name="model">sale.order</field>
             <field name="inherit_id" ref="sale.view_order_form"/>
             <field name="arch" type="xml">
+                <xpath expr="//button[@name='action_quotation_send']" position="attributes">
+                    <attribute name="name">action_pre_quotation_send</attribute>
+                </xpath> 
                 <xpath expr="//field[@name='payment_term_id']" position="after">
                     <field name="due_amount" invisible="1"/>
                     <field name="is_warning" invisible="1"/>

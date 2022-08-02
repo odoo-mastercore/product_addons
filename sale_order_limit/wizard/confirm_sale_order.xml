@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <record id="confirm_sale_order_form" model="ir.ui.view">
+    <field name="name">confirm.sale.order.form</field>
+    <field name="model">confirm.sale.order.wizard</field>
+    <field name="arch" type="xml">
+      <form string="">
+        <group>
+            <p>¿Este cliente ha sobrepasado el limite de deudas, facturas pendientes: <field name="invoice_debts" readonly="1" />, seguro que quieres continuar?</p> 
+        </group>
+        <footer>
+          <button string="Confirmar" name="confirm" type="object" class="oe_highlight" />
+          <button string="Cancelar" class="oe_link" special="cancel"/>
+        </footer>
+      </form>
+    </field>
+  </record>
+
+  <record id="action_confirm_sale_order_form" model="ir.actions.act_window">
+    <field name="name">Confirmar envio de presupuesto</field>
+    <field name="type">ir.actions.act_window</field>
+    <field name="res_model">confirm.sale.order.wizard</field>
+    <field name="view_mode">form</field>
+    <field name="view_id" ref="confirm_sale_order_form"/>
+    <field name="target">new</field>
+  </record>
+</odoo>
