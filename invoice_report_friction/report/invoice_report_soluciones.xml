@@ -16,7 +16,7 @@
                   </td>
                 </tr>
                 <tr>
-                  <th class="text-left" style="padding-right: 50px; padding-top: 10;">R.I.F</th>
+                  <th class="text-left" style="padding-right: 50px; padding-top: 10;">RIF</th>
                   <td class="text-left">
                     <span t-field="o.partner_id.l10n_latam_identification_type_id.l10n_ve_code"/>
                     <span>-</span>
@@ -55,7 +55,7 @@
                   </td>
                 </tr>
                 <tr>
-                  <th class="text-right" style="padding-right: 25px; padding-top: 10;">Termino de Pago:</th>
+                  <th class="text-right" style="padding-right: 25px; padding-top: 10;">Término de pago</th>
                   <td class="text-left">
                     <span t-field="o.payment_type2"/>
                   </td>
@@ -122,7 +122,7 @@
                       <td class="text-right" style="padding-right: 50px; padding-top: 10;">
                         Base $
                       </td>
-                      <th class="text-left">
+                      <th class="text-right">
                         <span t-field="o.amount_untaxed"/>
                       </th>
                     </tr>
@@ -135,7 +135,7 @@
                     </tr>
                     <tr>
                       <td class="text-right" style="padding-right: 50px; padding-top: 10;">Total $</td>
-                      <th class="text-left">
+                      <th class="text-right">
                         <span t-field="o.amount_total"/>
                       </th>
                     </tr>
@@ -153,7 +153,7 @@
                     <td class="text-right" style="padding-right: 50px; padding-top: 10;">
                       Sub-Total
                     </td>
-                    <th class="text-left">
+                    <th class="text-right">
                       <span t-esc="subtotal" t-options="{'widget': 'float', 'precision': 2}"/>
                     </th>
                   </tr>
@@ -165,7 +165,7 @@
                   </tr>
                   <tr>
                     <td class="text-right" style="padding-right: 50px; padding-top: 10;">Total Factura</td>
-                    <th class="text-left">
+                    <th class="text-right">
                       <span t-esc="total" t-options="{'widget': 'float', 'precision': 2}"/>
                     </th>
                   </tr>

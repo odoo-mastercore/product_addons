@@ -42,7 +42,7 @@
                   </th>
                 </tr>
                 <tr style="padding-top: 25;">
-                  <td class="text-left" style="padding-right: 50px; padding-top: 20;">R.I.F</td>
+                  <td class="text-left" style="padding-right: 50px; padding-top: 20;">RIF</td>
                   <th class="text-left" colspan="3">
                     <span t-field="o.partner_id.l10n_latam_identification_type_id"/>
                     <span t-field="o.partner_id.vat"/>
@@ -77,7 +77,7 @@
                   </th>
                 </tr>
                 <tr style="padding-top: 25;">
-                  <td class="text-left" style="padding-left: 20px; padding-right: 25px; padding-top: 10;">Termino de Pago:</td>
+                  <td class="text-left" style="padding-left: 20px; padding-right: 25px; padding-top: 10;">Término de pago</td>
                   <th class="text-left">
                     <span t-field="o.payment_type2"/>
                   </th>
@@ -218,7 +218,7 @@
                       Base Exenta
                     </th>
                     <td class="text-right">
-                      <span t-esc="round(o.base_exenta())" t-options="{'widget': 'float', 'precision': 2}"/>
+                      $ <span t-esc="round(o.base_exenta())" t-options="{'widget': 'float', 'precision': 2}"/>
                     </td>
                   </tr>
                   <tr>
@@ -226,13 +226,13 @@
                       Base Gravable
                     </th>
                     <td class="text-right">
-                      <span t-esc="round(o.base_gravable())" t-options="{'widget': 'float', 'precision': 2}"/>
+                      $ <span t-esc="round(o.base_gravable())" t-options="{'widget': 'float', 'precision': 2}"/>
                     </td>
                   </tr>
                   <tr>
                     <th class="text-left" style="padding-right: 20px; padding-top: 10;">IVA 16%</th>
                     <td class="text-right">
-                      <span t-esc="taxes" t-options="{'widget': 'float', 'precision': 2}"/>
+                      $ <span t-esc="taxes" t-options="{'widget': 'float', 'precision': 2}"/>
                     </td>
                   </tr>
                   <tr>
@@ -253,8 +253,14 @@
                   NOTA: Cumpliendo con el Art. 25 de la Ley del Impuesto del Valor Agregado, se establece la conversión en Bs según el tipo de cambio
                   en moneda extranjera del Banco Central de Venezuela, Tasa de cambio <span t-esc="currency" t-options="{'widget': 'float', 'precision': 2}" /> Bolivares por Dólar.
                 </p>
-                <p style="font-size: 90%;">
-                  verificar en la factura del cliente
+                <p style="font-size: 90%; text-align: justify;">
+                  Este considera cancelado únicamente con la emisión del recibo enumerado y firmado por personal autorizado mediante 
+                  recepción del pago por cheque no endosable, efectivo y/o deposito bancario procesado a favor de Giro Servicios, C.A. 
+                  La falta de pago en el plazo establecido, generará intereses conforme a la tase de interés corriente en el mercado, 
+                  siendo por cuenta del comprador los gastos de cobranzas judiciales o extrajudiciales, para todos los efectos legales 
+                  las partes eligen como domicilio especial, a la ciudad de Maracaibo, Estado Zulia a cuyos tribunales declaran 
+                  someterse con exclusión de cualquier otro tribunal competente en razón de territorio “No reclamado en contenido de 
+                  esta factura dentro de los ocho (8) días posteriores a su entrega, se tendrá por aceptada irrevocablemente”.
                 </p>
               </div>
             </div>
